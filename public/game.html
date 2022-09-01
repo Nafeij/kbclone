@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<!--     <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <meta
+      name="description"
+      content="game interface"
+    />
+    <link rel="prefetch" href="dices.png">
+    <link rel="prefetch" href="dicesB.png">
+    <link rel="prefetch" href="dicesR.png">
+    <link rel="prefetch" href="dicesY.png">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="game.css">
+    <script src="game.js"></script>
+</head>
+<body onload="gameLoop()" src="src.js">
+    <div class="inner">
+        <div class="side" id="opponent">
+            <div class="board">
+                <div class="roller">
+                    <div class="rollbox">
+                        <!-- <button class="rollbutton">
+                            Roll
+                        </button> -->
+                    </div>
+                </div>
+                <div class="tubs">
+                    <div class="tubbox">
+                        <div class="tub" id="left">
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <h1 class="scorer"></h1>
+                        </div>
+                        <div class="tub" id="mid">
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <h1 class="scorer"></h1>
+                        </div>
+                        <div class="tub" id="right">
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <h1 class="scorer"></h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="info">
+                    <h2 class="name">~ Opponent ~</h2>
+                    <div class="scorebox">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="side" id="player">
+            <div class="board">
+                <div class="roller">
+                    <div class="rollbox">
+                        <!-- <button class="rollbutton" onclick=playerRoll()>
+                            Roll
+                        </button> -->
+                    </div>
+                </div>
+                <div class="tubs">
+                    <div class="tubbox">
+                        <div class="tub" id="left">
+                            <h1 class="scorer"></h1>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                        </div>
+                        <div class="tub" id="mid">
+                            <h1 class="scorer"></h1>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                        </div>
+                        <div class="tub" id="right">
+                            <h1 class="scorer"></h1>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                            <div class="box"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info">
+                    <h2 class="name">~ Player ~</h2>
+                    <div class="scorebox">0</div>
+                </div>
+            </div>
+        </div>
+        <div id="flytext">
+            <p id="result" style="margin: 0;"></p>
+            <btn class="kbutton" id="restart">Restart</btn>
+        </div>
+    </ul>
+    </div>
+    </div>
+</body>
+</html>
