@@ -10,16 +10,20 @@ class Side extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            diceMatrix:[    [null, null, null],
-                            [null, null, null],
-                            [null, null, null]],
-            tubProps: Array(3).fill().map(this.generateTub),
+            diceMatrix: Array.from(Array(3), () => Array(3).fill(null)),
+            tubProps: Array.from({ length: 3 }, () => ({
+                    startShake: false,
+                    animClass: '',
+                    onScoreAnimEnd: ()=>{},
+                    score: null,
+                    boxRefs: Array(3).fill().map(React.createRef)}
+            )),
             tubsClickable: false,
-            isPlayer: true,
+            id: 0,
             newDice: null,
-            score: 0,
+            score: null,
             highlight: false,
-            turnIsPlayer: true,
+            turn: 0,
             rolled: false
         }
 /*         this.rollDice.bind(this)
@@ -53,16 +57,6 @@ class Side extends React.Component {
             onMovEnd: ()=>{},
             onShrinkEnd: ()=>{},
             fwdref: React.createRef()
-        }
-    }
-
-    generateTub(){
-        return {
-            startShake: false,
-            animClass: '',
-            onScoreAnimEnd: ()=>{},
-            score: null,
-            boxRefs: Array(3).fill().map(React.createRef)
         }
     }
 
@@ -184,7 +178,7 @@ class Side extends React.Component {
             {...this.state.tubProps[i]}
             diceList={this.state.diceMatrix[i]}
             clickable={this.state.tubsClickable}
-            flip={this.state.isPlayer}
+            flip={this.state.id}
             proccessClick={this.proccessClick(i)}
             onShakeAnimEnd={this.onShakeAnimEnd(i)}
         />)
@@ -205,7 +199,7 @@ class Side extends React.Component {
                 tubProps[i].startShake = true
                 this.setState({tubProps : tubProps})
             } else {
-                this.setState({tubsClickable : false})
+                // this.setState({tubsClickable : false})
                 this.proccessTurn(i)
             }
         }
@@ -224,14 +218,14 @@ class Side extends React.Component {
     }
 
     render(){
-        const {isPlayer, newDice, score} = this.state
-        const name = isPlayer ? '~ Player ~' : '~ Opponent' 
+        const {id, newDice, score} = this.state
+        const name = id ? '~ Player ~' : '~ Opponent ~' 
         return (
             <div className="side" id="opponent">
             <div className="board">
                 <div 
                     className='roller' onAnimationEnd={() => {this.rollDice()}}>
-                    <div className={`rollbox ${(this.state.turnIsPlayer === this.state.isPlayer) ? "hover" : ""}`}>
+                    <div className={`rollbox ${(this.state.id === this.state.turn) ? "hover" : ""}`}>
                         {newDice ? <Die {...newDice} ref={newDice.fwdref}/> : null}
                     </div>
                 </div>
