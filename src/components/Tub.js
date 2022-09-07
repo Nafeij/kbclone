@@ -17,33 +17,34 @@ RefBox.displayName = 'RefBox'
 class Tub extends React.Component {
 
     renderBox(i){
-        return <RefBox ref={this.props.boxRefs[i]}>
+        return <RefBox key={i} ref={this.props.boxRefs[i]}>
             {this.props.diceList[i] ? (<Die {...this.props.diceList[i]} ref={this.props.diceList[i].fwdref}/>) : null}
         </RefBox>
     }
 
     render(){
         const {
-            diceList, clickable, startShake, 
+            tubLen, diceList, clickable, startShake, 
             animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreTransform, cursor, cursorID
         } = this.props
+        const active = cursor === cursorID 
         const fillClass =  defLength(diceList) > 2 ? 'tubB' : 'tub';
         const hoverClass = clickable ? 'hover' : ''
+        const keyHoverClass = active ? 'hovering' : ''
         const shakeClass = startShake ? 'shake' : ''
-        const ordering = flip ? [2, 1, 0] : [0, 1, 2]
+        const ordering = Array(tubLen).fill().map((_,i)=>i)
+        if (!flip) ordering.reverse()
+        // if (clicked) console.log('pressed' + cursorID + cursor)
+        // if (clicked() && active) {proccessClick()}
         return (
         <div
-            className={`${fillClass} ${hoverClass} ${shakeClass}`}
-            onClick={() => {
-                if (clickable) proccessClick()
-            }}
+            className={`${fillClass} ${hoverClass} ${keyHoverClass} ${shakeClass}`}
+            onClick={proccessClick}
             onAnimationEnd={onShakeAnimEnd}>
-            {this.renderBox(ordering[0])}
-            {this.renderBox(ordering[1])}
-            {this.renderBox(ordering[2])}
+            {ordering.map((i)=>this.renderBox(i))}
             <h1 className={`scorer ${animClass}`}
-                onAnimationEnd={onScoreAnimEnd}>
+                onAnimationEnd={onScoreAnimEnd} style={{transform : scoreTransform}}>
                     {score}
             </h1>
         </div>
