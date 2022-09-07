@@ -14,6 +14,8 @@ Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.st
 ## Upcoming
 
 - Settings menu: custom board sizes and variant gamemodes
+- Timer
+- Back button for mobile
 - TODO
 
 It's quite buggy in its current state, so if you have suggestions or would like to propose a patch let me knoe in Issues.

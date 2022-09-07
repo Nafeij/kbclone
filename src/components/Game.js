@@ -142,7 +142,7 @@ class Game extends React.Component {
             const interval = setInterval(()=>{
                 const {sideProps, turn} = this.state
                 newDice = sideProps[turn].newDice
-                newDice.num = (newDice.num + 1 + randomInRange(numFaces - 1)) % (numFaces - 1) + 1
+                newDice.num = (newDice.num + randomInRange(numFaces-1) + 1) % numFaces + 1
                 this.setState({sideProps})
             },100);
             setTimeout(() => {
