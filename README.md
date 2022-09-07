@@ -13,6 +13,15 @@ Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.st
 - Settings menu: custom board sizes and variant gamemodes
 - TODO
 
+### Disclamer
+
+All assets are reproductions. All rights and intellectual properties belong to Massive Monster.
+
+CULT OF THE LAMB
+
+Cult of the Lamb is a rogue-like action-adventure game developed by indie developer Massive Monster and published by Devolver Digital.
+Start your own cult in a land of false prophets, venturing out into diverse and mysterious regions to build a loyal community of woodland Followers and spread your Word to become the one true cult.
+
 ---
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
