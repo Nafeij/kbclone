@@ -5,7 +5,8 @@ Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.st
 ## Features
 
 - Local and P2P Multiplayer
-- Play against AI. Different NPC profiles running on a reverse-engineered game engine 
+- Play against AI. Different NPC profiles running on a reverse-engineered game engine
+- Mobile/Touch-friendly (kind of)
 - Keyboard Controls
 
 ## Upcoming
