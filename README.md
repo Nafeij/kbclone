@@ -2,16 +2,21 @@
 
 Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.steampowered.com/app/1313140/Cult_of_the_Lamb/), by [Massive Monster](https://massivemonster.co/)
 
+[Play it here](https://nafeij.github.io/kbclone/)
+
 ## Features
 
 - Local and P2P Multiplayer
-- Play against AI. Different NPC profiles running on a reverse-engineered game engine 
+- AI. Different NPC profiles running on a reverse-engineered game engine
+- Mobile/Touch-friendly (kind of)
 - Keyboard Controls
 
 ## Upcoming
 
 - Settings menu: custom board sizes and variant gamemodes
 - TODO
+
+It's quite buggy in its current state, so if you have suggestions or would like to propose a patch let me knoe in Issues.
 
 ### Disclamer
 
