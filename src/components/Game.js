@@ -317,7 +317,7 @@ class Game extends React.Component {
             if(this.server.isHost){
                 this.server.send(!turn + 0)
                 const msg = await this.server.recv()
-                console.log(msg)
+                // console.log(msg)
             } else {
                 turn = await this.server.recv()
                 this.server.send('restart')
@@ -341,8 +341,8 @@ class Game extends React.Component {
     }
 
     gameComplete(){
-        //return this.state.diceMatrix[this.state.turn].flat().every(e=>e)
-        return this.state.diceMatrix[this.state.turn].flat().some(e=>e)
+        return this.state.diceMatrix[this.state.turn].flat().every(e=>e)
+        // return this.state.diceMatrix[this.state.turn].flat().some(e=>e)
     }
 
     calcTotal(turn=this.state.turn){

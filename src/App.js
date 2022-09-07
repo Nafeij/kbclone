@@ -124,7 +124,7 @@ class App extends React.Component{
 
   startGame(){
     // this.clearClickable()
-    console.log('test')
+    //console.log('test')
     this.keyManager.clear()
     this.keyManager.returnAction = ()=> this.return()
     let {menuProps, gameProps} = this.state
@@ -308,14 +308,14 @@ class App extends React.Component{
     const roomID = this.server.createRoom(()=>{
       this.server.send(username)
       this.server.recv().then((oppName)=>{
-        console.log(oppName)
+        //console.log(oppName)
         clearInterval(interval)
         this.startPVPGame(username, oppName)
       })
     }, ()=>{
       this.setState({isLoading : false})
       this.server.close()
-      console.log('other closed')
+      //console.log('other closed')
       clearInterval(interval)
       this.return()
       this.showFlytext("Player Disconnected")
@@ -347,13 +347,13 @@ class App extends React.Component{
       this.server.send(username)
       this.server.recv()
       .then((oppName)=>{
-        console.log(oppName)
+        //console.log(oppName)
         this.startPVPGame(username, oppName)
       })
     }, ()=>{
       this.server.close()
       this.setState({isLoading : false})
-      console.log('other closed')
+      //console.log('other closed')
       this.return()
       this.showFlytext("Player Disconnected")
     }, (e)=>{
@@ -380,7 +380,7 @@ class App extends React.Component{
       hostPfp = randomInRange(prange)
       guestPfp = (hostPfp + 1 + randomInRange(prange - 1)) % prange
       this.server.send({turn : !turn + 0, hostPfp, guestPfp})
-      console.log('host turn ' + turn)
+      //console.log('host turn ' + turn)
     } else {
       const init = await this.server.recv()
       turn = init.turn; guestPfp = init.hostPfp; hostPfp= init.guestPfp
