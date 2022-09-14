@@ -30,7 +30,7 @@ function Settings (props) {
     // console.log(props.graphicwidth)
 
     const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit} = props.gameSettingsProps
-    const {mod, modDscrt, modBool, modSpec, settingsRanges, modColor, cursor, pcursor} = props
+    const {mod, modDscrt, modBool, modSpec, settingsRanges, modColor, cursor, pcursor, settingChanged} = props
   
     return (<div className='menu'>
       <div className='menubox'>
@@ -152,7 +152,7 @@ function Settings (props) {
                 </div>
             </div>
         </div>
-        <div className={`kbutton space ${0 === cursor ? 'hovering' : ''}`} onClick={() => props.onClick()}>Back
+        <div className={`kbutton space ${0 === cursor ? 'hovering' : ''}`} onClick={() => props.onClick()}>{settingChanged ? 'Save' : 'Back'}
         </div>
       </div>
     </div>)

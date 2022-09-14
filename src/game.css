@@ -370,23 +370,24 @@ width: auto;
 }
 
 .turnCounter {
+	align-items: center;
+	aspect-ratio: 1;
 	background: #111;
-	color: white;
+	border: .5em solid #e80016;
+	border-radius: 50%;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	font-family: Cambria,Cochin,Georgia,Times,Times New Roman,serif;
+	font-weight: 700;
+	justify-content: flex-end;
+	left: 50%;
+	padding: 1em;
 	position: absolute;
 	top: 0;
-	left: 50%;
-	width: 90px;
-	border-radius: 50%;
-	border: .5em solid #e80016;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	flex-direction: column;
-	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-	font-weight: bold;
+	-webkit-transform: translate(-50%,-50%);
 	transform: translate(-50%,-50%);
-	aspect-ratio: 1;
-	padding: 1em;
+	width: 96px;
 }
 
 .turnCounter p {

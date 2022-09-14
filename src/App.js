@@ -96,6 +96,7 @@ class App extends React.Component{
       roomID : '',
       isLoading : false,
       graphicRef : React.createRef(),
+      settingChanged : false,
       gameSettingsProps : {
         tubLen : 3, 
         numTubs : 3, 
@@ -207,24 +208,24 @@ class App extends React.Component{
           const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
           gameSettingsProps.caravan = [mid-4,mid+4]
         }
-        this.setState(gameSettingsProps,this.return)
+        this.setState({gameSettingsProps},this.return)
       },
       mod : (setting,i)=>{
         const gameSettingsProps = this.state.gameSettingsProps
         gameSettingsProps[setting] = gameSettingsProps[setting] + i
         //console.log(gameSettingsProps[setting])
-        this.setState(gameSettingsProps)
+        this.setState({gameSettingsProps, settingChanged : true})
       },
       modDscrt : (setting,i)=>{
         const {gameSettingsProps, settingsRanges} = this.state
         settingsRanges[setting].rcursor += i
         gameSettingsProps[setting] = settingsRanges[setting].range[settingsRanges[setting].rcursor]
-        this.setState({gameSettingsProps, settingsRanges})
+        this.setState({gameSettingsProps, settingsRanges, settingChanged : true})
       },
       modBool : (setting)=>{
         const gameSettingsProps = this.state.gameSettingsProps
         gameSettingsProps[setting] = !gameSettingsProps[setting]
-        this.setState(gameSettingsProps)
+        this.setState({gameSettingsProps, settingChanged : true})
       },
       modSpec : (setting)=>{
         if (setting === 'caravan') {
@@ -234,7 +235,7 @@ class App extends React.Component{
             const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
             gameSettingsProps.caravan = [mid-4,mid+4]
           }
-          this.setState(gameSettingsProps)
+          this.setState({gameSettingsProps, settingChanged : true})
           //console.log(gameSettingsProps.caravan)
         }
       },
@@ -242,9 +243,9 @@ class App extends React.Component{
         const gameSettingsProps = this.state.gameSettingsProps
         const a = ((color.rgb.a * 255) | 1 << 8).toString(16).slice(1)
         gameSettingsProps[setting][side] = color.hex + a
-        this.setState(gameSettingsProps)
+        this.setState({gameSettingsProps, settingChanged : true})
       },
-      pcursor : true
+      pcursor : true,
     }
 
     const togglePCursor = ()=>{
@@ -607,7 +608,7 @@ class App extends React.Component{
     menuProps.onFade = ()=>{
       menuProps.onFade = ()=>{}
       menuProps.pointerEvents = 'auto'
-      this.setState({menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps}, ()=>{
+      this.setState({menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps, settingChanged : false}, ()=>{
         this.setButtonsClickable(callback)
       })
     }
@@ -638,7 +639,7 @@ class App extends React.Component{
             <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
           </div>
         </div>
-        {this.state.settingsProps ? <Settings {...this.state.settingsProps} gameSettingsProps={this.state.gameSettingsProps} settingsRanges={this.state.settingsRanges} cursor={this.state.cursor}/> : null}
+        {this.state.settingsProps ? <Settings {...this.state.settingsProps} gameSettingsProps={this.state.gameSettingsProps} settingsRanges={this.state.settingsRanges} cursor={this.state.cursor} settingChanged={this.state.settingChanged}/> : null}
         {this.state.gameProps ? <Game {...this.state.gameProps}/> : null}
         {this.state.serverSetupProps ? <ServerSetup {...this.state.serverSetupProps} cursor={this.state.cursor} roomID={this.state.roomID}/> : null}
         {this.state.charSelectProps ? <CharSelect {...this.state.charSelectProps} cursor={this.state.cursor} selectedpfp={this.state.selectedpfp}/> : null}
