@@ -36,7 +36,7 @@ class KeyManager{
     clear(){
         this.options = []
         this.clickActions = []
-        this.cursor = 0
+        this.cursor = null
         this.cursorUpdate()
     }
 
@@ -54,7 +54,7 @@ class KeyManager{
         const onList = typeof this.options[this.cursor] === 'object'
         const len = this.options.length
         if (len > 0){
-            console.log(this.options + ' ' + this.cursor)
+            // console.log(this.options + ' ' + this.cursor)
             if (keyEvent.key === "Enter" || keyEvent.key === "e" || keyEvent.key === " "){
                 if (onList) this.clickActions[this.cursor][0]()
                 else this.clickActions[this.cursor]()

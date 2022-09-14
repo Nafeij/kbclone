@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react";
-import Profile from "../util/profile";
+import Profile from "../util/Profile";
 
 const Bar = (props) => (
     <div className="barContainer">

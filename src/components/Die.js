@@ -1,27 +1,28 @@
 /* eslint react/prop-types: 0 */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 
 const Die = React.forwardRef((props, ref) =>{
-	const {height, transition, transform, shrink, num, onMovEnd, onShrinkEnd, transitionTimingFunction, backgroundColor, borderColor, zIndex} = props
+	const {height, transition, transform, shrink, num, onMovEnd, onShrinkEnd, transitionTimingFunction, diceColor, diceBorder, pipColor, zIndex, isCaravan, marginLeft, marginTop} = props
     // const [rnum, setNum] = useState(num);
-	const pips = Array(num).fill().map((_, i) => <span className="pip" key={i}/>)
 
 	return (
 		<div
-			className={`die ${shrink ? "shrink-out" : ""}`} ref={ref} style={{
-				height: height,
-				transition: transition,
-				transform: transform,
-				transitionTimingFunction: transitionTimingFunction,
-				backgroundColor: backgroundColor,
-				borderColor: borderColor,
-				zIndex: zIndex
+			className={`${num === 2 ? "die2" : "die"} ${isCaravan && num === 1? "caravan" : ""} ${shrink ? "shrink-out" : ""}`} ref={ref} style={{
+				height,
+				transition,
+				transform,
+				transitionTimingFunction,
+				backgroundColor: diceColor,
+				borderColor: diceBorder,
+				zIndex,
+				marginLeft,
+				marginTop
 			}}
 			onTransitionEnd={onMovEnd}
 			onAnimationEnd={onShrinkEnd}>
-			{pips}
+			{Array(num).fill().map((_, i) => <span className="pip" style={{backgroundColor: pipColor}} key={i}/>)}
 		</div>
 	)
 })

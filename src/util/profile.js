@@ -8,7 +8,7 @@ import img5 from "../img/5.png"
 const Profile = {
     imgs : [img0,img1,img2,img3,img4,img5],
     names : ['The Lamb', 'Ratau', 'Flinky', 'Klunko & Bop', 'Shrumy', 'The Fox'],
-    skill : [1.,.1,.25,.5,.9,1]
+    skill : [-1,.1,.25,.5,.9,1]
 }
 
 export default Profile

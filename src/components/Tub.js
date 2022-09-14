@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React, { forwardRef } from "react"
-import {defLength} from '../util/utils';
+import {defLength, timeFormat} from '../util/utils';
 import Die from "./Die";
 
 const RefBox = forwardRef((props, ref) => {
@@ -26,10 +26,16 @@ class Tub extends React.Component {
         const {
             tubLen, diceList, clickable, startShake, 
             animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score, scoreTransform, cursor, cursorID
-        } = this.props
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreTransform, cursor, cursorID, caravan} = this.props
         const active = cursor === cursorID 
-        const fillClass =  defLength(diceList) > 2 ? 'tubB' : 'tub';
+        const fillClass = (
+                caravan && 
+                score >= caravan[0] && 
+                score <= caravan[1]) ? 
+            'tubC' : (
+                defLength(diceList) >= diceList.length ? 
+            'tubB' : 'tub'
+        );
         const hoverClass = clickable ? 'hover' : ''
         const keyHoverClass = active ? 'hovering' : ''
         const shakeClass = startShake ? 'shake' : ''
@@ -50,13 +56,5 @@ class Tub extends React.Component {
         </div>
     )}
 }
-
-/*     componentDidMount(){
-        this.setState({transition:'.3s'});
-
-        setTimeout(()=>{this.setState({transform:'translateY(100px)'})},1000);
-
-        setTimeout(()=>{this.setState({shrink:true})},1000);
-    } */
 
 export default Tub

@@ -4,8 +4,8 @@ import React, { forwardRef } from "react"
 import Die from "./Die"
 
 const mDieProps = {
-  backgroundColor: "#ecd77a",
-  borderColor: "#cdbe61",
+  diceColor: "#ecd77a",
+  diceBorder: "#cdbe61",
   num : 6,
   height : '46%'
 }
@@ -37,8 +37,8 @@ const MatchGraphic = forwardRef((props, ref) => (
 MatchGraphic.displayName = 'MatchGraphic'
 
 const dDieProps = {
-  backgroundColor: "#f4b19c",
-  borderColor: "#d39f8e",
+  diceColor: "#f4b19c",
+  diceBorder: "#d39f8e",
   num : 6,
   height : '46%'
 }
@@ -91,7 +91,7 @@ function HowTo (props) {
             <div className="menubox">
                 <DestroyGraphic graphicwidth={props.graphicwidth}/>
                 <div className='text red'>DESTROY OPPONENT</div>
-                <div className='text'>Destory your opponent&lsquo;s dice by matching yours to theirs.</div>
+                <div className='text'>Destory your opponent&rsquo;s dice by matching yours to theirs.</div>
             </div>
         </div>
         {button("Got it")}

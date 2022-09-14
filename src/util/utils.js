@@ -40,3 +40,18 @@ export function mostCommon(arr){
     //console.log(Number(res))
     return Number(res)
 }
+
+/* export function timeFormat(sec){
+    if (sec < 0) return '--:--'
+    const seconds = Math.floor(sec % 60);
+    const minutes = Math.floor((sec / 60) % 60);
+    // const hours = Math.floor((total / 1000 / 60 / 60) % 24);
+    return (minutes > 9 ? minutes : '0' + minutes) + ':'
+    + (seconds > 9 ? seconds : '0' + seconds)
+} */
+
+export function timeFormat(seconds){
+    if (seconds < 0) return '--'
+    // const hours = Math.floor((total / 1000 / 60 / 60) % 24);
+    return seconds > 9 ? seconds : '0' + seconds
+}
