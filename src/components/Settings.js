@@ -29,7 +29,7 @@ function Settings (props) {
     // console.log(props.cursorID + ' : ' + props.cursor)
     // console.log(props.graphicwidth)
 
-    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit} = props.gameSettingsProps
+    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull} = props.gameSettingsProps
     const {mod, modDscrt, modBool, modSpec, settingsRanges, modColor, cursor, pcursor, settingChanged} = props
   
     return (<div className='menu'>
@@ -135,20 +135,29 @@ function Settings (props) {
             </div>
             <div className={`settingsItem ${8 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>
-                    Unrestricted
-                    <div className='text'>you can place dice onto your opponent&rsquo;s board</div>
+                    Longplay
+                    <div className='text'>game continues until there are no legal moves</div>
                 </div>
                 <div className="settingInput">
-                    <Switch sid={0} isOn={pickable} handleToggle={()=>{modBool('pickable')}}/>
+                    <Switch sid={0} isOn={ignoreFull} handleToggle={()=>{modBool('ignoreFull')}}/>
                 </div>
             </div>
             <div className={`settingsItem ${9 === cursor ? 'hovering' : ''}`}>
+                <div className='subtitle'>
+                    Sabotage
+                    <div className='text'>you can place dice onto your opponent&rsquo;s board</div>
+                </div>
+                <div className="settingInput">
+                    <Switch sid={1} isOn={pickable} handleToggle={()=>{modBool('pickable')}}/>
+                </div>
+            </div>
+            <div className={`settingsItem ${10 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>
                     Caravan Rules
                     <div className='text'>{`over ${settingsRanges.caravan[tubLen] - 5}, under ${settingsRanges.caravan[tubLen] + 5}, ones are Jokers`}</div>
                 </div>
                 <div className="settingInput">
-                    <Switch sid={1} isOn={!!caravan} handleToggle={()=>{modSpec('caravan')}}/>
+                    <Switch sid={2} isOn={!!caravan} handleToggle={()=>{modSpec('caravan')}}/>
                 </div>
             </div>
         </div>

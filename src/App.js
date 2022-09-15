@@ -105,7 +105,8 @@ class App extends React.Component{
         pipColor : ['#382020ff','#382020ff'], 
         // time : 120
         time : null, 
-        pickable : false, 
+        pickable : false,
+        ignoreFull : false,
         // caravan : [10,18]
         caravan : null,
         turnLimit : null
@@ -156,7 +157,7 @@ class App extends React.Component{
     this.keyManager.clear()
     this.keyManager.returnAction = ()=> this.return()
     let {menuProps, gameProps} = this.state
-    gameProps = {...this.state.gameSettingsProps,
+    gameProps = {settings : this.state.gameSettingsProps,
       ai : 0,
       return : ()=>this.return(),
       gameType : 'DEFAULT'
@@ -273,6 +274,7 @@ class App extends React.Component{
     this.keyManager.push([-1,0,1], [
       ()=>{},()=>{if (this.state.gameSettingsProps.turnLimit !== null) settingsProps.modDscrt('turnLimit',-1)},
       ()=>{if (this.state.gameSettingsProps.turnLimit !== 500) settingsProps.modDscrt('turnLimit',1)}])
+    this.keyManager.push(0, ()=>{settingsProps.modBool('ignoreFull')})
     this.keyManager.push(0, ()=>{settingsProps.modBool('pickable')})
     this.keyManager.push(0, ()=>{settingsProps.modSpec('caravan')})
     menuProps.fadeAway = true
@@ -507,7 +509,7 @@ class App extends React.Component{
       turn = init.turn; guestPfp = init.hostPfp; hostPfp= init.guestPfp
     }
     let {gameProps, serverSetupProps} = this.state
-    gameProps = {...this.state.gameSettingsProps,
+    gameProps = {settings : this.state.gameSettingsProps,
       name, oppName, turn, hostPfp, guestPfp,
       gameType : 'PVP',
       return : ()=> {
@@ -529,7 +531,7 @@ class App extends React.Component{
   }
 
   setID(evt){
-    const id = evt.target.value
+    const id = evt.target.value.toUpperCase()
     this.setState({roomID : id})
   }
 
@@ -570,7 +572,7 @@ class App extends React.Component{
     this.keyManager.clear()
     this.keyManager.returnAction = ()=>this.return()
     let {gameProps, charSelectProps} = this.state
-    gameProps = {...this.state.gameSettingsProps,
+    gameProps = {settings : this.state.gameSettingsProps,
       ai : this.state.selectedpfp,
       return : ()=>this.return(),
       gameType : 'AI'

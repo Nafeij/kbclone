@@ -246,6 +246,7 @@ width: auto;
 	gap: 1.5vh;
 	padding-top: 3em;
 	text-align: left;
+	max-height: 70vh;
 }
 
 .settingsItem {
@@ -440,15 +441,16 @@ width: auto;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	max-height: 50%;
 }
 
 .board {
 	display: grid;
-	grid-template-columns: repeat(6,minmax(0,1fr));
+	grid-template-columns: 2fr 1fr;
 	gap: 3rem;
-	padding: 1em;
+	padding: 2em;
 	height: 95%;
-	grid-auto-rows: minmax(0, 50%);
+	grid-auto-rows: minmax(100px , auto);
 }
 
 
@@ -457,7 +459,7 @@ width: auto;
 	justify-content: center;
 	align-items: center;
 	order: 2;
-	grid-column: 1 /span 3;
+	grid-column: 1 /span 1;
     position: relative;
     animation: movDown .9s 1 ease-out forwards;
 }
@@ -468,7 +470,7 @@ width: auto;
 }
 
 .rollbox { /*number 1 victory royale*/
-	width: 10rem;
+	width: 12rem;
 	aspect-ratio: 5/3;
 	display: flex;
 	justify-content: center;
@@ -495,7 +497,7 @@ width: auto;
 
 .tubs {
 	order: 4;
-	grid-column: 1 /span 6;
+	grid-column: 1 /span 2;
     position: relative;
     animation: movDown .9s 1 ease-out forwards;
 	height: 100%;
@@ -511,17 +513,19 @@ width: auto;
 .tubbox {
 	display: flex;
 	/* margin: auto; */
-	max-width: 600px;
 	flex: 1 1 auto;
 	/* grid-template-columns: repeat(5,minmax(0,1fr)); */
-	padding-bottom: 3em;
 	height: 100%;
-} 
+	align-items: center;
+	padding-bottom: 3em;
+}
 
 #player .tubbox {
-	padding-bottom:0;
 	padding-top: 3em;
+	padding-bottom: 0;
 }
+
+
 
 .tub, .tubB, .tubC {
 	position: relative;
@@ -530,6 +534,7 @@ width: auto;
 	flex-direction: column;
 	justify-content: center;
 	flex: 1;
+	max-height: 100%
 }
 
 .tub::before, .tubB::before, .tubC::before {
@@ -579,7 +584,7 @@ width: auto;
 	flex-direction: column;
 	text-align: center;
 	color: white;
-	grid-column: 4 /span 3;
+	grid-column: 2 /span 1;
 	order: 3;
 	z-index: 2;
     position: relative;
@@ -945,13 +950,13 @@ width: auto;
 
 @media (min-width: 820px){
 	.board {
-		grid-template-columns: repeat(7,minmax(0,1fr));
+		grid-template-columns: minmax(0,1fr) minmax(300px,3fr);
 		max-width: 560px;
 	}
 
 	.tubs {
 		order: 2;
-		grid-column: 3 /span 5;
+		grid-column: 2 /span 1;
 	}
 
  	.tubbox {
@@ -968,12 +973,12 @@ width: auto;
     .tub:last-child, .tubB:last-child {grid-column-start: 3;}  */
 
 	.roller{
-		grid-column: 1 /span 7;
+		grid-column: 1 /span 2;
 		order: 1;
 	}
 
 	.info{
-		grid-column: 1 /span 2;
+		grid-column: 1 /span 1;
 		order: 1;
 		animation: movLeft .9s 1 ease-out forwards;
 	}
@@ -1016,6 +1021,7 @@ width: auto;
 	.side {
 		grid-row: 1 / span 1;
 		grid-column: 1 / 1;
+		max-height: none;
 	}
 	
 	#player {
@@ -1023,25 +1029,18 @@ width: auto;
 	}
 
 	.board {
-		max-width: 2200px;
-		width: 100%;
-		grid-template-columns: 1fr minmax(500px, 1fr) 1fr;
+		max-width: none;
+		grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);
 		grid-auto-rows: minmax(35px,auto);
 		height: 100%;
 		box-sizing: border-box;
 		align-items: center;
 		justify-content: center;
-		margin-top: 5%;
-	}
-
-	#player .board{
-		margin-top: 0;
-		margin-bottom: 5%;
 	}
 
 	.tubs{
 		grid-column: 2 /span 1;
-		grid-row: 1 /span 3;
+		grid-row: 1 /span 4;
 		order: 1
 	}
 	.roller {
@@ -1058,10 +1057,6 @@ width: auto;
 		order: 3;
         animation: movRight .9s 1 ease-out forwards;
 		margin-top: 9em;
-	}
-
-	#player .tubs {
-		grid-row: 2 /span 3;
 	}
 
 	#player .info{
