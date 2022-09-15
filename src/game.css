@@ -241,11 +241,12 @@ width: auto;
 }
 
 .menubox.settingsList {
-	width: 60vw;
-	min-width: 500px;
+	width: 80vw;
+	max-width: 800px;
 	gap: 1.5vh;
 	padding-top: 3em;
 	text-align: left;
+	max-height: 70vh;
 }
 
 .settingsItem {
