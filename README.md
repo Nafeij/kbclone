@@ -10,13 +10,7 @@ Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.st
 - AI. Different NPC profiles running on a reverse-engineered game engine
 - Mobile/Touch-friendly (kind of)
 - Keyboard Controls
-
-## Upcoming
-
-- Settings menu: custom board sizes and variant gamemodes
-- Timer
-- Back button for mobile
-- TODO
+- [NEW] Settings, custom board sizes and gamemodes
 
 It's quite buggy in its current state, so if you have suggestions or would like to propose a patch let me knoe in Issues.
 
