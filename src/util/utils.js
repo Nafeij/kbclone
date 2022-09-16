@@ -37,6 +37,14 @@ export function score(num, count){
     return num * (count ** 2)
 }
 
+export function scoreTub(tub) {
+    let points = 0
+    for (const dice of tub){
+        if (dice) points += dice.num * numMatchingDice(tub, dice.num);
+    }
+    return points
+}
+
 function combinations(n, k) {
     var result = 1;
     for(var i=1; i <= k; i++){

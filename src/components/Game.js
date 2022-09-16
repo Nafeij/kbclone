@@ -3,7 +3,7 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
-import {randomInRange, defLength, numMatchingDice, isFull} from '../util/utils';
+import {randomInRange, defLength, numMatchingDice, isFull, scoreTub} from '../util/utils';
 import KeyManager from "../util/KeyManager.js";
 import Profile from "../util/Profile.js";
 import {evaluate, cheatDice} from "../util/AI.js";
@@ -23,8 +23,8 @@ class Game extends React.Component {
                 Array.from({length: props.settings.numTubs},()=>(Array(props.settings.tubLen).fill(null)))
                 )
             ),
-            tubProps: Array.from({length:2},()=>(
-                Array.from({length: props.settings.numTubs}, () => ({
+            tubProps: Array.from({length:2},(_,i)=>(
+                Array.from({length: props.settings.numTubs}, (_,j) => ({
                     tubLen: props.settings.tubLen,
                     startShake: false,
                     animClass: '',
@@ -33,7 +33,16 @@ class Game extends React.Component {
                     boxRefs: Array(props.settings.tubLen).fill().map(React.createRef),
                     scoreTransform: 'none',
                     cursorID: -1,
-                    caravan : props.settings.caravan
+                    caravan : props.settings.caravan,
+                    scoreHover : (h)=>{
+                        const {tubProps, diceMatrix, sideProps} = this.state
+                        if (isFull(diceMatrix[i][j])) return
+                        tubProps[i][j].score = scoreTub(diceMatrix[i][j])
+                        if (h && sideProps[i].newDice) tubProps[i][j].score += 
+                            (numMatchingDice(diceMatrix[i][j],sideProps[i].newDice.num) * 2 + 1) * sideProps[i].newDice.num
+                        if (!tubProps[i][j].score) tubProps[i][j].score = null
+                        this.setState({tubProps})
+                    } // TODO : implement pickable
                 })))
             ),
             sideProps: Array.from({length:2},(_,i)=>({
@@ -433,7 +442,6 @@ class Game extends React.Component {
     }
 
     gameEnd(){
-        let name
         const playerName = this.state.sideProps[1].name.toUpperCase(),
                 oppName = this.state.sideProps[0].name.toUpperCase()
         if (this.props.settings.caravan){
@@ -539,7 +547,12 @@ class Game extends React.Component {
 
     calcTotal(turn=this.state.turn){
         let total = 0;
+        const caravan = this.props.settings.caravan
         for (const tub of this.state.tubProps[turn]) {
+            if (caravan){
+                if (tub.score >= caravan[0] && tub.score <= caravan[1]) total++
+                continue
+            }
             if (tub.score) total += tub.score
         }
         return total
@@ -548,18 +561,14 @@ class Game extends React.Component {
     destroyAll(tub, turn = this.state.turn){
         let diceMatrix = this.state.diceMatrix
         const onePos = defLength(diceMatrix[turn][tub])
-        if (onePos === 1){
-            this.updateScore(tub, turn)
-            return false
-        }
-        const removeNum = diceMatrix[turn][tub][onePos-2].num
+        let removeNum = -1
+        if (onePos > 1) removeNum = diceMatrix[turn][tub][onePos-2].num
         let diceLost = [new Set(),new Set()], promises = []
-
         for(let i = 0; i < diceMatrix.length; i++) {
             for(let j = 0; j < diceMatrix[i].length; j++) {
                 for(let k = 0; k < diceMatrix[i][j].length; k++) {
                     const dice = diceMatrix[i][j][k]
-                    if (dice && removeNum === dice.num){
+                    if (dice && (removeNum === dice.num || (dice.num === 1 && i !== turn && j === tub))){
                         diceLost[i].add(j)
                         promises.push(new Promise(resolve=>{
                             dice.shrink = true
@@ -568,20 +577,24 @@ class Game extends React.Component {
                                 this.setState({diceMatrix}, resolve)
                             }
                         }))
-                        
                     }
                 }
             }
         }
+        if (!promises.length){
+            this.updateScore(tub, turn)
+            return false
+        }
         this.setState({diceMatrix})
         return new Promise(resolve=>{
             Promise.all(promises).then(()=>{
-                promises = []
+                promises = [this.updateScore(tub, turn)]
                 diceLost.forEach((s,si)=>{
                     s.forEach(i=>{
-                        promises.push(this.updateScore(i, si));
+                        if (tub !== i || turn !== si) promises.push(this.updateScore(i, si));
                     })
                 })
+                // console.log(promises)
                 Promise.all(promises).then(async ()=>{
                     diceMatrix = this.state.diceMatrix
                     for(let i = 0; i < diceLost.length; i++) {
@@ -730,13 +743,13 @@ class Game extends React.Component {
 
     
     onShakeAnimEnd(i, turn){
-        const tubProps = this.state.tubProps.slice()
+        const tubProps = this.state.tubProps
         tubProps[turn][i].startShake = false
         this.setState({tubProps})
     }
 
     onSideScoreAnimEnd(side){
-        const sideProps = this.state.sideProps.slice()
+        const sideProps = this.state.sideProps
         sideProps[side].scoreShake = false
         this.setState({sideProps})
     }
@@ -773,6 +786,8 @@ class Game extends React.Component {
     }
 
     render(){
+        const {ignoreFull, pickable, caravan} = this.props.settings
+        const isPVP = this.props.gameType === 'PVP'
         return (
             <div className="game">
                 {this.renderSide(0)}
@@ -783,9 +798,9 @@ class Game extends React.Component {
                     <p>{Math.ceil(this.state.turnCount)}</p>
                     <p>{`of ${this.props.settings.turnLimit} turns left`}</p>
                 </div> : null}
-                {this.props.gameType === 'PVP' ? <div className="settingsInfo">
-                    {`${this.props.settings.ignoreFull ? 'Longplay, ' : ''}${this.props.settings.pickable ? 'Sabotage, ' : ''}${!!this.props.settings.caravan ? `Caravan ${this.props.settings.caravan}` : ''}`}
-                </div> : null}
+                <div className="settingsInfo">
+                    {`${ignoreFull && isPVP? 'Longplay, ' : ''}${pickable && isPVP? 'Sabotage, ' : ''}${!!caravan ? `Caravan ${caravan}` : ''}`}
+                </div>
             </div>
         )
     }

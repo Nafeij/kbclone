@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React, { forwardRef } from "react"
-import {defLength, timeFormat} from '../util/utils';
+import {defLength, isFull, timeFormat} from '../util/utils';
 import Die from "./Die";
 
 const RefBox = forwardRef((props, ref) => {
@@ -26,14 +26,14 @@ class Tub extends React.Component {
         const {
             tubLen, diceList, clickable, startShake, 
             animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score, scoreTransform, cursor, cursorID, caravan} = this.props
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreTransform, cursor, cursorID, caravan, scoreHover} = this.props
         const active = cursor === cursorID 
         const fillClass = (
                 caravan && 
                 score >= caravan[0] && 
                 score <= caravan[1]) ? 
             'tubC' : (
-                defLength(diceList) >= diceList.length ? 
+                isFull(diceList) ? 
             'tubB' : 'tub'
         );
         const hoverClass = clickable ? 'hover' : ''
@@ -46,6 +46,8 @@ class Tub extends React.Component {
         return (
         <div
             className={`${fillClass} ${hoverClass} ${keyHoverClass} ${shakeClass}`}
+            onMouseOver={()=>{scoreHover(true)}}
+            onMouseOut={()=>{scoreHover(false)}}
             onClick={proccessClick}
             onAnimationEnd={onShakeAnimEnd}>
             {ordering.map((i)=>this.renderBox(i))}
