@@ -1,4 +1,4 @@
-import { randomSelect, isFull, numMatchingDice, randomInRange, defLength, score} from "./utils"
+import { randomSelect, isFull, numMatchingDice, randomInRange, defLength, score, emptySpaces, bernou} from "./utils"
 
 export function evaluate(diceMatrix, num, skill, turn, numFaces, settings){
     const choices = possibleChoices(diceMatrix, turn, settings.pickable)
@@ -9,18 +9,11 @@ export function evaluate(diceMatrix, num, skill, turn, numFaces, settings){
 
     let maxWeight = -Infinity, bestChoices = []
     for (const choice of choices) {
-        let oppSide = !choice.side + 0
 
-        let currWeight = weighDie(num, diceMatrix[choice.side][choice.tub], diceMatrix[oppSide][choice.tub])
-        let lost = oppCost(num, diceMatrix, choice, numFaces)
-        if (settings.pickable && choice.side !== turn) {
-            currWeight = ~currWeight + 1
-            if (diceMatrix[choice.side][choice.tub].length - defLength(diceMatrix[choice.side][choice.tub]) === 1){
-                currWeight += lost
-            } 
-        } else {
-            currWeight -= lost
-        }
+        let currWeight = weighDie(num, diceMatrix, choice, settings.caravan)
+        let lost = oppCost(num, diceMatrix, choice, numFaces, settings.caravan)
+        currWeight -= lost
+        if (settings.pickable && choice.side !== turn) currWeight = ~currWeight + 1
 
         console.log(`choice: ${choice.side ? 'player' : 'opp'} ${choice.tub} weight : ${currWeight}`)
 
@@ -38,48 +31,79 @@ export function evaluate(diceMatrix, num, skill, turn, numFaces, settings){
 export function cheatDice(diceMatrix, turn, numFaces, settings){
     console.log('cheat')
     const choices = possibleChoices(diceMatrix, turn, settings.pickable)
-    let num = 1 + randomInRange(numFaces), choice = randomSelect(choices), weight = -Infinity
-    for (const pchoice of choices) {
+    let num = 1 + randomInRange(numFaces), bestChoice = randomSelect(choices), weight = -Infinity
+    for (const choice of choices) {
         for (let face = 1; face <= numFaces; face++){
-            const oppSide = !choice.side + 0
-            let currWeight = weighDie(face, diceMatrix[pchoice.side][pchoice.tub], diceMatrix[oppSide][pchoice.tub])
-            let lost = oppCost(face, diceMatrix, pchoice, numFaces)
-            if (settings.pickable && pchoice.side !== turn) {
-                currWeight = ~currWeight + 1
-                if (diceMatrix[pchoice.side][pchoice.tub].length - defLength(diceMatrix[pchoice.side][pchoice.tub]) === 1){
-                    currWeight += lost
-                }
-            } else {
-                currWeight -= lost
-            }
+            let currWeight = weighDie(face, diceMatrix, choice, settings.caravan)
+            let lost = oppCost(face, diceMatrix, choice, numFaces, settings.caravan)
+            currWeight -= lost
+            if (settings.pickable && choice.side !== turn) currWeight = ~currWeight + 1
 
             if (currWeight > weight) {
                 weight = currWeight
-                choice = pchoice
+                bestChoice = choice
                 num = face
             }
         }
     }
-    return {num, side : choice.side, tub : choice.tub}
+    return {num, side : bestChoice.side, tub : bestChoice.tub}
 }
 
-function oppCost(num, diceMatrix, choice, numFaces){
-    let negWeight = 0
-    const oppSide = !choice.side + 0
+function oppCost(num, diceMatrix, choice, numFaces, caravan = null){
+    /* let negWeight = 0
     for (let face = 1; face <= numFaces; face++){
         if (face != num){
-            let currNegWeight = weighDie(face, diceMatrix[choice.side][choice.tub], diceMatrix[oppSide][choice.tub])
+            let currNegWeight = weighDie(face, diceMatrix, choice, caravan)
             negWeight += currNegWeight
         }
     }
-    return negWeight / numFaces
+    return negWeight / numFaces */
+    const tub = diceMatrix[choice.side][choice.tub]
+    const empty = emptySpaces(tub), emptyTotal = emptySpaces(diceMatrix[choice.side].flat())
+    const likelihood = 1 - Array(empty).fill()
+        .map((_,i)=>(bernou(emptyTotal, i, 1/numFaces)))
+        .reduce((a,b) => (a+b))
+    let maxVal = 0
+    if (defLength(tub) === 0) return 0
+    for (let face = 1; face <= numFaces; face++){
+        if (face != num){
+            const baseCount = numMatchingDice(tub,face)
+            const currVal = face * (empty + baseCount - 1) * 2
+            maxVal = Math.max(currVal, maxVal)
+        }
+    }
+    return maxVal * likelihood
 }
 
 
-function weighDie(num, tub, oppTub){
+function weighDie(num, diceMatrix, choice, caravan = null){ // TODO tubscore
+    const oppSide = !choice.side + 0
+    const tub = diceMatrix[choice.side][choice.tub]
+    const oppTub = diceMatrix[oppSide][choice.tub]
     const matches = numMatchingDice(tub, num),
         oppMatches = numMatchingDice(oppTub, num)
-    return num + matches * num * 2 + score(num, oppMatches) // (n+1)^2 - n^2 - 1
+    let points = num + matches * num * 2 + score(num, oppMatches)
+    if (caravan) {
+        let baseScore = scoreTub(diceMatrix[choice.side][choice.tub]) + points
+        points = Math.min(0, baseScore - caravan[0]) + Math.min(0, caravan[1] - baseScore)
+        if (num === 1 && defLength(tub) >= 1) {
+            const removeNum = tub[defLength(tub) - 1].num
+            points += diceMatrix.map((side,i)=>(
+                i === choice.side ? 
+                    side.map(t=>(~score(removeNum, numMatchingDice(t, removeNum))+1)) : 
+                    side.map(t=>(score(removeNum, numMatchingDice(t, removeNum)))) // consider caravan ranges
+            )).flat().reduce((t,c)=>(t+c),0)
+        }
+    }
+    return points  // (n+1)^2 - n^2 - 1
+}
+
+function scoreTub(tub) {
+    let points = 0
+    for (const dice of tub){
+        if (dice) points += dice.num * numMatchingDice(tub, dice.num);
+    }
+    return points
 }
 
 function possibleChoices(diceMatrix, side, pickable = false){

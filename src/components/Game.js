@@ -547,12 +547,12 @@ class Game extends React.Component {
 
     destroyAll(tub, turn = this.state.turn){
         let diceMatrix = this.state.diceMatrix
-        const onePos = defLength(diceMatrix[turn][tub]) - 1
-        if (onePos === 0){
+        const onePos = defLength(diceMatrix[turn][tub])
+        if (onePos === 1){
             this.updateScore(tub, turn)
             return false
         }
-        const removeNum = diceMatrix[turn][tub][onePos-1].num
+        const removeNum = diceMatrix[turn][tub][onePos-2].num
         let diceLost = [new Set(),new Set()], promises = []
 
         for(let i = 0; i < diceMatrix.length; i++) {

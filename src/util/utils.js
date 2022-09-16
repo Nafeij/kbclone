@@ -21,9 +21,12 @@ export function firstSpace(array){
     return -1;
 }
 
+export function emptySpaces(array){
+    return array.length - defLength(array)
+}
+
 export function isFull(arr){
-    const limit = arr.length - 1
-    return defLength(arr) > limit
+    return !emptySpaces(arr)
 }
 
 export function numMatchingDice(arr, num){
@@ -32,6 +35,19 @@ export function numMatchingDice(arr, num){
 
 export function score(num, count){
     return num * (count ** 2)
+}
+
+function combinations(n, k) {
+    var result = 1;
+    for(var i=1; i <= k; i++){
+        result *= (n+1-i)/i;
+    }
+    return result;
+}
+
+export function bernou(trials, successes, p){
+    const q = 1-p
+    return combinations(trials, successes) * (p**successes) * (q**(trials - successes))
 }
 
 export function mostCommon(arr){
