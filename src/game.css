@@ -945,7 +945,7 @@ width: auto;
 }
 
 @media screen and (max-width: 1000px) {
-	.footer {display: none;}
+	.fcontain:last-child, .symb.backSymb {display: none;}
 }
 
 @media (min-width: 820px){
