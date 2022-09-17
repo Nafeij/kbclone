@@ -44,8 +44,8 @@ class Game extends React.Component {
                     score: 0,
                     scoreShown: false,
                     scoreShake: false,
-                    pfp: 0,
-                    name : '',
+                    profile: Profile.cosm.lamb,
+                    name : Profile.cosm.lamb.name,
                     rollRef : React.createRef(),
                     numTubs: props.settings.numTubs,
                     time : props.settings.time === null ? props.settings.time : -1
@@ -184,7 +184,7 @@ class Game extends React.Component {
                 clearInterval(interval)
                 window.addEventListener("resize", ()=>{this.heightOnResize()})
                 const {diceMatrix, sideProps, turn} = this.state
-                const {pfp, newDice} = sideProps[turn]
+                const {profile , newDice} = sideProps[turn]
                 if (this.props.gameType === 'PVP'){
                     newDice.num = rnum
                     this.setState({sideProps})
@@ -242,13 +242,13 @@ class Game extends React.Component {
                         })
                     }
                 } else if (this.props.gameType === 'AI' && !turn){
-                    if(pfp === 5 && Math.random() > 0.5) {
+                    if(profile.effects.includes('cheat') && Math.random() > 0.5) {
                         let best = cheatDice(this.state.diceMatrix, turn, numFaces, this.props.settings)
                         newDice.num = best.num
                         this.setState({sideProps},()=>{this.proccessTurn(best.tub, best.side)})
                         return
                     }
-                    const choice = evaluate(diceMatrix, newDice.num, Profile.skill[pfp], turn, numFaces, this.props.settings)
+                    const choice = evaluate(diceMatrix, newDice.num, profile, turn, numFaces, this.props.settings)
                     this.proccessTurn(choice.tub, choice.side)
                 } else {
                     this.setTubClickable()
@@ -348,6 +348,8 @@ class Game extends React.Component {
         if (destPos === null) destPos = defLength(diceMatrix[turn][tubId])
         const newDice = srcPos === null ? this.state.sideProps[this.state.turn].newDice : diceMatrix[turn][tubId][srcPos]
 
+        if (!newDice) return new Promise((r)=>r())
+
         const srcRect = newDice.fwdref.current.getBoundingClientRect()
         const destRect = tubProps.boxRefs[destPos].current.getBoundingClientRect()
 
@@ -394,7 +396,6 @@ class Game extends React.Component {
         sideProps[1].tubsClickable = false
         this.clearClickable()
         this.setState({sideProps})
-
         const num = await this.handleMoveAnim(i, null, null, turn)
 
         if (this.props.settings.caravan && num === 1){
@@ -405,7 +406,6 @@ class Game extends React.Component {
             }), this.checkEnd)
             return
         }
-
         await this.updateScore(i, turn);
         // this.updateCurrSide({score : total}, {turn : !prevState.turn, rolled: false}, this.rollDice)
         this.setState(prevState => ({
@@ -507,8 +507,7 @@ class Game extends React.Component {
         }
         flytextProps.show = false
         const diceMatrix = Array.from({length:2}, ()=>(
-            Array.from({length:this.props.settings.numTubs},()=>(Array(this.props.settings.tubLen).fill(null)))
-            )
+            Array.from({length:this.props.settings.numTubs},()=>(Array(this.props.settings.tubLen).fill(null))))
         )
         let {tubProps, sideProps} = this.state
         sideProps = sideProps.map((side)=>({...side, score : 0, scoreShown : false}))
@@ -678,6 +677,7 @@ class Game extends React.Component {
         return new Promise((resolve)=>{
             if (!newScore) newScore = null
             const tubProp = tubProps[side][tub]
+            if (tubProp.animClass !== '') resolve()
             tubProp.animClass = ''
             tubProp.scoreTransform = 'none'
             if (tubProp.score !== newScore){
@@ -803,15 +803,19 @@ class Game extends React.Component {
         if (this.props.gameType === 'PVP'){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
-            const {name, oppName, turn, hostPfp, guestPfp} = this.props
-            sideProps[1].pfp = hostPfp ; sideProps[0].pfp = guestPfp
-            sideProps[1].name = name ; sideProps[0].name = oppName
+            const {name, oppName, turn, hostProfile, guestProfile} = this.props
+            sideProps[1].profile = hostProfile
+            sideProps[0].profile = guestProfile
+            sideProps[1].name = name
+            sideProps[0].name = oppName
             this.setState({turn, sideProps, flytextProps})
             return
         }
-        sideProps[0].pfp = this.props.ai
-        sideProps[0].name = Profile.names[this.props.ai]
-        sideProps[1].name = Profile.names[sideProps[1].pfp]
+        sideProps[0].profile = this.props.oppProfile
+        sideProps[0].name = this.props.oppProfile.name
+        // sideProps[1].profile = Profile.cosm.lamb // TODO customization
+        // sideProps[1].name = Profile.cosm.lamb.name
+
         this.setState({turn : randomInRange(2), sideProps})
     }
 

@@ -3,7 +3,6 @@
 import React from "react"
 import Die from "./Die"
 import Tub from "./Tub"
-import Profile from "../util/Profile"
 import { timeFormat } from "../util/utils"
 
 const Timer = (props) => (
@@ -26,8 +25,8 @@ class Side extends React.Component {
     }
 
     render(){
-        const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd, pfp, numTubs, name, rollRef, time} = this.props
-        const dname = name ? name : Profile.names[pfp]
+        const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd, profile, numTubs, name, rollRef, time} = this.props
+        const dname = name ? name : profile.name
         const isTurn = turn === id
         const shakeClass = scoreShake && scoreShown ? 'shake' : ''
         const timer = time === null ? time : <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/>
@@ -49,7 +48,7 @@ class Side extends React.Component {
                     </div>
                 </div>
                 <div className="info">
-                    <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} style={{backgroundImage: `url(${Profile.imgs[pfp]})`, transform: (!pfp && !id) ? 'scaleX(-1)' : ''}}/>
+                    <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} style={{backgroundImage: `url(${profile.img})`, transform: (profile.skill === undefined && !id) ? 'scaleX(-1)' : 'none'}}/>
                     <h2 className="name">{`~ ${dname} ~`}</h2>
                     <div className={`scorebox ${shakeClass}`} style={{opacity : scoreShown || time !== null ? 1 : 0}} onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}</div>
                 </div>

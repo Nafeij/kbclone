@@ -8,7 +8,7 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { randomInRange } from './util/utils.js'
+import { randomInRange, randomSelect, randomSplice } from './util/utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
@@ -88,7 +88,7 @@ class App extends React.Component{
       serverSetupProps: null,
       settingsProps : null,
       flytextProps: null,
-      selectedpfp : 1,
+      selectedAIInd : 0,
       cursor: this.keyManager.cursor,
       // disable: () => {this.disable()},
       next: null,
@@ -159,7 +159,7 @@ class App extends React.Component{
     this.keyManager.returnAction = ()=> this.return()
     let {menuProps, gameProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,
-      ai : 0,
+      oppProfile : Profile.cosm.lamb,
       return : ()=>this.return(),
       gameType : 'DEFAULT'
     }
@@ -308,14 +308,13 @@ class App extends React.Component{
           }
         },
       ],
-      incrementPfp : ()=>{this.incrementPfp()},
-      decrementPfp : ()=>{this.decrementPfp()},
+      modAIInd : (i)=>this.modAIInd(i),
       shakeSelect : false,
       onShakeDone : ()=>{},
       fadeAway : false,
       onFade : ()=>{},
     }
-    this.keyManager.push([-1, 0, 1], [()=>{this.startAIGame()},()=>{this.decrementPfp()},()=>{this.incrementPfp()}])
+    this.keyManager.push([-1, 0, 1], [()=>{this.startAIGame()},()=>{this.modAIInd(-1)},()=>{this.modAIInd(1)}])
     this.keyManager.push(1, charSelectProps.buttons[1].onClick)
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
@@ -496,21 +495,25 @@ class App extends React.Component{
       this.server.close()
       this.return()
     }
-    let turn, hostPfp, guestPfp
+    let turn, hostPkey, guestPkey
     if(this.server.isHost){
       turn = randomInRange(2)
-      const prange = Profile.names.length
-      hostPfp = randomInRange(prange)
-      guestPfp = (hostPfp + 1 + randomInRange(prange - 1)) % prange
-      this.server.send({turn : !turn + 0, hostPfp, guestPfp})
+      const profiles = Object.keys(Profile.cosm)
+      hostPkey = randomSplice(profiles)
+      guestPkey = randomSelect(profiles)
+      this.server.send({turn : !turn + 0, hostPkey, guestPkey})
       //console.log('host turn ' + turn)
     } else {
       const init = await this.server.recv()
-      turn = init.turn; guestPfp = init.hostPfp; hostPfp= init.guestPfp
+      turn = init.turn
+      guestPkey = init.guestPkey
+      hostPkey = init.hostPkey
     }
     let {gameProps, serverSetupProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,
-      name, oppName, turn, hostPfp, guestPfp,
+      name, oppName, turn,
+      hostProfile : Profile.cosm[hostPkey],
+      guestProfile : Profile.cosm[guestPkey],
       gameType : 'PVP',
       return : ()=> {
         this.server.close()
@@ -546,13 +549,10 @@ class App extends React.Component{
     this.setState({serverSetupProps})
   }
 
-  incrementPfp(){
-    if (this.state.selectedpfp < Profile.names.length - 1) this.setState((prevstate)=>({selectedpfp : prevstate.selectedpfp + 1})) 
-    else this.shakeSelect()
-  }
-
-  decrementPfp(){
-    if (this.state.selectedpfp > 1) this.setState((prevstate)=>({selectedpfp : prevstate.selectedpfp - 1}))
+  modAIInd(i){
+    const pLength = Object.keys(Profile.ai).length
+    // console.log(this.state.selectedAIInd)
+    if ((this.state.selectedAIInd > 0 && i === -1) || (this.state.selectedAIInd < pLength - 1 && i === 1)) this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
     else this.shakeSelect()
   }
 
@@ -573,7 +573,7 @@ class App extends React.Component{
     this.keyManager.returnAction = ()=>this.return()
     let {gameProps, charSelectProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,
-      ai : this.state.selectedpfp,
+      oppProfile : Object.values(Profile.ai)[this.state.selectedAIInd],
       return : ()=>this.return(),
       gameType : 'AI'
     }
@@ -644,7 +644,7 @@ class App extends React.Component{
         {this.state.settingsProps ? <Settings {...this.state.settingsProps} gameSettingsProps={this.state.gameSettingsProps} settingsRanges={this.state.settingsRanges} cursor={this.state.cursor} settingChanged={this.state.settingChanged}/> : null}
         {this.state.gameProps ? <Game {...this.state.gameProps}/> : null}
         {this.state.serverSetupProps ? <ServerSetup {...this.state.serverSetupProps} cursor={this.state.cursor} roomID={this.state.roomID}/> : null}
-        {this.state.charSelectProps ? <CharSelect {...this.state.charSelectProps} cursor={this.state.cursor} selectedpfp={this.state.selectedpfp}/> : null}
+        {this.state.charSelectProps ? <CharSelect {...this.state.charSelectProps} cursor={this.state.cursor} selectedAIInd={this.state.selectedAIInd}/> : null}
         {this.state.htProps ? <HowTo {...this.state.htProps} cursor={this.state.cursor}/> : null}
         <Menu {...this.state.menuProps} cursor={this.state.cursor}/>
       </div>

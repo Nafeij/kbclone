@@ -1,8 +1,8 @@
 import { randomSelect, isFull, numMatchingDice, randomInRange, defLength, score, emptySpaces, bernou, scoreTub} from "./utils"
 
-export function evaluate(diceMatrix, num, skill, turn, numFaces, settings){
+export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
     const choices = possibleChoices(diceMatrix, turn, settings.pickable)
-    if (Math.random() > skill) {
+    if (Math.random() > profile.skill) {
         console.log('misplay')
         return randomSelect(choices)
     }

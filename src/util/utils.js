@@ -1,7 +1,10 @@
 export function randomSelect(array){
 	return array[randomInRange(array.length)]
 }
-export function randomInRange(max){
+export function randomSplice(array){
+    return array.splice(randomInRange(array.length),1)
+}
+export function randomInRange(max){ // 0 to exclusive
 	return Math.floor(Math.random() * max)
 }
 export function shallowUpdate(array, ind, ele){
