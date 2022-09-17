@@ -6,7 +6,7 @@ import Flytext from "./Flytext.js";
 import {randomInRange, defLength, numMatchingDice, isFull, scoreTub} from '../util/utils';
 import KeyManager from "../util/KeyManager.js";
 import Profile from "../util/Profile.js";
-import {evaluate, cheatDice} from "../util/AI.js";
+import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";
 import Loading from "./Loading.js";
 
@@ -34,15 +34,7 @@ class Game extends React.Component {
                     scoreTransform: 'none',
                     cursorID: -1,
                     caravan : props.settings.caravan,
-                    scoreHover : (h)=>{
-                        const {tubProps, diceMatrix, sideProps} = this.state
-                        if (isFull(diceMatrix[i][j])) return
-                        tubProps[i][j].score = scoreTub(diceMatrix[i][j])
-                        if (h && sideProps[i].newDice) tubProps[i][j].score += 
-                            (numMatchingDice(diceMatrix[i][j],sideProps[i].newDice.num) * 2 + 1) * sideProps[i].newDice.num
-                        if (!tubProps[i][j].score) tubProps[i][j].score = null
-                        this.setState({tubProps})
-                    } // TODO : implement pickable
+                    scoreHover : this.props.settings.preview ? (h)=>{this.scoreHover(h,i,j)} : ()=>{}
                 })))
             ),
             sideProps: Array.from({length:2},(_,i)=>({
@@ -98,9 +90,6 @@ class Game extends React.Component {
         this.keyManager.initCursorUpdate(()=>{
             this.setState({cursor: this.keyManager.cursor})
         })
-        //this.heightOnResize.bind(this)
-        //this.rollDice.bind(this)
-        // this.proccessClick.bind(this)
     }
 
     generateDice(){
@@ -681,29 +670,70 @@ class Game extends React.Component {
             }
         }
         this.setState({diceMatrix})
+        return this.handleScoreHover(newScore,turn,i)
+    }
+
+    handleScoreHover(newScore,side,tub){
         const tubProps = this.state.tubProps
-        const currTub = tubProps[turn][i]
-        const isZero = newScore === 0
-        if (newScore === currTub.score || (isZero && currTub.score === null)) {
-            return new Promise((resolve)=>{resolve()})
-        }
-        if (!isZero) currTub.score = newScore
-        // console.log(currTub.animClass + ' ' + newScore)
-        currTub.animClass = isZero ? "shrink-out" : "shake"
-        if (isZero) currTub.scoreTransform = 'scale(0)'
         return new Promise((resolve)=>{
-            currTub.onScoreAnimEnd = ()=>{
-                if (isZero) currTub.score = null
-                currTub.animClass = ''
-                currTub.onScoreAnimEnd = ()=>{}
-                this.setState({tubProps}, () => {
-                    if (isZero) currTub.scoreTransform = 'none'
-                    this.setState({tubProps})
-                    resolve()
-                })
+            if (!newScore) newScore = null
+            const tubProp = tubProps[side][tub]
+            tubProp.animClass = ''
+            tubProp.scoreTransform = 'none'
+            if (tubProp.score !== newScore){
+                if (newScore) {
+                    this.setState({tubProps},()=>{
+                        tubProp.score = newScore
+                        tubProp.animClass = 'shake'
+                        tubProp.onScoreAnimEnd = ()=>{
+                            tubProp.animClass = ''
+                            tubProp.onScoreAnimEnd = ()=>{}
+                            this.setState({tubProps})
+                            resolve()
+                        }
+                        this.setState({tubProps})
+                    })                    
+                } else {
+                    this.setState({tubProps},()=>{
+                        tubProp.animClass = 'shrink-out'
+                        tubProp.scoreTransform = 'scale(0)'
+                        tubProp.onScoreAnimEnd = ()=>{
+                            tubProp.score = newScore
+                            tubProp.animClass = ''
+                            tubProp.onScoreAnimEnd = ()=>{}
+                            this.setState({tubProps},()=>{
+                                tubProp.scoreTransform = 'none'
+                                this.setState({tubProps})
+                            })
+                            resolve()
+                        }
+                        this.setState({tubProps})
+                    })
+                }
+            } else {
+                this.setState({tubProps})
+                resolve()
             }
-            this.setState({tubProps})
         })
+    }
+
+    scoreHover(isHover,i,j){
+        const {diceMatrix, sideProps, turn} = this.state
+        if (isFull(diceMatrix[i][j])) return
+        const caravan = this.props.settings.caravan, newDice = sideProps[turn].newDice.num
+        if(caravan){
+            const scores = scoreAll(isHover ? newDice : null, diceMatrix, {side : i, tub : j}, caravan, true)
+            scores.forEach((s,si)=>{
+                s.forEach((newScore,ti)=>{
+                    this.handleScoreHover(newScore,si,ti)
+                })
+            })
+        } else {
+            let newScore = scoreTub(diceMatrix[i][j])
+            if (isHover && newDice) newScore += 
+            (numMatchingDice(diceMatrix[i][j],newDice) * 2 + 1) * newDice
+            this.handleScoreHover(newScore,i,j)
+        }
     }
 
     renderSide(side){

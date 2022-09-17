@@ -107,6 +107,7 @@ class App extends React.Component{
         time : null, 
         pickable : false,
         ignoreFull : false,
+        preview : false,
         // caravan : [10,18]
         caravan : null,
         turnLimit : null
@@ -246,12 +247,12 @@ class App extends React.Component{
         gameSettingsProps[setting][side] = color.hex + a
         this.setState({gameSettingsProps, settingChanged : true})
       },
-      pcursor : true,
+      pcursor : 0,
     }
 
-    const togglePCursor = ()=>{
+    const togglePCursor = (p)=>{
       const settingsProps = this.state.settingsProps
-      settingsProps.pcursor = !settingsProps.pcursor
+      settingsProps.pcursor = (settingsProps.pcursor + p + 3) % 3
       this.setState({settingsProps})
     }
     // this.keyManager.push(0, htProps.onClick)
@@ -263,17 +264,16 @@ class App extends React.Component{
       ()=>{},()=>{if (this.state.gameSettingsProps.numTubs > 3) settingsProps.mod('numTubs',-1)},
       ()=>{if (this.state.gameSettingsProps.numTubs < 5) settingsProps.mod('numTubs',1)}])
     this.keyManager.push([-1,0,1], [
-      ()=>{},togglePCursor,togglePCursor])
+      ()=>{},()=>{togglePCursor(-1)},()=>{togglePCursor(1)}])
     this.keyManager.push([-1,0,1], [
-      ()=>{},togglePCursor,togglePCursor])
-    this.keyManager.push([-1,0,1], [
-      ()=>{},togglePCursor,togglePCursor])
+      ()=>{},()=>{togglePCursor(-1)},()=>{togglePCursor(1)}])
     this.keyManager.push([-1,0,1], [
       ()=>{},()=>{if (this.state.gameSettingsProps.time !== null) settingsProps.modDscrt('time',-1)},
       ()=>{if (this.state.gameSettingsProps.time !== 60) settingsProps.modDscrt('time',1)}])
     this.keyManager.push([-1,0,1], [
       ()=>{},()=>{if (this.state.gameSettingsProps.turnLimit !== null) settingsProps.modDscrt('turnLimit',-1)},
       ()=>{if (this.state.gameSettingsProps.turnLimit !== 500) settingsProps.modDscrt('turnLimit',1)}])
+    this.keyManager.push(0, ()=>{settingsProps.modBool('preview')})
     this.keyManager.push(0, ()=>{settingsProps.modBool('ignoreFull')})
     this.keyManager.push(0, ()=>{settingsProps.modBool('pickable')})
     this.keyManager.push(0, ()=>{settingsProps.modSpec('caravan')})
@@ -284,7 +284,7 @@ class App extends React.Component{
       this.setState({menuProps})
     }
     this.setState({menuProps, settingsProps})
-  } // TODO
+  }
 
   startChapterSelect(){
     // this.clearClickable()
@@ -484,7 +484,7 @@ class App extends React.Component{
       this.setState({isLoading : false})
       this.server.close()
       this.showFlytext("Connection Failed")
-      this.shakeServer()// TODO ERROR
+      this.shakeServer()
     })
   }
 

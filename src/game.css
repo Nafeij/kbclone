@@ -242,7 +242,7 @@ width: auto;
 
 .menubox.settingsList {
 	width: 80vw;
-	max-width: 1500px;
+	max-width: 1800px;
 	gap: 1.5vh;
 	padding-top: 3em;
 	text-align: left;
@@ -261,12 +261,12 @@ width: auto;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	font-size: calc(1vh + 1vw);
+	font-size: 2.5vmin;
 }
 
 .settingsItem .subtitle {
 	font-family: Open Sans, "Gill Sans", sans-serif;
-	font-size: calc(.8vh + .8vw);
+	font-size: 2vmin;
 	font-style: italic;
 	letter-spacing: .07em;
 	opacity: .5;
@@ -279,7 +279,7 @@ width: auto;
 }
 
 .settingsItem .text {
-	font-size: calc(.6vh + .6vw);
+	font-size: 1.6vmin;
 	font-weight: 100;
 	letter-spacing: .05em;
 	font-style: normal;
@@ -291,7 +291,7 @@ width: auto;
 .settingInput .menubox {
 	width: auto;
 	position: relative;
-	font-size: calc(.6vh + .6vw);
+	font-size: 1.6vmin;
 	flex-direction: row;
 	gap: 1em;
 	justify-content: center;
@@ -302,11 +302,12 @@ width: auto;
 	z-index: 1;
 }
 
-.testColor{
+.testColor {
 	width: 2vw;
 	aspect-ratio: 1;
 	border-radius: 3px;
 	position: relative;
+	border: 2px solid white;
 }
 
 .pickWrapper {
@@ -342,7 +343,7 @@ width: auto;
 	align-items: center;
 	justify-content: space-between;
 	cursor: pointer;
-	max-width: 120px;
+	max-width: 150px;
 	background: #888;
 	border-radius: 2px;
 	position: relative;

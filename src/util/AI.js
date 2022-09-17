@@ -82,14 +82,13 @@ function oppCost(num, diceMatrix, choice, numFaces, caravan = null){
             maxVal = Math.max(currVal, maxVal)
         }
     }
-    // console.log(maxVal + ' - ' + likelihood)
     return maxVal * likelihood
 }
 
 
 function weighDie(num, diceMatrix, choice, caravan = null){
 
-    if (caravan) return scoreCarav(num, diceMatrix, choice, caravan)
+    if (caravan) return scoreAll(num, diceMatrix, choice, caravan).flat().reduce((a,b)=>(a+b))
 
     const oppSide = !choice.side + 0
     const tub = diceMatrix[choice.side][choice.tub]
@@ -99,14 +98,15 @@ function weighDie(num, diceMatrix, choice, caravan = null){
     return num + matches * num * 2 + score(num, oppMatches)
 }
 
-function scoreCarav(num, diceMatrix, choice, caravan){
+export function scoreAll(num, diceMatrix, choice, caravan, getRaw = false){
+    if (!num) num = 0
     const onePos = defLength(diceMatrix[choice.side][choice.tub])
     let removeNum = null
-    if (num === 1 && onePos >= 1) {
+    if (caravan && num === 1 && onePos >= 1) {
         removeNum = diceMatrix[choice.side][choice.tub][onePos-1].num
         diceMatrix = diceMatrix.map(s=>(
             s.map(t=>(
-                t.filter(d=>(!d || d.num !== removeNum))
+                t.map(d=>(d && d.num !== removeNum ? d : null))
             ))
         ))
     }
@@ -114,35 +114,22 @@ function scoreCarav(num, diceMatrix, choice, caravan){
         si === choice.side ? s :
         s.map((t,ti)=>(
             ti !== choice.tub ? t :
-            t.filter(d=>(!d || d.num !== num))
+            t.filter(d=>(d && d.num !== num ? d : null))
         ))
     ))
-/*     console.log(diceMatrix.map(s=>(
-        s.map(t=>(
-            t.map(d=>(d?d.num:d))
-        ))
-    ))) */
-    let d = diceMatrix.map((s,si)=>(
+    
+    return diceMatrix.map((s,si)=>(
         s.map((t,ti)=>{
-            let points = 0
-            if (si !== choice.side || ti !== choice.tub || removeNum === 1){
-                points = scoreTub(t)
-            } else {
-                points = num * (numMatchingDice(t, num) + 1)
-                for (const dice of t){
-                    if (dice) {
-                        if (dice.num !== num) points += dice.num * numMatchingDice(t, dice.num)
-                        else points += num * (numMatchingDice(t, num) + 1)
-                    }
-                }
+            let points = scoreTub(t)
+            if (si === choice.side && ti === choice.tub && removeNum !== 1){
+                points += num * (2 * numMatchingDice(t, num) + 1)
             }
-            let ch = cHeuristic(points, caravan)
-            if (si !== choice.side) ch = ~ch + 1
-            return ch
+            if (getRaw) return points
+            if (caravan) points = cHeuristic(points, caravan)
+            if (si !== choice.side) points = ~points + 1
+            return points
         })
     ))
-    // console.log(d)
-    return d.flat().reduce((a,b)=>(a+b))
 }
 
 function cHeuristic(points, caravan){
