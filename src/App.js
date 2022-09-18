@@ -200,9 +200,14 @@ class App extends React.Component{
   }
 
   startSettings(){
-    this.keyManager.clear()
     let {menuProps, settingsProps} = this.state
     menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
+    const cycleSetting = (s,p,o)=>{
+      const settingsProps = this.state.settingsProps
+      settingsProps[s] = (settingsProps[s] + p + o) % o
+      this.setState({settingsProps})
+      return settingsProps[s]
+    }
     settingsProps = {
       onClick: () => {
         const {gameSettingsProps, settingsRanges} = this.state
@@ -248,42 +253,53 @@ class App extends React.Component{
         this.setState({gameSettingsProps, settingChanged : true})
       },
       pcursor : 0,
+      tabs : ['gameplay', 'personal'],
+      activeTab : 0,
+      switchTab : (destTab)=>{
+        const settingsProps = this.state.settingsProps
+        settingsProps.activeTab = destTab
+        this.keyManager.clear()
+        this.keyManager.cursor = 1
+        this.keyManager.push(0, settingsProps.onClick)
+        this.keyManager.push([-1,0,1], [
+          ()=>{},()=>{
+            const newTab = cycleSetting('activeTab',-1,2)
+            this.state.settingsProps.switchTab(newTab)
+          },()=>{
+            const newTab = cycleSetting('activeTab',1,2)
+            this.state.settingsProps.switchTab(newTab)
+          }])
+        if (destTab === 0){
+          this.keyManager.push([-1,0,1], 
+            [()=>{},()=>{if (this.state.gameSettingsProps.tubLen > 2) settingsProps.mod('tubLen',-1)},
+            ()=>{if (this.state.gameSettingsProps.tubLen < 4) settingsProps.mod('tubLen',1)}])
+          this.keyManager.push([-1,0,1], [
+            ()=>{},()=>{if (this.state.gameSettingsProps.numTubs > 3) settingsProps.mod('numTubs',-1)},
+            ()=>{if (this.state.gameSettingsProps.numTubs < 5) settingsProps.mod('numTubs',1)}])
+          this.keyManager.push([-1,0,1], [
+            ()=>{},()=>{if (this.state.gameSettingsProps.time !== null) settingsProps.modDscrt('time',-1)},
+            ()=>{if (this.state.gameSettingsProps.time !== 60) settingsProps.modDscrt('time',1)}])
+          this.keyManager.push([-1,0,1], [
+            ()=>{},()=>{if (this.state.gameSettingsProps.turnLimit !== null) settingsProps.modDscrt('turnLimit',-1)},
+            ()=>{if (this.state.gameSettingsProps.turnLimit !== 500) settingsProps.modDscrt('turnLimit',1)}])
+          this.keyManager.push(0, ()=>{settingsProps.modBool('preview')})
+          this.keyManager.push(0, ()=>{settingsProps.modBool('ignoreFull')})
+          this.keyManager.push(0, ()=>{settingsProps.modBool('pickable')})
+          this.keyManager.push(0, ()=>{settingsProps.modSpec('caravan')})
+        } else if (destTab === 1) {
+          this.keyManager.push([-1,0,1], [()=>{},()=>{cycleSetting('pcursor',-1,3)},()=>{cycleSetting('pcursor',1,3)}])
+          this.keyManager.push([-1,0,1], [()=>{},()=>{cycleSetting('pcursor',-1,3)},()=>{cycleSetting('pcursor',1,3)}])
+        }
+        this.setState({settingsProps})
+      }
     }
-
-    const togglePCursor = (p)=>{
-      const settingsProps = this.state.settingsProps
-      settingsProps.pcursor = (settingsProps.pcursor + p + 3) % 3
-      this.setState({settingsProps})
-    }
-    // this.keyManager.push(0, htProps.onClick)
-    this.keyManager.push(0, settingsProps.onClick)
-    this.keyManager.push([-1,0,1], 
-      [()=>{},()=>{if (this.state.gameSettingsProps.tubLen > 2) settingsProps.mod('tubLen',-1)},
-      ()=>{if (this.state.gameSettingsProps.tubLen < 4) settingsProps.mod('tubLen',1)}])
-    this.keyManager.push([-1,0,1], [
-      ()=>{},()=>{if (this.state.gameSettingsProps.numTubs > 3) settingsProps.mod('numTubs',-1)},
-      ()=>{if (this.state.gameSettingsProps.numTubs < 5) settingsProps.mod('numTubs',1)}])
-    this.keyManager.push([-1,0,1], [
-      ()=>{},()=>{togglePCursor(-1)},()=>{togglePCursor(1)}])
-    this.keyManager.push([-1,0,1], [
-      ()=>{},()=>{togglePCursor(-1)},()=>{togglePCursor(1)}])
-    this.keyManager.push([-1,0,1], [
-      ()=>{},()=>{if (this.state.gameSettingsProps.time !== null) settingsProps.modDscrt('time',-1)},
-      ()=>{if (this.state.gameSettingsProps.time !== 60) settingsProps.modDscrt('time',1)}])
-    this.keyManager.push([-1,0,1], [
-      ()=>{},()=>{if (this.state.gameSettingsProps.turnLimit !== null) settingsProps.modDscrt('turnLimit',-1)},
-      ()=>{if (this.state.gameSettingsProps.turnLimit !== 500) settingsProps.modDscrt('turnLimit',1)}])
-    this.keyManager.push(0, ()=>{settingsProps.modBool('preview')})
-    this.keyManager.push(0, ()=>{settingsProps.modBool('ignoreFull')})
-    this.keyManager.push(0, ()=>{settingsProps.modBool('pickable')})
-    this.keyManager.push(0, ()=>{settingsProps.modSpec('caravan')})
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
       menuProps.onFade = ()=>{}
       menuProps.pointerEvents = 'none'
       this.setState({menuProps})
     }
-    this.setState({menuProps, settingsProps})
+    this.setState({menuProps, settingsProps},()=>this.state.settingsProps.switchTab(0))
   }
 
   startChapterSelect(){
@@ -506,8 +522,8 @@ class App extends React.Component{
     } else {
       const init = await this.server.recv()
       turn = init.turn
-      guestPkey = init.guestPkey
-      hostPkey = init.hostPkey
+      guestPkey = init.hostPkey
+      hostPkey = init.guestPkey
     }
     let {gameProps, serverSetupProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,

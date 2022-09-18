@@ -176,7 +176,7 @@ width: auto;
  */
 .subtitle {
 	flex: 1 1;
-	font-size: calc(2vh + 2vw);
+	font-size: 3vmin;
 	font-weight: 400;
 	opacity: 1;
 	transition: .3s
@@ -244,9 +244,38 @@ width: auto;
 	width: 80vw;
 	max-width: 1800px;
 	gap: 1.5vh;
-	padding-top: 3em;
 	text-align: left;
-	max-height: 70vh;
+	height: 60vh;
+	flex: auto;
+	justify-content: center;
+}
+
+.menubox.across.TabBar {
+	margin: 1.2em 0;
+	align-items: end;
+	justify-content: center;
+	font-size: 2vmin;
+	max-width: 1800px;
+	width: 80vw;
+	gap: .7em;
+}
+
+.Tab {
+	flex: 1;
+	padding: .4em 0 .1em 0;
+	transition: .3s;
+	background: white;
+	color: black;
+	border-bottom: 5px solid #0008;
+	font-weight: bold;
+	letter-spacing: .05em;
+	border-radius: 3px 3px 0 0;
+}
+
+.Tab:hover, .Tab.hovering {
+	background: red;
+	color: white;
+	padding: .4em 0;
 }
 
 .settingsItem {

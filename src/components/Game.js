@@ -3,7 +3,7 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
-import {randomInRange, defLength, numMatchingDice, isFull, scoreTub} from '../util/utils';
+import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat} from '../util/utils';
 import KeyManager from "../util/KeyManager.js";
 import Profile from "../util/Profile.js";
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
@@ -242,13 +242,14 @@ class Game extends React.Component {
                         })
                     }
                 } else if (this.props.gameType === 'AI' && !turn){
+                    const numMat = convertToNumMat(diceMatrix)
                     if(profile.effects.includes('cheat') && Math.random() > 0.5) {
-                        let best = cheatDice(this.state.diceMatrix, turn, numFaces, this.props.settings)
+                        let best = cheatDice(numMat, turn, numFaces, this.props.settings)
                         newDice.num = best.num
                         this.setState({sideProps},()=>{this.proccessTurn(best.tub, best.side)})
                         return
                     }
-                    const choice = evaluate(diceMatrix, newDice.num, profile, turn, numFaces, this.props.settings)
+                    const choice = evaluate(numMat, newDice.num, profile, turn, numFaces, this.props.settings)
                     this.proccessTurn(choice.tub, choice.side)
                 } else {
                     this.setTubClickable()
@@ -538,10 +539,11 @@ class Game extends React.Component {
         const caravan = this.props.settings.caravan
         for (const tub of this.state.tubProps[turn]) {
             if (caravan){
-                if (tub.score >= caravan[0] && tub.score <= caravan[1]) total++
+                if (tub.score && tub.score >= caravan[0] && tub.score <= caravan[1]) total++
                 continue
+            } else {
+                if (tub.score) total += tub.score
             }
-            if (tub.score) total += tub.score
         }
         return total
     }
@@ -720,9 +722,10 @@ class Game extends React.Component {
     scoreHover(isHover,i,j){
         const {diceMatrix, sideProps, turn} = this.state
         if (isFull(diceMatrix[i][j])) return
-        const caravan = this.props.settings.caravan, newDice = sideProps[turn].newDice.num
-        if(caravan){
-            const scores = scoreAll(isHover ? newDice : null, diceMatrix, {side : i, tub : j}, caravan, true)
+        const settings = this.props.settings, newDice = sideProps[turn].newDice.num
+        if(settings.caravan){
+            const numMat = convertToNumMat(diceMatrix)
+            const scores = scoreAll(isHover ? newDice : null, numMat, {side : i, tub : j}, settings, true)
             scores.forEach((s,si)=>{
                 s.forEach((newScore,ti)=>{
                     this.handleScoreHover(newScore,si,ti)

@@ -35,6 +35,7 @@ class KeyManager{
 
     clear(){
         this.options = []
+        //console.log(this.options)
         this.clickActions = []
         this.cursor = null
         this.cursorUpdate()

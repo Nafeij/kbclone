@@ -36,6 +36,14 @@ export function numMatchingDice(arr, num){
     return arr.filter((die)=>die !== null && die.num === num).length
 }
 
+export function numMatchingNum(arr, num){
+    return arr.filter((die)=> die !== null && die === num).length
+}
+
+export function convertToNumMat(diceMatrix){
+    return diceMatrix.map(s=>(s.map(t=>(t.filter(d=>d).map(d=>(d.num))))))
+}
+
 export function score(num, count){
     return num * (count ** 2)
 }
@@ -44,6 +52,14 @@ export function scoreTub(tub) {
     let points = 0
     for (const dice of tub){
         if (dice) points += dice.num * numMatchingDice(tub, dice.num);
+    }
+    return points
+}
+
+export function scoreNumTub(tub) {
+    let points = 0
+    for (const dice of tub){
+        if (dice) points += dice * numMatchingNum(tub, dice);
     }
     return points
 }
