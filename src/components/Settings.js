@@ -2,6 +2,7 @@
 
 import React from "react";
 import { SketchPicker } from "react-color";
+import Profile from "../util/Profile";
 
 const Switch = ({ isOn, handleToggle, sid}) => {
     return (
@@ -29,9 +30,10 @@ function Settings (props) {
     // console.log(props.cursorID + ' : ' + props.cursor)
     // console.log(props.graphicwidth)
 
-    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview} = props.gameSettingsProps
-    const {mod, modDscrt, modBool, modSpec, settingsRanges, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab} = props
-  
+    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name} = props.gameSettingsProps
+    const {mod, modDscrt, modBool, modSpec, modVal, settingsRanges, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons} = props
+    let offset = 0
+    if (showProfiles) offset = Math.floor(Profile.cosm.length / 4)
     return (<div className='menu settings'>
       <div className='menubox'>
         <div className='subtitle'>~ Settings ~</div>
@@ -41,62 +43,81 @@ function Settings (props) {
             <div className={`Tab ${tabs[activeTab] === 'personal' ? 'hovering':''}`} onClick={()=>switchTab(1)}>Personalization</div>
             <div className="arrowR" style={{opacity : 1 === cursor ? 1 : .2}}>⯈</div>
         </div>
-        <div className="menubox settingsList" style={{display : tabs[activeTab] === 'personal' ? 'flex' : 'none'}}>
-            <div className={`settingsItem ${2 === cursor ? 'hovering' : ''}`}>
-                <div className='subtitle'>Colors</div>
-                <div className="settingInput">
-                    <div className="menubox">
-                        Dice: 
-                        <div className={`testColor ${2 === cursor && 0 === pcursor? 'hovering' : ''}`} style={{background: diceColor[1]}}>
-                            <div className="pickWrapper" >
-                                <SketchPicker color={diceColor[1]} onChange={(color)=>{
-                                    modColor('diceColor',1,color)
-                                }}/>
+        <div className="menubox across personal" style={{display : tabs[activeTab] === 'personal' ? 'flex' : 'none'}}>
+            {showProfiles ? <div className="scrollContainer">
+                <div className="formGrid">
+                    {Profile.cosm.map((p,i)=>(
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/4) && pcursor === i % 4? 'hovering':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
+                    ))}
+                </div>
+            </div> : null}
+            {!showProfiles ? <div className='menubox'>
+                <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
+                <div className={`kbutton ${2 === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+            </div> : null}
+            <div className="menubox settingsList">
+                <div className={`settingsItem ${3 + offset === cursor ? 'hovering' : ''}`}>
+                    <div className='subtitle'>Name</div>
+                    <div className="settingInput">
+                        <input type='text' value={name} placeholder="Enter Username" onFocus={onFocus} onBlur={onBlur} onChange={evt => modVal('name',evt.target.value)}/>
+                    </div>
+                </div>
+                <div className={`settingsItem ${4 + offset === cursor ? 'hovering' : ''}`}>
+                    <div className='subtitle'>Colors</div>
+                    <div className="settingInput">
+                        <div className="menubox">
+                            Dice: 
+                            <div className={`testColor ${4 + offset === cursor && 0 === pcursor? 'hovering' : ''}`} style={{background: diceColor[1]}}>
+                                <div className="pickWrapper" >
+                                    <SketchPicker color={diceColor[1]} onChange={(color)=>{
+                                        modColor('diceColor',1,color)
+                                    }}/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="menubox">
-                        Border: 
-                        <div className={`testColor ${2 === cursor && 1 === pcursor? 'hovering' : ''}`} style={{background: diceBorder[1]}}>
-                            <div className="pickWrapper" >
-                                <SketchPicker color={diceBorder[1]} onChange={(color)=>{modColor('diceBorder',1,color)}}/>
+                        <div className="menubox">
+                            Border: 
+                            <div className={`testColor ${4 + offset === cursor && 1 === pcursor? 'hovering' : ''}`} style={{background: diceBorder[1]}}>
+                                <div className="pickWrapper" >
+                                    <SketchPicker color={diceBorder[1]} onChange={(color)=>{modColor('diceBorder',1,color)}}/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="menubox">
-                        Pip: 
-                        <div className={`testColor ${2 === cursor && 2 === pcursor? 'hovering' : ''}`} style={{background: pipColor[1]}}>
-                            <div className="pickWrapper" >
-                                <SketchPicker color={pipColor[1]} onChange={(color)=>{modColor('pipColor',1,color)}}/>
+                        <div className="menubox">
+                            Pip: 
+                            <div className={`testColor ${4 + offset === cursor && 2 === pcursor? 'hovering' : ''}`} style={{background: pipColor[1]}}>
+                                <div className="pickWrapper" >
+                                    <SketchPicker color={pipColor[1]} onChange={(color)=>{modColor('pipColor',1,color)}}/>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className={`settingsItem ${3 === cursor ? 'hovering' : ''}`}>
-                <div className='subtitle'>Opponent Colors</div>
-                <div className="settingInput">
-                    <div className="menubox">
-                        Dice: 
-                        <div className={`testColor ${3 === cursor && 0 === pcursor? 'hovering' : ''}`} style={{background: diceColor[0]}}>
-                            <div className="pickWrapper" >
-                                <SketchPicker color={diceColor[0]} onChange={(color)=>{modColor('diceColor',0,color)}}/>
+                <div className={`settingsItem ${5 + offset === cursor ? 'hovering' : ''}`}>
+                    <div className='subtitle'>Opponent Colors</div>
+                    <div className="settingInput">
+                        <div className="menubox">
+                            Dice: 
+                            <div className={`testColor ${5 + offset === cursor && 0 === pcursor? 'hovering' : ''}`} style={{background: diceColor[0]}}>
+                                <div className="pickWrapper" >
+                                    <SketchPicker color={diceColor[0]} onChange={(color)=>{modColor('diceColor',0,color)}}/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="menubox">
-                        Border: 
-                        <div className={`testColor ${3 === cursor && 1 === pcursor? 'hovering' : ''}`} style={{background: diceBorder[0]}}>
-                            <div className="pickWrapper" >
-                                <SketchPicker color={diceBorder[0]} onChange={(color)=>{modColor('diceBorder',0,color)}}/>
+                        <div className="menubox">
+                            Border: 
+                            <div className={`testColor ${5 + offset === cursor && 1 === pcursor? 'hovering' : ''}`} style={{background: diceBorder[0]}}>
+                                <div className="pickWrapper" >
+                                    <SketchPicker color={diceBorder[0]} onChange={(color)=>{modColor('diceBorder',0,color)}}/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="menubox">
-                        Pip: 
-                        <div className={`testColor ${3 === cursor && 2 === pcursor? 'hovering' : ''}`} style={{background: pipColor[0]}}>
-                            <div className="pickWrapper" >
-                                <SketchPicker color={pipColor[0]} onChange={(color)=>{modColor('pipColor',0,color)}}/>
+                        <div className="menubox">
+                            Pip: 
+                            <div className={`testColor ${5 + offset === cursor && 2 === pcursor? 'hovering' : ''}`} style={{background: pipColor[0]}}>
+                                <div className="pickWrapper" >
+                                    <SketchPicker color={pipColor[0]} onChange={(color)=>{modColor('pipColor',0,color)}}/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -175,7 +196,7 @@ function Settings (props) {
                 </div>
             </div>
         </div>
-        <div className={`kbutton space ${0 === cursor ? 'hovering' : ''}`} onClick={() => props.onClick()}>{settingChanged ? 'Save' : 'Back'}
+        <div className={`kbutton space ${0 === cursor ? 'hovering' : ''}`} onClick={() => buttons[0].onClick()}>{settingChanged ? 'Save' : 'Back'}
         </div>
       </div>
     </div>)

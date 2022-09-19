@@ -8,7 +8,7 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { randomInRange, randomSelect, randomSplice } from './util/utils.js'
+import { randomInRange } from './util/utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
@@ -56,7 +56,7 @@ class App extends React.Component{
             text : 'Play with the Shack',
             cursorID: -1,
             onClick: () => {
-              this.startChapterSelect()
+              this.startCharacterSelect()
             },
           },
           {
@@ -92,7 +92,6 @@ class App extends React.Component{
       cursor: this.keyManager.cursor,
       // disable: () => {this.disable()},
       next: null,
-      username: '',
       roomID : '',
       isLoading : false,
       graphicRef : React.createRef(),
@@ -110,8 +109,10 @@ class App extends React.Component{
         preview : false,
         // caravan : [10,18]
         caravan : null,
-        turnLimit : null
+        turnLimit : null,
+        name : Profile.cosm[0].name
       },
+      playProfileInd : 0,
       settingsRanges : {
         time : {rcursor : 0, range : [null, 1, 5, 10, 20, 30, 60]},
         turnLimit : {rcursor : 0, range : [null, 5, 10, 50, 100, 200, 500]},
@@ -159,7 +160,9 @@ class App extends React.Component{
     this.keyManager.returnAction = ()=> this.return()
     let {menuProps, gameProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,
-      oppProfile : Profile.cosm.lamb,
+      playProfile : Profile.cosm[this.state.playProfileInd],
+      oppProfile : Profile.cosm[this.state.playProfileInd],
+      oppName : this.state.gameSettingsProps.name,
       return : ()=>this.return(),
       gameType : 'DEFAULT'
     }
@@ -199,28 +202,25 @@ class App extends React.Component{
     })
   }
 
+  cycleSetting(propsName,settingName,change,clamp){
+    const sprops = this.state[propsName]
+    sprops[settingName] = (sprops[settingName] + change + clamp) % clamp
+    this.setState({propsName: sprops})
+    return sprops[settingName]
+  }
+
   startSettings(){
     let {menuProps, settingsProps} = this.state
     menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
-    const cycleSetting = (s,p,o)=>{
-      const settingsProps = this.state.settingsProps
-      settingsProps[s] = (settingsProps[s] + p + o) % o
-      this.setState({settingsProps})
-      return settingsProps[s]
-    }
     settingsProps = {
-      onClick: () => {
-        const {gameSettingsProps, settingsRanges} = this.state
-        if (gameSettingsProps.caravan){
-          const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
-          gameSettingsProps.caravan = [mid-4,mid+4]
-        }
-        this.setState({gameSettingsProps},this.return)
+      modVal : (setting,val)=>{
+        const gameSettingsProps = this.state.gameSettingsProps
+        gameSettingsProps[setting] = val
+        this.setState({gameSettingsProps, settingChanged : true})
       },
       mod : (setting,i)=>{
         const gameSettingsProps = this.state.gameSettingsProps
         gameSettingsProps[setting] = gameSettingsProps[setting] + i
-        //console.log(gameSettingsProps[setting])
         this.setState({gameSettingsProps, settingChanged : true})
       },
       modDscrt : (setting,i)=>{
@@ -252,6 +252,57 @@ class App extends React.Component{
         gameSettingsProps[setting][side] = color.hex + a
         this.setState({gameSettingsProps, settingChanged : true})
       },
+      setProfileInd : (i)=>this.setProfileInd(i),
+      buttons: [
+        {
+          text : 'Go Back',
+          onClick: () => {
+            const {gameSettingsProps, settingsRanges} = this.state
+            if (gameSettingsProps.caravan){
+              const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
+              gameSettingsProps.caravan = [mid-4,mid+4]
+            }
+            this.setState({gameSettingsProps},this.return)
+          },
+          enabled : true
+        },
+        {
+          text : 'Choose Form',
+          onClick: () => {
+            const {settingsProps} = this.state
+            settingsProps.showProfiles = !settingsProps.showProfiles
+            this.keyManager.clear()
+            this.keyManager.cursor = 1
+            this.keyManager.push(0, settingsProps.buttons[0].onClick)
+            this.keyManager.push([-1,0,1], [
+              ()=>{},()=>{
+                const newTab = this.cycleSetting('settingsProps','activeTab',-1,2)
+                this.state.settingsProps.switchTab(newTab)
+              },()=>{
+                const newTab = this.cycleSetting('settingsProps','activeTab',1,2)
+                this.state.settingsProps.switchTab(newTab)
+              }])
+            if (settingsProps.showProfiles){
+              for (let index = 0; index < Math.ceil(Profile.cosm.length / 4); index++) {
+                this.keyManager.push([-1,0,1], [()=>{
+                  this.setProfileInd((this.keyManager.cursor - 2) * 4 + this.state.settingsProps.pcursor)
+                  this.state.settingsProps.buttons[1].onClick()
+                }, ()=>{this.cycleSetting('settingsProps','pcursor',-1,4)}, ()=>{this.cycleSetting('settingsProps','pcursor',1,4)}])
+              }
+            } else {
+              this.keyManager.push(0, settingsProps.buttons[1].onClick)
+            }
+            this.keyManager.push(0, ()=>{})
+            this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
+            this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
+            this.setState({settingsProps})
+          },
+          enabled : true
+        }
+      ],
+      showProfiles : false,
+      onFocus : ()=>{this.keyManager.enabled = false},
+      onBlur : ()=>{this.keyManager.enabled = true},
       pcursor : 0,
       tabs : ['gameplay', 'personal'],
       activeTab : 0,
@@ -260,13 +311,13 @@ class App extends React.Component{
         settingsProps.activeTab = destTab
         this.keyManager.clear()
         this.keyManager.cursor = 1
-        this.keyManager.push(0, settingsProps.onClick)
+        this.keyManager.push(0, settingsProps.buttons[0].onClick)
         this.keyManager.push([-1,0,1], [
           ()=>{},()=>{
-            const newTab = cycleSetting('activeTab',-1,2)
+            const newTab = this.cycleSetting('settingsProps','activeTab',-1,2)
             this.state.settingsProps.switchTab(newTab)
           },()=>{
-            const newTab = cycleSetting('activeTab',1,2)
+            const newTab = this.cycleSetting('settingsProps','activeTab',1,2)
             this.state.settingsProps.switchTab(newTab)
           }])
         if (destTab === 0){
@@ -287,8 +338,10 @@ class App extends React.Component{
           this.keyManager.push(0, ()=>{settingsProps.modBool('pickable')})
           this.keyManager.push(0, ()=>{settingsProps.modSpec('caravan')})
         } else if (destTab === 1) {
-          this.keyManager.push([-1,0,1], [()=>{},()=>{cycleSetting('pcursor',-1,3)},()=>{cycleSetting('pcursor',1,3)}])
-          this.keyManager.push([-1,0,1], [()=>{},()=>{cycleSetting('pcursor',-1,3)},()=>{cycleSetting('pcursor',1,3)}])
+          this.keyManager.push(0, ()=>{settingsProps.buttons[1].onClick()})
+          this.keyManager.push(0, ()=>{})
+          this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
+          this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
         }
         this.setState({settingsProps})
       }
@@ -302,7 +355,13 @@ class App extends React.Component{
     this.setState({menuProps, settingsProps},()=>this.state.settingsProps.switchTab(0))
   }
 
-  startChapterSelect(){
+  setProfileInd(i){
+    const gameSettingsProps = this.state.gameSettingsProps
+    gameSettingsProps.name = Profile.cosm[i].name
+    this.setState({gameSettingsProps,playProfileInd : i})
+  }
+
+  startCharacterSelect(){
     // this.clearClickable()
     this.keyManager.clear()
     let {menuProps, charSelectProps} = this.state
@@ -328,7 +387,7 @@ class App extends React.Component{
       shakeSelect : false,
       onShakeDone : ()=>{},
       fadeAway : false,
-      onFade : ()=>{},
+      onFade : ()=>{}
     }
     this.keyManager.push([-1, 0, 1], [()=>{this.startAIGame()},()=>{this.modAIInd(-1)},()=>{this.modAIInd(1)}])
     this.keyManager.push(1, charSelectProps.buttons[1].onClick)
@@ -366,40 +425,75 @@ class App extends React.Component{
     serverSetupProps = {
       buttons: [
         {
-          text : 'Create Room',
-          cursorID: 0,
-          onClick: () => {
-            this.startRoom()
-          },
-        },
-        {
-          text : 'Join Room',
-          cursorID: 1,
-          onClick: () => {
-            this.joinRoom()
-          }
-        },
-        {
           text : 'Go Back',
-          cursorID: 2,
           onClick: () => {
             this.server.close()
             this.return()
-          }
+          },
+          enabled : true
         },
+        {
+          text : 'Choose Form',
+          onClick: () => {
+            const {serverSetupProps} = this.state
+            serverSetupProps.showProfiles = !serverSetupProps.showProfiles
+            serverSetupProps.buttons[2].enabled = !serverSetupProps.showProfiles
+            serverSetupProps.buttons[3].enabled = !serverSetupProps.showProfiles
+            this.keyManager.clear()
+            serverSetupProps.buttons.forEach((e,i) => {
+              if (e.enabled) this.keyManager.push(i, e.onClick)
+            });
+            if (serverSetupProps.showProfiles) {
+              serverSetupProps.buttons[1].text = 'Done'
+              for (let index = 0; index < Math.ceil(Profile.cosm.length / 7); index++) {
+                this.keyManager.push([-1,0,1], [()=>{
+                  this.setProfileInd((this.keyManager.cursor - 2) * 7 + this.state.serverSetupProps.pcursor)
+                  this.state.serverSetupProps.buttons[1].onClick()
+                }, ()=>{this.cycleSetting('serverSetupProps','pcursor',-1,7)}, ()=>{this.cycleSetting('serverSetupProps','pcursor',1,7)}])
+              }
+            }
+            else serverSetupProps.buttons[1].text = 'Choose Form'
+            this.setState({serverSetupProps})
+          },
+          enabled : true
+        },
+        {
+          text : 'Create Room',
+          onClick: () => {
+            this.startRoom()
+          },
+          enabled : true
+        },
+        {
+          text : 'Join Room',
+          onClick: () => {
+            this.joinRoom()
+          },
+          enabled : true
+        }
       ],
       lock : false,
       shake : false,
       onShakeDone : ()=>{},
       fadeAway : false,
+      showProfiles : false,
+      pcursor : 0,
       onFade : ()=>{},
       onFocus : ()=>{this.keyManager.enabled = false},
       onBlur : ()=>{this.keyManager.enabled = true},
-      setUsername : (e)=>{this.setUsername(e)},
-      setID : (e)=>{this.setID(e)}
+      setUsername : (evt)=>{
+        const gameSettingsProps = this.state.gameSettingsProps
+        gameSettingsProps.name = evt.target.value
+        this.setState({gameSettingsProps})
+      },
+      setID : (evt)=>{
+        const id = evt.target.value.toUpperCase()
+        this.setState({roomID : id})
+      },
+      setProfileInd : this.setProfileInd
     }
-    serverSetupProps.buttons.forEach(e => {
-      this.keyManager.push(e.cursorID, e.onClick)
+    serverSetupProps.buttons.forEach((e,i) => {
+      if (e.enabled) this.keyManager.push(i, e.onClick)
     });
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
@@ -411,39 +505,33 @@ class App extends React.Component{
   }
 
   startRoom(){
-    let {username, serverSetupProps} = this.state
+    let {gameSettingsProps, serverSetupProps} = this.state
+    let username = gameSettingsProps.name
     if (!username.length){
       username = 'Player 1'
     }
     serverSetupProps.lock = true
-    this.keyManager.clear()
-    serverSetupProps.buttons[0].cursorID = 3
-    serverSetupProps.buttons[2].cursorID = 0
     const baseText = 'Waiting'
     let count = 1
-    serverSetupProps.buttons[0].text = baseText
+    serverSetupProps.buttons[2].text = baseText
     const interval = setInterval(()=>{
-      serverSetupProps = this.state.serverSetupProps
-      serverSetupProps.buttons[0].text = baseText + ('.'.repeat(count))
+      serverSetupProps.buttons[2].text = baseText + ('.'.repeat(count))
       this.setState({serverSetupProps})
       count = (count + 1) % 4
     },1000)
-    serverSetupProps.buttons[2].onClick = ()=>{
+    serverSetupProps.buttons[0].onClick = ()=>{
       this.setState({isLoading : false})
       clearInterval(interval)
       this.server.close()
       this.return()
     }
-    this.keyManager.push(0, serverSetupProps.buttons[2].onClick)
+    this.keyManager.clear()
+    this.keyManager.push(0, serverSetupProps.buttons[0].onClick)
 
     if (this.server.peer) this.server.close()
     const roomID = this.server.createRoom(()=>{
-      this.server.send({username, gameSettingsProps : this.state.gameSettingsProps})
-      this.server.recv().then((oppName)=>{
-        //console.log(oppName)
-        clearInterval(interval)
-        this.startPVPGame(username, oppName)
-      })
+      clearInterval(interval)
+      this.startPVPGame(username)
     }, ()=>{
       this.setState({isLoading : false})
       this.server.close()
@@ -464,7 +552,8 @@ class App extends React.Component{
 
   joinRoom(){
     const pattern = /[A-Z]{4}/
-    let {username, roomID} = this.state
+    let {gameSettingsProps, roomID} = this.state
+    let username = gameSettingsProps.name
     if (!roomID || !pattern.test(roomID)) {
       // console.log(pattern.test(roomID))
       this.shakeServer()
@@ -476,18 +565,7 @@ class App extends React.Component{
     if (this.server.peer) this.server.close()
     this.setState({isLoading : true})
     this.server.connectRoom(roomID, ()=>{
-      this.server.send(username)
-      this.server.recv().then(initObj=>{
-        const {diceColor, diceBorder, pipColor} = this.state.gameSettingsProps
-        //console.log(oppName)
-        initObj.gameSettingsProps = {
-          ...initObj.gameSettingsProps,
-          diceColor, diceBorder, pipColor
-        }
-        this.setState({gameSettingsProps : initObj.gameSettingsProps},()=>{
-          this.startPVPGame(username, initObj.username)
-        })
-      })
+      this.startPVPGame(username)
     }, ()=>{
       this.server.close()
       this.setState({isLoading : false})
@@ -503,7 +581,8 @@ class App extends React.Component{
     })
   }
 
-  async startPVPGame(name, oppName){
+
+  async startPVPGame(name){
     // this.clearClickable()
     // console.log(' Player: ' + name + ' Opponent: ' + oppName)
     this.keyManager.clear()
@@ -511,25 +590,36 @@ class App extends React.Component{
       this.server.close()
       this.return()
     }
-    let turn, hostPkey, guestPkey
+    const playProfile =  Profile.cosm[this.state.playProfileInd]
+    let oppProfile, oppName, gameSettingsProps = this.state.gameSettingsProps
     if(this.server.isHost){
       turn = randomInRange(2)
-      const profiles = Object.keys(Profile.cosm)
-      hostPkey = randomSplice(profiles)
-      guestPkey = randomSelect(profiles)
-      this.server.send({turn : !turn + 0, hostPkey, guestPkey})
+      this.server.send({
+        name, 
+        turn : !turn + 0, 
+        gameSettingsProps,
+        oppProfileInd : this.state.playProfileInd})
+      let init = await this.server.recv()
+      oppProfile = Profile.cosm[init.oppProfileInd]
+      oppName = init.name
       //console.log('host turn ' + turn)
     } else {
-      const init = await this.server.recv()
+      this.server.send({name, oppProfileInd : this.state.playProfileInd})
+      let init = await this.server.recv()
       turn = init.turn
-      guestPkey = init.hostPkey
-      hostPkey = init.guestPkey
+      oppProfile = Profile.cosm[init.oppProfileInd]
+      oppName = init.name
+      const {diceColor, diceBorder, pipColor} = gameSettingsProps
+      gameSettingsProps = {
+        ...init.gameSettingsProps,
+        diceColor, diceBorder, pipColor
+      }
     }
     let {gameProps, serverSetupProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,
       name, oppName, turn,
-      hostProfile : Profile.cosm[hostPkey],
-      guestProfile : Profile.cosm[guestPkey],
+      playProfile,
+      oppProfile,
       gameType : 'PVP',
       return : ()=> {
         this.server.close()
@@ -541,17 +631,7 @@ class App extends React.Component{
       serverSetupProps=null
       this.setState({serverSetupProps})
     }
-    this.setState({gameProps, serverSetupProps, isLoading : false})
-  }
-
-  setUsername(evt){
-    const name = evt.target.value;
-    if (name) this.setState({username : name})
-  }
-
-  setID(evt){
-    const id = evt.target.value.toUpperCase()
-    this.setState({roomID : id})
+    this.setState({gameProps, serverSetupProps, gameSettingsProps, isLoading : false})
   }
 
   shakeServer(){
@@ -566,7 +646,7 @@ class App extends React.Component{
   }
 
   modAIInd(i){
-    const pLength = Object.keys(Profile.ai).length
+    const pLength = Profile.ai.length
     // console.log(this.state.selectedAIInd)
     if ((this.state.selectedAIInd > 0 && i === -1) || (this.state.selectedAIInd < pLength - 1 && i === 1)) this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
     else this.shakeSelect()
@@ -589,7 +669,9 @@ class App extends React.Component{
     this.keyManager.returnAction = ()=>this.return()
     let {gameProps, charSelectProps} = this.state
     gameProps = {settings : this.state.gameSettingsProps,
-      oppProfile : Object.values(Profile.ai)[this.state.selectedAIInd],
+      playProfile : Profile.cosm[this.state.playProfileInd],
+      oppProfile : Profile.ai[this.state.selectedAIInd],
+      oppName : Profile.ai[this.state.selectedAIInd].name,
       return : ()=>this.return(),
       gameType : 'AI'
     }
@@ -657,9 +739,9 @@ class App extends React.Component{
             <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
           </div>
         </div>
-        {this.state.settingsProps ? <Settings {...this.state.settingsProps} gameSettingsProps={this.state.gameSettingsProps} settingsRanges={this.state.settingsRanges} cursor={this.state.cursor} settingChanged={this.state.settingChanged}/> : null}
+        {this.state.settingsProps ? <Settings {...this.state.settingsProps} gameSettingsProps={this.state.gameSettingsProps} settingsRanges={this.state.settingsRanges} cursor={this.state.cursor} settingChanged={this.state.settingChanged} playProfileInd={this.state.playProfileInd}/> : null}
         {this.state.gameProps ? <Game {...this.state.gameProps}/> : null}
-        {this.state.serverSetupProps ? <ServerSetup {...this.state.serverSetupProps} cursor={this.state.cursor} roomID={this.state.roomID}/> : null}
+        {this.state.serverSetupProps ? <ServerSetup {...this.state.serverSetupProps} cursor={this.state.cursor} name={this.state.gameSettingsProps.name} playProfileInd={this.state.playProfileInd} roomID={this.state.roomID}/> : null}
         {this.state.charSelectProps ? <CharSelect {...this.state.charSelectProps} cursor={this.state.cursor} selectedAIInd={this.state.selectedAIInd}/> : null}
         {this.state.htProps ? <HowTo {...this.state.htProps} cursor={this.state.cursor}/> : null}
         <Menu {...this.state.menuProps} cursor={this.state.cursor}/>

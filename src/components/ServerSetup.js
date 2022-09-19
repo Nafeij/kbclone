@@ -1,26 +1,39 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react";
+import Profile from "../util/Profile";
 
 function ServerSetup (props) {
-    const {buttons, cursor, shake, onShakeDone, fadeAway, onFade, onFocus, onBlur, setID, setUsername, roomID, lock} = props
+    const {buttons, cursor, shake, onShakeDone, fadeAway,
+        onFade, onFocus, onBlur, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles, pcursor} = props
     const button = (i)=>(
-        <div key={i} className={`kbutton ${buttons[i].cursorID === cursor && !(lock && i < buttons.length - 1) ? 'hovering' : ''}`} style={{pointerEvents : lock && i < buttons.length - 1 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()} >{buttons[i].text}</div>
+        <div key={i} className={`kbutton ${i === cursor && !(lock && i !== 0) ? 'hovering' : ''}`} style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()}>{buttons[i].text}</div>
     )
     return (
     <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
-        <div className="menubox">
-            <div className={`ssBox ${lock ? 'lock' : ''}`}>
-                    <div className='subtitle'>Username</div>
-                    <input type='text' placeholder="-" readOnly={lock} onFocus={onFocus} onBlur={onBlur} onChange={evt => setUsername(evt)}/>
+        <div className="menubox profile">
+            <div className={`ssBox profile ${lock ? 'lock' : ''}`}>
+                <div className="menubox">
+                    <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
+                    {button(1)}
                 </div>
-                <div className={`ssBox ${lock ? 'lock' : ''}`}>
-                    <input className={shake ? 'shake' : ''} value={roomID} type='text' placeholder="XXXX" size="4" readOnly={lock} onFocus={onFocus} onBlur={onBlur} maxLength="4" onChange={evt => setID(evt)} onAnimationEnd={onShakeDone}/>
-                    <div className="menubox across ssinner" >
-                        {Array(buttons.length - 1).fill().map((_,i)=>button(i))}
-                    </div>
+                <input type='text' value={name} placeholder="Enter Username" readOnly={lock} onFocus={onFocus} onBlur={onBlur} onChange={evt => setUsername(evt)}/>
             </div>
-            {button(buttons.length - 1)}
+            {showProfiles ? <div className="ssBox profile">
+                <div className="formGrid">
+                    {Profile.cosm.map((p,i)=>(
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/7) && pcursor === i % 7? 'hovering':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{buttons[1].onClick();setProfileInd(i)}}/>
+                    ))}
+                </div>
+            </div> : null}
+            {!showProfiles ?
+            <div className={`ssBox ${lock ? 'lock' : ''}`}>
+                <input className={shake ? 'shake' : ''} value={roomID} type='text' placeholder="XXXX" size="4" readOnly={lock} onFocus={onFocus} onBlur={onBlur} maxLength="4" onChange={evt => setID(evt)} onAnimationEnd={onShakeDone}/>
+                <div className="menubox across ssinner" >
+                    {Array(buttons.length - 2).fill().map((_,i)=>button(i+2))}
+                </div>
+            </div> : null}
+            {button(0)}
         </div>
     </div>
     )

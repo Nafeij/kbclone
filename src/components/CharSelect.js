@@ -15,15 +15,14 @@ function CharSelect (props) {
     const translation = selectedAIInd * -20
     const translationName = selectedAIInd * -100
     const leftend = selectedAIInd === 0
-    const rightend = selectedAIInd === Object.keys(Profile.ai).length - 1
-    const aiProfiles = Object.values(Profile.ai)
+    const rightend = selectedAIInd === Profile.ai.length - 1
     return (
         <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
             <div className='menubox'>
                 <div className='subtitle'>~ Select Opponent ∽</div>
                 <div className="slidePaneContainer">
                     <div className="slidePane" style={{transform : `translateX(${translation}%)`}}>
-                        {aiProfiles.map((p, i)=>(
+                        {Profile.ai.map((p, i)=>(
                             <div key={i} className={`pfp simp ${i === selectedAIInd ? 'simphover':''}`} style={{backgroundImage: `url(${p.img})`}}/>
                         ))}
                     </div>
@@ -33,14 +32,14 @@ function CharSelect (props) {
                     <div className={`charInfo ${buttons[0].cursorID === cursor ? 'charInfohover' : ''} ${shakeSelect ? 'shake' : ''}`} onClick={() => buttons[0].onClick()} onAnimationEnd={()=>onShakeDone()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{transform : `translateX(${translationName}%)`}}>
-                        {aiProfiles.map((p, i)=>(
+                        {Profile.ai.map((p, i)=>(
                             <div key={i} className={`subtitle ${i === selectedAIInd ? '':'subtitlehide'}`}>{p.name}</div>
                         ))}
                         </div>
                         </div>
                         <div className="difficulty">
                             <div className='text red'>Difficulty</div>
-                            <Bar progress={aiProfiles[selectedAIInd].skill}/>
+                            <Bar progress={Profile.ai[selectedAIInd].skill}/>
                         </div>
                     </div>
                     <div className="arrowR" style={{opacity : rightend ? .2 : 1}} onClick={()=>modAIInd(1)}>⯈</div>

@@ -1,4 +1,9 @@
-* {user-select: none;}
+* {
+	-webkit-user-select: none;
+	user-select: none;
+	/* font-family: 'Markazi Text','Piazzolla','Scheherazade New','Times New Roman', Times, serif; */
+	line-height: 1.1em;
+}
 
 html {overflow: hidden;}
 
@@ -57,12 +62,13 @@ body {
 
 .menubox {
 	z-index: 1;
-	flex: 1 1 0%;
+	flex: 1 1;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
 	text-align: center;
 	width: 100vw;
+	justify-content: center;
 }
 
 .menubox .kbutton {
@@ -92,6 +98,10 @@ body {
 }
 .menubox.across.ssouter{
 width: auto;
+}
+
+.ssBox.profile .menubox {
+	flex: 2;
 }
 
 .graphicbox {
@@ -186,8 +196,8 @@ width: auto;
 	opacity: 0;
 }
 
-.arrowL, .arrowR{
-	font-size: calc(2vw + 2vh);
+.arrowL, .arrowR {
+	font-size: 4vmin;
 	transition: .3s;
 }
 
@@ -278,6 +288,97 @@ width: auto;
 	padding: .4em 0;
 }
 
+.formGrid {
+	display: grid;
+	grid-template-columns: repeat(7,1fr);
+	gap: 1vmin;
+	flex: 1;
+}
+
+.formGrid .pfp {
+	width: 100%;
+	border-radius: 3px;
+	border: 5px solid transparent;
+	background-repeat: no-repeat;
+}
+
+.formGrid .pfp:hover, .formGrid .pfp.hovering{
+	border-color: #01d5a2;
+}
+
+.formGrid .pfp.active{
+	border-color: red;
+}
+
+.menubox.across.personal {
+	margin: 0;
+	align-items: stretch;
+	width: 80vw;
+	padding: 0 3vw;
+	box-sizing: border-box;
+}
+
+.menubox.across.personal .pfp {
+	width: 25vmin;
+}
+
+.menubox.across.personal .formGrid .pfp {
+	width: auto;
+}
+
+.scrollContainer {
+	flex: 1;
+	height: 60vh;
+	overflow: scroll;
+}
+
+.menubox.across.personal .menubox.settingsList {
+	flex: 1;
+}
+
+.menubox.across.personal .settingsItem {
+	display: block;
+	flex: none;
+}
+
+.menubox.across.personal .settingsItem .subtitle {
+	flex: none;
+	padding: 1em;
+}
+
+.menubox.across.personal .formGrid {
+	grid-template-columns: repeat(4,1fr);
+	margin: 0 4vmin;
+}
+
+.menubox.across.personal input {
+	font-size: 4vmin;
+	color: white;
+	outline: none;
+	box-sizing: border-box;
+	background-color: transparent;
+	letter-spacing: 0.04em;
+	text-align: center;
+	-webkit-user-select: text;
+	user-select: text;
+	border: none;
+	box-shadow: none;
+	width: 75%;
+	font-family: 'Times New Roman', Times, serif;
+}
+
+.menubox.across.personal input:focus {
+	box-shadow: 0 2px white;
+}
+
+.menubox.across.personal .settingInput {
+	justify-content: center;
+}
+
+.menubox.across.personal .settingInput .menubox {
+	max-width: 25%;
+}
+
 .settingsItem {
 	width: 100%;
 	display: flex;
@@ -344,6 +445,7 @@ width: auto;
 	position: absolute;
 	transform: translateX(-50%);
 	left: 50%;
+	z-index: 0;
 }
 
 .testColor:hover .pickWrapper, .testColor.hovering .pickWrapper, .pickWrapper:hover{
@@ -372,14 +474,13 @@ width: auto;
 	align-items: center;
 	justify-content: space-between;
 	cursor: pointer;
-	max-width: 150px;
 	background: #888;
 	border-radius: 2px;
 	position: relative;
 	transition: background-color .2s;
 	aspect-ratio: 2/1;
-	width: 25%;
 	margin: auto;
+	height: 5vmin;
 }
   
 .react-switch-label .react-switch-button {
@@ -409,7 +510,6 @@ width: auto;
 	color: #fff;
 	display: flex;
 	flex-direction: column;
-	font-family: Cambria,Cochin,Georgia,Times,Times New Roman,serif;
 	font-weight: 700;
 	justify-content: flex-end;
 	left: 50%;
@@ -654,7 +754,7 @@ width: auto;
 	position: relative;
 	flex-direction: column;
 	align-items: center;
-	gap: 1.5em;
+	gap: 2.5em;
 }
 
 .ssBox::before {
@@ -671,6 +771,10 @@ width: auto;
 	transform: translateX(0);
 }
 
+.ssBox.profile{
+	flex-direction: row;
+}
+
 .ssBox:focus-within::before, .ssBox.lock::before {
 	background: red;
 	padding: 0 1em;
@@ -682,7 +786,7 @@ width: auto;
 	top: -1em;
 }
 
-.ssBox .kbutton {
+.ssBox .kbutton, .menubox.across.personal .kbutton {
 	width: 20vmin;
 	padding: 1.2vmin;
 	clip-path: none;
@@ -692,10 +796,16 @@ width: auto;
 	background-color: #0002;
 }
 
+.ssBox.profile .kbutton {
+	font-size: 1.8vmin;
+	padding: .8vmin;
+	width: 11vmin;
+}
+
 .ssBox input {
 	background: #171916;
 	border: none;
-	box-shadow: 1px 1px #d52f2f;
+	box-shadow: 2px 2px #d52f2f;
 	color: white;
 	outline: none;
 	padding: 0.5em;
@@ -711,8 +821,9 @@ width: auto;
 
 .ssBox input:last-child {
 	text-transform: none;
-	width: 10em;
 	letter-spacing: 0;
+	flex: 3;
+	width: 0;
 }
 
 .ssBox input:focus{
@@ -769,6 +880,10 @@ width: auto;
 .pfp.simphover{
 	opacity: 1;
 	transform: none;
+}
+
+.ssBox.profile .pfp {
+	width: 100%;
 }
 
 .charInfo {

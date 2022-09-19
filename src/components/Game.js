@@ -5,7 +5,6 @@ import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
 import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat} from '../util/utils';
 import KeyManager from "../util/KeyManager.js";
-import Profile from "../util/Profile.js";
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";
 import Loading from "./Loading.js";
@@ -44,8 +43,8 @@ class Game extends React.Component {
                     score: 0,
                     scoreShown: false,
                     scoreShake: false,
-                    profile: Profile.cosm.lamb,
-                    name : Profile.cosm.lamb.name,
+                    profile: i ? props.playProfile : props.oppProfile,
+                    name : i ? props.settings.name : props.oppName,
                     rollRef : React.createRef(),
                     numTubs: props.settings.numTubs,
                     time : props.settings.time === null ? props.settings.time : -1
@@ -802,24 +801,14 @@ class Game extends React.Component {
 
 
     componentDidMount(){
-        const sideProps = this.state.sideProps
         if (this.props.gameType === 'PVP'){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
-            const {name, oppName, turn, hostProfile, guestProfile} = this.props
-            sideProps[1].profile = hostProfile
-            sideProps[0].profile = guestProfile
-            sideProps[1].name = name
-            sideProps[0].name = oppName
-            this.setState({turn, sideProps, flytextProps})
+            const turn = this.props.turn
+            this.setState({turn, flytextProps})
             return
         }
-        sideProps[0].profile = this.props.oppProfile
-        sideProps[0].name = this.props.oppProfile.name
-        // sideProps[1].profile = Profile.cosm.lamb // TODO customization
-        // sideProps[1].name = Profile.cosm.lamb.name
-
-        this.setState({turn : randomInRange(2), sideProps})
+        this.setState({turn : randomInRange(2)})
     }
 
     render(){
