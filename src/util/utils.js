@@ -88,14 +88,17 @@ export function mostCommon(arr){
     return {num : res, count : hashmap[res]}
 }
 
-/* export function timeFormat(sec){
-    if (sec < 0) return '--:--'
-    const seconds = Math.floor(sec % 60);
-    const minutes = Math.floor((sec / 60) % 60);
-    // const hours = Math.floor((total / 1000 / 60 / 60) % 24);
-    return (minutes > 9 ? minutes : '0' + minutes) + ':'
-    + (seconds > 9 ? seconds : '0' + seconds)
-} */
+export function timeFormatLong(sec){
+    if (sec <= 0) return 'None'
+    const seconds = Math.floor(sec % 60)
+    const minutes = Math.floor((sec / 60) % 60)
+    const hours = Math.floor((sec / 3600) % 24)
+    const days = Math.floor((sec / 86400))
+    return (days ? days + 'd ' : '') +
+        (hours ? hours + 'h ' : '') + 
+        (minutes ? minutes + 'm ' : '') + 
+        seconds + 's'
+}
 
 export function timeFormat(seconds){
     if (seconds < 0) return '--'

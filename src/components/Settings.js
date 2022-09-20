@@ -3,6 +3,7 @@
 import React from "react";
 import { SketchPicker } from "react-color";
 import Profile from "../util/Profile";
+import { timeFormatLong } from "../util/utils";
 
 const Switch = ({ isOn, handleToggle, sid}) => {
     return (
@@ -31,7 +32,43 @@ function Settings (props) {
     // console.log(props.graphicwidth)
 
     const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name} = props.gameSettingsProps
-    const {mod, modDscrt, modBool, modSpec, modVal, settingsRanges, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons} = props
+    const {mod, modDscrt, modBool, modSpec, modVal, settingsRanges, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props
+    const combiBreakdown = statsProps.aiBreakdown.slice()
+    combiBreakdown.push(statsProps.pvpBreakdown)
+    const aggregate = combiBreakdown.reduce((pObj, cObj)=>{
+        pObj.nGames += cObj.nGames
+        pObj.time += cObj.time
+        pObj.sideBreakdown.map((prevSide,i)=>{
+            const side = cObj.sideBreakdown[i]
+            prevSide.nWins += side.nWins
+            prevSide.highestScore = Math.max(prevSide.highestScore, side.highestScore)
+            const pMargin = prevSide.closestWin.p - prevSide.closestWin.o,
+                sMargin = side.closestWin.p - side.closestWin.o
+            if (!prevSide.closestWin.p || sMargin > pMargin) prevSide.closestWin = side.closestWin
+            prevSide.numDestroyed += side.numDestroyed
+            prevSide.mostDestroyed = Math.max(prevSide.mostDestroyed, side.mostDestroyed)
+            prevSide.mostDestroyedTurn = Math.max(prevSide.mostDestroyedTurn, side.mostDestroyedTurn)
+            prevSide.numClears += side.numClears
+            prevSide.mostClears = Math.max(prevSide.mostClears, side.mostClears)
+            prevSide.fastestWinTime = !!prevSide.fastestWinTime ? ( !!side.fastestWinTime ? Math.min(prevSide.fastestWinTime, side.fastestWinTime) : prevSide.fastestWinTime) : side.fastestWinTime
+            return prevSide
+        })
+        return pObj
+    },{
+        nGames : 0,
+        sideBreakdown : Array(2).fill().map(()=>({
+            nWins : 0,
+            highestScore : 0,
+            closestWin : {p : null, o : null},
+            numDestroyed : 0,
+            mostDestroyed : 0,
+            mostDestroyedTurn : 0,
+            numClears : 0,
+            mostClears : 0,
+            fastestWinTime : null,
+        })),
+        time: 0
+    })
     let offset = 0
     if (showProfiles) offset = Math.floor(Profile.cosm.length / 4)
     return (<div className='menu settings'>
@@ -40,7 +77,7 @@ function Settings (props) {
         <div className="menubox across TabBar">
             <div className="arrowL" style={{opacity : 1 === cursor ? 1 : .2}}>⯇</div>
             <div className={`Tab ${tabs[activeTab] === 'gameplay' ? 'hovering':''}`} onClick={()=>switchTab(0)}>Gameplay</div>
-            <div className={`Tab ${tabs[activeTab] === 'personal' ? 'hovering':''}`} onClick={()=>switchTab(1)}>Personalization</div>
+            <div className={`Tab ${tabs[activeTab] === 'personal' ? 'hovering':''}`} onClick={()=>switchTab(1)}>Profile</div>
             <div className="arrowR" style={{opacity : 1 === cursor ? 1 : .2}}>⯈</div>
         </div>
         <div className="menubox across personal" style={{display : tabs[activeTab] === 'personal' ? 'flex' : 'none'}}>
@@ -51,9 +88,75 @@ function Settings (props) {
                     ))}
                 </div>
             </div> : null}
-            {!showProfiles ? <div className='menubox'>
-                <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
-                <div className={`kbutton ${2 === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+            {!showProfiles ? <div className="scrollContainer">
+                <div className='menubox stats'>
+                    <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
+                    <div className={`kbutton ${2 === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+                    <div className="menubox across">
+                        <div className='menubox'>
+                            <div className="subtitle">{aggregate.nGames}</div>
+                            <div className="subtitle">{' game' + (aggregate.nGames > 1 ? 's' :'')}</div>
+                        </div>
+                        <div className='menubox'>
+                            <div className="subtitle">{aggregate.sideBreakdown[1].nWins}</div>
+                            <div className="subtitle">{' win' + (aggregate.sideBreakdown[1].nWins > 1 ? 's' :'')}</div>
+                        </div>
+                        <div className='menubox'>
+                            <div className="subtitle">{aggregate.sideBreakdown[0].nWins}</div>
+                            <div className="subtitle">{' loss' + (aggregate.sideBreakdown[0].nWins > 1 ? 'es' :'')}</div>
+                        </div>
+                    </div>
+                    <div className='settingsItem'>
+                        <div className='subtitle'>Stats</div>
+                        <div className="menubox misc">
+                            <div className="subtitle">High Score: {aggregate.sideBreakdown[1].highestScore}</div>
+                            <div className="subtitle">Total Dice Destroyed: {aggregate.sideBreakdown[1].numDestroyed}</div>
+                            <div className="subtitle">Closest Win: {aggregate.sideBreakdown[1].closestWin.o === null ? 'None':aggregate.sideBreakdown[1].closestWin.p + ' - ' + aggregate.sideBreakdown[1].closestWin.o}</div>
+                            <div className="subtitle">Most Destroyed in a Game: {aggregate.sideBreakdown[1].mostDestroyed}</div>
+                            <div className="subtitle">Closest Defeat: {aggregate.sideBreakdown[0].closestWin.o === null ? 'None': aggregate.sideBreakdown[0].closestWin.o + ' - ' + aggregate.sideBreakdown[0].closestWin.p}</div>
+                            <div className="subtitle">Most Destroyed in a Turn: {aggregate.sideBreakdown[1].mostDestroyedTurn}</div>
+                            <div className="subtitle">Total <s>Perfect</s> Board Clears: {aggregate.sideBreakdown[1].numClears}</div>
+                            <div className="subtitle">Most Clears in a Game: {aggregate.sideBreakdown[1].mostClears}</div>
+                            <div className="subtitle">Total Playtime: {timeFormatLong(aggregate.time / 1000)}</div>
+                            <div className="subtitle">Fastest Win: {timeFormatLong(aggregate.sideBreakdown[1].fastestWinTime / 1000)}</div>
+                            <div className="subtitle">Fastest Defeat: {timeFormatLong(aggregate.sideBreakdown[0].fastestWinTime / 1000)}</div>
+                        </div>
+                        <div className='subtitle'>Opponent Breakdown</div>
+                        <div className="menubox settingsList opponent">
+                            {statsProps.aiBreakdown.map((p,i)=>(
+                                <div key={i*6} className='settingsItem'>
+                                    <div key={i*6+2} className='menubox'>
+                                        <div key={i*6+3} className='subtitle'><b>{Profile.ai[p.profileInd].name}</b></div>
+                                        <div key={i*6+4} className='subtitle'>{
+                                        (!p.nGames ? 'No' : p.nGames) + ' Game' + (p.nGames > 1 || !p.nGames? 's' :'') + ', ' + 
+                                        (!p.sideBreakdown[0].nWins ? 'No' : p.sideBreakdown[0].nWins) + ' Win' + (p.sideBreakdown[0].nWins > 1 || !p.sideBreakdown[0].nWins ? 's' :'') + ', ' +
+                                        (!p.sideBreakdown[1].nWins ? 'No' : p.sideBreakdown[1].nWins) + ' Loss' + (p.sideBreakdown[1].nWins > 1 || !p.sideBreakdown[1].nWins ? 'es' :'')
+                                        }</div>
+                                        <div key={i*6+5} className='subtitle'>High Score: {p.sideBreakdown[0].highestScore ? p.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(p.time / 1000)}</div>
+                                    </div>
+                                    <div key={i*6+1} className='pfp' style={{backgroundImage: `url(${Profile.ai[p.profileInd].img})`}}/>
+                                </div>
+                            ))}
+                        </div>
+                        {statsProps.pvpBreakdown.name ? <div className='subtitle'>Online Opponents</div> : null}
+                        {statsProps.pvpBreakdown.name ? 
+                            <div className="menubox settingsList opponent">
+                                <div className='settingsItem'>
+                                    <div className='menubox'>
+                                        <div className='subtitle'>Most Recent: <b>{statsProps.pvpBreakdown.name}</b></div>
+                                        <div className='subtitle'>{
+                                        (!statsProps.pvpBreakdown.nGames ? 'No' : statsProps.pvpBreakdown.nGames) + ' Game' + (statsProps.pvpBreakdown.nGames > 1 || !statsProps.pvpBreakdown.nGames? 's' :'') + ', ' + 
+                                        (!statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[1].nWins) + ' Win' + (statsProps.pvpBreakdown.sideBreakdown[1].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 's' :'') + ', ' +
+                                        (!statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[0].nWins) + ' Loss' + (statsProps.pvpBreakdown.sideBreakdown[0].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'es' :'')
+                                        }</div>
+                                        <div className='subtitle'>High Score: {statsProps.pvpBreakdown.sideBreakdown[0].highestScore ? statsProps.pvpBreakdown.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(statsProps.pvpBreakdown.time / 1000)}</div>
+                                    </div>
+                                    <div className='pfp' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, transform : 'scaleX(-1)'}}/>
+                                </div>
+                            </div>
+                        : null}
+                    </div>
+                </div>
             </div> : null}
             <div className="menubox settingsList">
                 <div className={`settingsItem ${3 + offset === cursor ? 'hovering' : ''}`}>

@@ -8,12 +8,13 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { randomInRange } from './util/utils.js'
+import { randomInRange, score } from './util/utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
 import Loading from './components/Loading.js'
 import Settings from './components/Settings.js'
+import { withCookies } from 'react-cookie';
 
 function Menu (props) {
 
@@ -96,7 +97,7 @@ class App extends React.Component{
       isLoading : false,
       graphicRef : React.createRef(),
       settingChanged : false,
-      gameSettingsProps : {
+      gameSettingsProps : props.cookies.get('gameSettingsProps') || {
         tubLen : 3, 
         numTubs : 3, 
         diceColor : ['#f4ebceff','#f4ebceff'],
@@ -110,28 +111,88 @@ class App extends React.Component{
         // caravan : [10,18]
         caravan : null,
         turnLimit : null,
-        name : Profile.cosm[0].name
+        playProfileInd : 0,
+        oppProfileInd : 0,
+        name : Profile.cosm[0].name,
+        oppName : Profile.cosm[0].name,
+        gameType : 'DEFAULT'
       },
-      playProfileInd : 0,
       settingsRanges : {
         time : {rcursor : 0, range : [null, 1, 5, 10, 20, 30, 60]},
         turnLimit : {rcursor : 0, range : [null, 5, 10, 50, 100, 200, 500]},
         caravan : {2 : 8, 3 : 14, 4 : 21, 5 : 29}
+      },
+      statsProps : props.cookies.get('statsProps') || {
+        aiBreakdown : Profile.ai.map((_,i)=>({profileInd : i, nGames : 0, 
+          sideBreakdown : Array(2).fill().map(()=>({
+            nWins : null,
+            highestScore : null,
+            closestWin : {p : null, o : null},
+            numDestroyed : null,
+            mostDestroyed : null,
+            mostDestroyedTurn : null,
+            numClears : null,
+            mostClears : null,
+            fastestWinTime : null,
+          }))
+        , time : 0})),
+        pvpBreakdown : {profileInd : null, name : null, nGames : 0, 
+          sideBreakdown : Array(2).fill().map(()=>({
+            nWins : null,
+            highestScore : null,
+            closestWin : {p : null, o : null},
+            numDestroyed : null,
+            mostDestroyed : null,
+            mostDestroyedTurn : null,
+            numClears : null,
+            mostClears : null,
+            fastestWinTime : null,
+          }))
+        , time : 0}
       }
     }
-/*     this.keyManager.initCallback(()=>{
-      const {menuProps, htProps: htprops} = this.state
-      this.setState({menuProps, htprops})
-    }) */
     this.keyManager.initCursorUpdate(()=>{
       this.setState({cursor: this.keyManager.cursor})
     })
   }
 
-/*   disable(){
-    console.log('disable')
-    this.setState({enabled : false})
-  } */
+  statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
+    const {statsProps, gameSettingsProps} = this.state
+    let focusBreakdown
+    if (gameSettingsProps.gameType === 'AI'){
+      focusBreakdown = statsProps.aiBreakdown[gameSettingsProps.oppProfileInd]
+    } else {
+      focusBreakdown = statsProps.pvpBreakdown
+      focusBreakdown.profileInd = gameSettingsProps.oppProfileInd
+      focusBreakdown.name = gameSettingsProps.oppName
+    }
+    focusBreakdown.nGames++
+    focusBreakdown.time += time
+    focusBreakdown.sideBreakdown = focusBreakdown.sideBreakdown.map((side,i)=>{
+      if (!gameSettingsProps.caravan) side.highestScore = Math.max(scoreList[i], side.highestScore)
+      side.numDestroyed += destroyedList[i]
+      side.mostDestroyed = Math.max(destroyedList[i], side.mostDestroyed)
+      side.mostDestroyedTurn = Math.max(destroyedMaxTurnList[i], side.mostDestroyedTurn)
+      side.numClears += clearList[i]
+      side.mostClears = Math.max(clearList[i], side.mostClears)
+      return side
+    })
+    if (winnerInd !== -1){
+      focusBreakdown = focusBreakdown.sideBreakdown[winnerInd]
+      focusBreakdown.nWins++
+      focusBreakdown.fastestWinTime = !!focusBreakdown.fastestWinTime ? Math.min(focusBreakdown.fastestWinTime, time) : time
+      if (!gameSettingsProps.caravan){
+        const margin = focusBreakdown.closestWin.p - focusBreakdown.closestWin.o
+        const marginNew = scoreList[winnerInd] - scoreList[!winnerInd + 0]
+        if (!focusBreakdown.closestWin.p || marginNew < margin) {
+          focusBreakdown.closestWin.p = scoreList[winnerInd]
+          focusBreakdown.closestWin.o = scoreList[!winnerInd + 0]
+        }
+      }
+    }
+    this.props.cookies.set('statsProps', statsProps, { path: '/' });
+    this.setState({statsProps})
+  }
 
   setButtonsClickable(callback = ()=>{}){
     this.keyManager.clear()
@@ -158,13 +219,13 @@ class App extends React.Component{
     //console.log('test')
     this.keyManager.clear()
     this.keyManager.returnAction = ()=> this.return()
-    let {menuProps, gameProps} = this.state
-    gameProps = {settings : this.state.gameSettingsProps,
-      playProfile : Profile.cosm[this.state.playProfileInd],
-      oppProfile : Profile.cosm[this.state.playProfileInd],
-      oppName : this.state.gameSettingsProps.name,
+    let {menuProps, gameProps, gameSettingsProps} = this.state
+    gameSettingsProps.oppName = gameSettingsProps.name
+    gameSettingsProps.oppProfileInd = gameSettingsProps.playProfileInd
+    gameSettingsProps.gameType ='DEFAULT'
+    gameProps = {settings : gameSettingsProps,
       return : ()=>this.return(),
-      gameType : 'DEFAULT'
+      statUpdate : ()=>{}
     }
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
@@ -262,6 +323,7 @@ class App extends React.Component{
               const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
               gameSettingsProps.caravan = [mid-4,mid+4]
             }
+            this.props.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/' });
             this.setState({gameSettingsProps},this.return)
           },
           enabled : true
@@ -358,7 +420,9 @@ class App extends React.Component{
   setProfileInd(i){
     const gameSettingsProps = this.state.gameSettingsProps
     gameSettingsProps.name = Profile.cosm[i].name
-    this.setState({gameSettingsProps,playProfileInd : i})
+    gameSettingsProps.playProfileInd = i
+    this.props.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/' });
+    this.setState({gameSettingsProps})
   }
 
   startCharacterSelect(){
@@ -490,7 +554,7 @@ class App extends React.Component{
         const id = evt.target.value.toUpperCase()
         this.setState({roomID : id})
       },
-      setProfileInd : this.setProfileInd
+      setProfileInd : (i)=>this.setProfileInd(i)
     }
     serverSetupProps.buttons.forEach((e,i) => {
       if (e.enabled) this.keyManager.push(i, e.onClick)
@@ -590,41 +654,42 @@ class App extends React.Component{
       this.server.close()
       this.return()
     }
-    const playProfile =  Profile.cosm[this.state.playProfileInd]
-    let oppProfile, oppName, gameSettingsProps = this.state.gameSettingsProps
+    let turn, gameSettingsProps = this.state.gameSettingsProps
+    const playProfileInd =  gameSettingsProps.playProfileInd
     if(this.server.isHost){
       turn = randomInRange(2)
       this.server.send({
         name, 
         turn : !turn + 0, 
         gameSettingsProps,
-        oppProfileInd : this.state.playProfileInd})
+        oppProfileInd : playProfileInd})
       let init = await this.server.recv()
-      oppProfile = Profile.cosm[init.oppProfileInd]
-      oppName = init.name
+      gameSettingsProps.oppProfileInd = init.oppProfileInd
+      gameSettingsProps.oppName = init.name
       //console.log('host turn ' + turn)
     } else {
-      this.server.send({name, oppProfileInd : this.state.playProfileInd})
+      this.server.send({name, oppProfileInd : playProfileInd})
       let init = await this.server.recv()
       turn = init.turn
-      oppProfile = Profile.cosm[init.oppProfileInd]
-      oppName = init.name
       const {diceColor, diceBorder, pipColor} = gameSettingsProps
       gameSettingsProps = {
         ...init.gameSettingsProps,
-        diceColor, diceBorder, pipColor
+        diceColor, diceBorder, pipColor,
+        name : gameSettingsProps.name,
+        playProfileInd : gameSettingsProps.playProfileInd,
+        oppName : init.name, 
+        oppProfileInd : init.oppProfileInd
       }
     }
     let {gameProps, serverSetupProps} = this.state
-    gameProps = {settings : this.state.gameSettingsProps,
-      name, oppName, turn,
-      playProfile,
-      oppProfile,
-      gameType : 'PVP',
+    gameSettingsProps.gameType = 'PVP'
+    gameProps = {settings : gameSettingsProps,
+      turn,
       return : ()=> {
         this.server.close()
         this.return()
-      }
+      },
+      statUpdate : (...args)=>{this.statUpdate(...args)}
     }
     serverSetupProps.fadeAway = true
     serverSetupProps.onFade = ()=>{
@@ -667,13 +732,14 @@ class App extends React.Component{
     // this.clearClickable()
     this.keyManager.clear()
     this.keyManager.returnAction = ()=>this.return()
-    let {gameProps, charSelectProps} = this.state
-    gameProps = {settings : this.state.gameSettingsProps,
-      playProfile : Profile.cosm[this.state.playProfileInd],
-      oppProfile : Profile.ai[this.state.selectedAIInd],
-      oppName : Profile.ai[this.state.selectedAIInd].name,
+    let {gameProps, charSelectProps, gameSettingsProps} = this.state
+    gameSettingsProps.oppProfileInd = this.state.selectedAIInd
+    gameSettingsProps.oppName = Profile.ai[this.state.selectedAIInd].name
+    gameSettingsProps.gameType = 'AI'
+    gameProps = {
+      settings : gameSettingsProps,
+      statUpdate : (...args)=>{this.statUpdate(...args)},
       return : ()=>this.return(),
-      gameType : 'AI'
     }
     charSelectProps.fadeAway = true
     charSelectProps.onFade = ()=>{
@@ -724,13 +790,15 @@ class App extends React.Component{
   }
   
   render(){
-    // const {cursor, disable, enabled} = this.state
+    const {flytextProps,isLoading,gameProps,settingsProps,gameSettingsProps,statsProps,
+      settingsRanges, cursor, settingChanged, serverSetupProps, roomID, charSelectProps, 
+      selectedAIInd, htProps, menuProps} = this.state
     return (
       <div>
-        {(this.state.flytextProps) ? <Flytext {...this.state.flytextProps} /> : null}
-        <Loading show={this.state.isLoading}/>
+        {(flytextProps) ? <Flytext {...flytextProps} /> : null}
+        <Loading show={isLoading}/>
         <div className='footer'>
-          <div className="fcontain" style={{display : this.state.gameProps ? 'flex' : 'none'}} onClick={()=>{
+          <div className="fcontain" style={{display : gameProps ? 'flex' : 'none'}} onClick={()=>{
                           /* this.clearClickable() */
                           this.return()}}>
             <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
@@ -739,15 +807,15 @@ class App extends React.Component{
             <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
           </div>
         </div>
-        {this.state.settingsProps ? <Settings {...this.state.settingsProps} gameSettingsProps={this.state.gameSettingsProps} settingsRanges={this.state.settingsRanges} cursor={this.state.cursor} settingChanged={this.state.settingChanged} playProfileInd={this.state.playProfileInd}/> : null}
-        {this.state.gameProps ? <Game {...this.state.gameProps}/> : null}
-        {this.state.serverSetupProps ? <ServerSetup {...this.state.serverSetupProps} cursor={this.state.cursor} name={this.state.gameSettingsProps.name} playProfileInd={this.state.playProfileInd} roomID={this.state.roomID}/> : null}
-        {this.state.charSelectProps ? <CharSelect {...this.state.charSelectProps} cursor={this.state.cursor} selectedAIInd={this.state.selectedAIInd}/> : null}
-        {this.state.htProps ? <HowTo {...this.state.htProps} cursor={this.state.cursor}/> : null}
-        <Menu {...this.state.menuProps} cursor={this.state.cursor}/>
+        {settingsProps ? <Settings {...settingsProps} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} cursor={cursor} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/> : null}
+        {gameProps ? <Game {...gameProps}/> : null}
+        {serverSetupProps ? <ServerSetup {...serverSetupProps} cursor={cursor} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/> : null}
+        {charSelectProps ? <CharSelect {...charSelectProps} cursor={cursor} selectedAIInd={selectedAIInd}/> : null}
+        {htProps ? <HowTo {...htProps} cursor={cursor}/> : null}
+        <Menu {...menuProps} cursor={cursor}/>
       </div>
     )
   }
 }
 
-export default App
+export default withCookies(App)

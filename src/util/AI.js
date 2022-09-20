@@ -4,7 +4,7 @@ export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
     // diceMatrix = diceMatrix.map(s=>(s.map(t=>(t.map(d=>(d ? d.num : d))))))
     const choices = possibleChoices(diceMatrix, turn, settings)
     if (Math.random() > profile.skill) {
-        console.log('misplay')
+        // console.log('misplay')
         return randomSelect(choices)
     }
 

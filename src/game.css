@@ -186,7 +186,7 @@ width: auto;
  */
 .subtitle {
 	flex: 1 1;
-	font-size: 3vmin;
+	font-size: 4vmin;
 	font-weight: 400;
 	opacity: 1;
 	transition: .3s
@@ -252,7 +252,7 @@ width: auto;
 
 .menubox.settingsList {
 	width: 80vw;
-	max-width: 1800px;
+	max-width: 1500px;
 	gap: 1.5vh;
 	text-align: left;
 	height: 60vh;
@@ -265,7 +265,7 @@ width: auto;
 	align-items: end;
 	justify-content: center;
 	font-size: 2vmin;
-	max-width: 1800px;
+	max-width: 1500px;
 	width: 80vw;
 	gap: .7em;
 }
@@ -316,10 +316,44 @@ width: auto;
 	width: 80vw;
 	padding: 0 3vw;
 	box-sizing: border-box;
+	gap: 3em;
+	flex-direction: column;
+	max-height: 70vh;
+	max-width: 1500px;
+}
+
+.menubox.stats .settingsItem > .subtitle {
+	opacity: .5 !important;
+	border-bottom: 2px solid #999;
+	padding-bottom: .5em !important;
+	margin-bottom: 1vmin;
+}
+
+.menubox.settingsList.opponent .subtitle, .menubox.across.personal .menubox.misc .subtitle {
+	font-style: normal;
+	font-weight: normal;
+	opacity: 1;
+	letter-spacing: normal;
+	padding: .5em;
+	height: 100%;
+	box-sizing: border-box;
+	text-align: center;
+	font-size: 1.3vmin;
+}
+
+.menubox.across.personal .menubox.misc .subtitle:first-child {
+	grid-column: 1 /span 2;
 }
 
 .menubox.across.personal .pfp {
 	width: 25vmin;
+	margin-top: 10%;
+}
+
+.menubox.misc {
+	display: grid;
+	grid-template-columns: repeat(2,minmax(0,1fr));
+	grid-auto-rows: 1fr;
 }
 
 .menubox.across.personal .formGrid .pfp {
@@ -332,8 +366,54 @@ width: auto;
 	overflow: scroll;
 }
 
+.scrollContainer .menubox {
+	width: 100%;
+}
+
+.scrollContainer .menubox.across {
+	margin: 1em 0 0 0;
+	width: 80%;
+	border: 2px solid #555;
+	padding: 1em 5vmin;
+	box-sizing: border-box;
+}
+
+.scrollContainer .menubox.score {
+	width: 100%;
+}
+
+.scrollContainer .settingsItem .subtitle {
+	text-align: left;
+}
+.scrollContainer .settingsItem {
+	width: 80%;
+}
+
+.scrollContainer .menubox.across .menubox .subtitle:last-child {
+	font-size: 1.8vmin;
+}
+
 .menubox.across.personal .menubox.settingsList {
-	flex: 1;
+	flex: 1 1;
+	width: 100%;
+}
+
+.menubox.across.personal .menubox.settingsList.opponent .settingsItem {
+	width: 100%;
+	display: flex;
+}
+
+.personal .menubox.settingsList.opponent .settingsItem .subtitle {
+	padding: .7vmin;
+	/* font-size: 1.8vmin; */
+}
+.menubox.settingsList.opponent {
+	height: auto;
+}
+
+.menubox.settingsList.opponent .pfp {
+	width: 15vmin;
+	margin: 0;
 }
 
 .menubox.across.personal .settingsItem {
@@ -787,13 +867,13 @@ width: auto;
 }
 
 .ssBox .kbutton, .menubox.across.personal .kbutton {
-	width: 20vmin;
-	padding: 1.2vmin;
+	width: 15vmin;
+	padding: 1vmin;
 	clip-path: none;
 	border: none;
 	border-radius: 3px;
-	font-size: 3vmin;
-	background-color: #0002;
+	font-size: 2vmin;
+	background-color: #222;
 }
 
 .ssBox.profile .kbutton {
@@ -1094,6 +1174,15 @@ width: auto;
 }
 
 @media (min-width: 820px){
+
+	.menubox.across.personal {
+		flex-direction: row;
+	}
+
+	.menubox.settingsList.opponent {
+		height: auto;
+	}
+
 	.board {
 		grid-template-columns: minmax(0,1fr) minmax(300px,3fr);
 		max-width: 560px;
