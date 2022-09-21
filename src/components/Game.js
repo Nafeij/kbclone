@@ -443,11 +443,11 @@ class Game extends React.Component {
 
     async gameEnd(){
         const {statUpdate, settings} = this.props
-        const {gameTime, tubProps, sideProps} = this.state
+        const {gameTime, diceMatrix, sideProps} = this.state
         let winnerInd = -1, scoreList, time = Date.now() - gameTime 
         if (settings.caravan){
-            scoreList = tubProps.map(s=>(
-                s.map(t=>t.score).filter(sc=>(
+            scoreList = diceMatrix.map(s=>(
+                s.map(t=>scoreTub(t)).filter(sc=>(
                     sc >= settings.caravan[0] && 
                     sc <= settings.caravan[1]
                 ))
@@ -476,7 +476,9 @@ class Game extends React.Component {
                 }
             }
         } else {
-            scoreList = sideProps.map(e=>e.score)
+            scoreList = diceMatrix.map(s=>(
+                s.map(t=>scoreTub(t)).reduce((a,b)=>(a+b),0)
+            ))
             if (scoreList[1] > scoreList[0]){
                 winnerInd = 1
             } else if (scoreList[1] < scoreList[0]){
@@ -488,7 +490,7 @@ class Game extends React.Component {
             if (sideProps[!winnerInd+0].lives){
                 sideProps[!winnerInd+0].lives--
                 await this.destroyAll(null, null)
-                this.setState({sideProps, rolled : false}, this.rollDice)
+                this.setState({sideProps, rolled : false, turnCount : this.props.settings.turnLimit}, this.rollDice)
                 return
             }
             this.showFlytext(sideProps[winnerInd].name.toUpperCase() + " WINS " + scoreList[winnerInd] + " - " + scoreList[!winnerInd + 0])
@@ -496,7 +498,7 @@ class Game extends React.Component {
         else {
             if (sideProps.some(s=>(s.maxLives))){
                 await this.destroyAll(null, null)
-                this.setState({rolled : false}, this.rollDice)
+                this.setState({rolled : false, turnCount : this.props.settings.turnLimit}, this.rollDice)
                 return
             }
             this.showFlytext("TIE GAME " + scoreList[0] + " - " + scoreList[1])
@@ -547,8 +549,9 @@ class Game extends React.Component {
         const diceMatrix = Array.from({length:2}, ()=>(
             Array.from({length:this.props.settings.numTubs},()=>(Array(this.props.settings.tubLen).fill(null))))
         )
+
         let {tubProps, sideProps} = this.state
-        sideProps = sideProps.map((side)=>({...side, score : 0, destroyed : 0, destroyedTurn : 0,cleared : 0, prevDiceNum : 0, scoreShown : false, lives: side.maxLives}))
+        sideProps = sideProps.map((side)=>({...side, score : 0, destroyed : 0, destroyedTurn : 0, cleared : 0, prevDiceNum : 0, scoreShown : false, lives: side.maxLives}))
         tubProps = tubProps.map((side)=>(side.map((tub)=>({...tub, score : null}))))
 
         flytextProps.slideEnd = ()=>{
@@ -592,24 +595,23 @@ class Game extends React.Component {
     calcTotal(turn=this.state.turn){
         let total = 0;
         const caravan = this.props.settings.caravan
-        for (const tub of this.state.tubProps[turn]) {
+        for (const tub of this.state.diceMatrix[turn]) {
+            let tubScore = scoreTub(tub)
             if (caravan){
-                if (tub.score && tub.score >= caravan[0] && tub.score <= caravan[1]) total++
+                if (tubScore >= caravan[0] && tubScore <= caravan[1]) total++
                 continue
             } else {
-                if (tub.score) total += tub.score
+                total += tubScore
             }
         }
-        console.log(`side ${turn} score ${total} `)
+        //console.log(`side ${turn} score ${total} `)
         return total
     }
 
     destroyAll(tub, turn = this.state.turn){
         let {diceMatrix, sideProps} = this.state
-
         let onePos, removeNum, destAll = tub === null
-
-        if (destAll){
+        if (!destAll){
             onePos = defLength(diceMatrix[turn][tub])
             removeNum = -1
             if (onePos > 1) removeNum = diceMatrix[turn][tub][onePos-2].num
@@ -795,7 +797,8 @@ class Game extends React.Component {
     }
 
     scoreHover(isHover,i,j){
-        const {diceMatrix, sideProps, turn} = this.state
+        const {sideProps, turn} = this.state
+        let {diceMatrix} = this.state
         if (isFull(diceMatrix[i][j])) return
         const settings = this.props.settings, newDice = sideProps[turn].newDice.num
         const numMat = convertToNumMat(diceMatrix)

@@ -118,7 +118,7 @@ class App extends React.Component{
       },
       settingsRanges : {
         time : {rcursor : 0, range : [null, 1, 5, 10, 20, 30, 60]},
-        turnLimit : {rcursor : 0, range : [null, 5, 10, 50, 100, 200, 500]},
+        turnLimit : {rcursor : 0, range : [null, 5, 10, 25, 50, 100, 200, 500]},
         caravan : {2 : 8, 3 : 14, 4 : 21, 5 : 29}
       },
       statsProps : props.cookies.get('statsProps') || {
@@ -279,6 +279,8 @@ class App extends React.Component{
       },
       modDscrt : (setting,i)=>{
         const {gameSettingsProps, settingsRanges} = this.state
+        const rcursor = settingsRanges[setting].rcursor
+        if ((rcursor === 0 && i < 0) || (rcursor === settingsRanges[setting].range.length -1 && i > 0 )) return
         settingsRanges[setting].rcursor += i
         gameSettingsProps[setting] = settingsRanges[setting].range[settingsRanges[setting].rcursor]
         this.setState({gameSettingsProps, settingsRanges, settingChanged : true})

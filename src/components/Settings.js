@@ -247,17 +247,17 @@ function Settings (props) {
             <div className={`settingsItem ${4 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Turn Timer</div>
                 <div className="settingInput">
-                    <div className="arrowL" style={{opacity : time === null ? .2 : 1}} onClick={()=>{if (time !== null) modDscrt('time',-1)}}>⯇</div>
+                    <div className="arrowL" style={{opacity : time === null ? .2 : 1}} onClick={()=>{modDscrt('time',-1)}}>⯇</div>
                     {time ? time + (time > 1 ? ' seconds' : ' second') : 'None'}
-                    <div className="arrowR" style={{opacity : time >= 60 ? .2 : 1}} onClick={()=>{if (time !== 60) modDscrt('time',1)}}>⯈</div>
+                    <div className="arrowR" style={{opacity : time >= 60 ? .2 : 1}} onClick={()=>{modDscrt('time',1)}}>⯈</div>
                 </div>
             </div>
             <div className={`settingsItem ${5 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Turn Limit</div>
                 <div className="settingInput">
-                    <div className="arrowL" style={{opacity : turnLimit === null ? .2 : 1}} onClick={()=>{if (turnLimit !== null) modDscrt('turnLimit',-1)}}>⯇</div>
+                    <div className="arrowL" style={{opacity : turnLimit === null ? .2 : 1}} onClick={()=>{modDscrt('turnLimit',-1)}}>⯇</div>
                     {turnLimit ? turnLimit + ' turns' : 'None'}
-                    <div className="arrowR" style={{opacity : turnLimit >= 500 ? .2 : 1}} onClick={()=>{if (turnLimit !== 500) modDscrt('turnLimit',1)}}>⯈</div>
+                    <div className="arrowR" style={{opacity : turnLimit >= 500 ? .2 : 1}} onClick={()=>{modDscrt('turnLimit',1)}}>⯈</div>
                 </div>
             </div>
 

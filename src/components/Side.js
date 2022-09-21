@@ -32,7 +32,8 @@ class Side extends React.Component {
             shakeClass = scoreShake && scoreShown ? 'shake' : '',
             timer = time === null || profile.skill !== undefined ? null : 
                 <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/>,
-            hBar = maxLives ? <Bar progress={(lives + 1) / (maxLives + 1)}/> : null
+            hBar = maxLives ? <Bar progress={(lives + 1) / (maxLives + 1)} text={(lives + 1) + ' / ' + (maxLives + 1)}/> 
+                : null
         return (
             <div className="side" id={id ? "player" : "opponent"}>
             <div className="board">
