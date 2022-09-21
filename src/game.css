@@ -234,14 +234,23 @@ width: auto;
 	width: 12vmin;
 	display: block;
 }
+.info .barContainer {
+	border: 3px solid black;
+	font-size: 2vmin;
+	position: relative;
+}
+.info .barContainer p {
+	line-height: 1em;
+	position: absolute;
+	margin: 0;
+	width: 100%;
+}
 .bar{
 	height: 1vmin;
 	background-color: red;
 }
 .info .bar {
-	border: 3px solid black;
 	height: 2vmin;
-	font-size: 2vmin;
 }
 
 .difficulty {
@@ -249,6 +258,26 @@ width: auto;
 	flex-direction: column;
 	text-align: center;
 	align-items: center;
+	grid-column: 1 /span 1;
+}
+
+.difficulty:last-child {
+	grid-column: 2 /span 1;
+	min-width: 7vmin;
+}
+
+.difficulty .pip {
+	height: 1.7vmin;
+	width: auto;
+	box-shadow: none;
+}
+
+.difficulty .menubox.across {
+	width: 100%;
+	height: auto;
+	margin: 0;
+	flex: none;
+	gap: .7vmin;
 }
 
 .logo {
@@ -1011,7 +1040,8 @@ width: auto;
 	border-width: 0;
 	transition: .3s;
 	padding: 3vmin 4vmin 5vmin 4vmin;
-	width: 21vmin;
+	min-width: 30vmin;
+	min-height: 13vmin;
 	margin: 1em 0;
 	position: relative;
 }
@@ -1040,7 +1070,8 @@ width: auto;
 .charInfo .slidePaneContainer {
 	aspect-ratio: auto;
 	width: 3vmin;
-	margin: 0 9vmin 0 9vmin;
+	margin: 0 auto;
+	grid-column: 1 /span 2;
 }
 
 .charInfo .slidePane {

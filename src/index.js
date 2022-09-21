@@ -3,13 +3,10 @@ import ReactDOM from 'react-dom/client'
 import './game.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import { CookiesProvider } from 'react-cookie';
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <CookiesProvider>
-    <App />
-  </CookiesProvider>
+  <App />
 )
 
 // If you want to start measuring performance in your app, pass a function

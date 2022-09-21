@@ -35,22 +35,14 @@ function Settings (props) {
     const {mod, modDscrt, modBool, modSpec, modVal, settingsRanges, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props
     const combiBreakdown = statsProps.aiBreakdown.slice()
     combiBreakdown.push(statsProps.pvpBreakdown)
-    const aggregate = combiBreakdown.reduce((pObj, cObj)=>{
+    const aggregate = statsProps.aggregate,
+        newAggregate = combiBreakdown.reduce((pObj, cObj)=>{
         pObj.nGames += cObj.nGames
         pObj.time += cObj.time
         pObj.sideBreakdown.map((prevSide,i)=>{
             const side = cObj.sideBreakdown[i]
             prevSide.nWins += side.nWins
             prevSide.highestScore = Math.max(prevSide.highestScore, side.highestScore)
-            const pMargin = prevSide.closestWin.p - prevSide.closestWin.o,
-                sMargin = side.closestWin.p - side.closestWin.o
-            if (!prevSide.closestWin.p || sMargin > pMargin) prevSide.closestWin = side.closestWin
-            prevSide.numDestroyed += side.numDestroyed
-            prevSide.mostDestroyed = Math.max(prevSide.mostDestroyed, side.mostDestroyed)
-            prevSide.mostDestroyedTurn = Math.max(prevSide.mostDestroyedTurn, side.mostDestroyedTurn)
-            prevSide.numClears += side.numClears
-            prevSide.mostClears = Math.max(prevSide.mostClears, side.mostClears)
-            prevSide.fastestWinTime = !!prevSide.fastestWinTime ? ( !!side.fastestWinTime ? Math.min(prevSide.fastestWinTime, side.fastestWinTime) : prevSide.fastestWinTime) : side.fastestWinTime
             return prevSide
         })
         return pObj
@@ -94,32 +86,32 @@ function Settings (props) {
                     <div className={`kbutton ${2 === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
                     <div className="menubox across">
                         <div className='menubox'>
-                            <div className="subtitle">{aggregate.nGames}</div>
-                            <div className="subtitle">{' game' + (aggregate.nGames > 1 ? 's' :'')}</div>
+                            <div className="subtitle">{newAggregate.nGames}</div>
+                            <div className="subtitle">{' game' + (newAggregate.nGames > 1 || !newAggregate.nGames ? 's' :'')}</div>
                         </div>
                         <div className='menubox'>
-                            <div className="subtitle">{aggregate.sideBreakdown[1].nWins}</div>
-                            <div className="subtitle">{' win' + (aggregate.sideBreakdown[1].nWins > 1 ? 's' :'')}</div>
+                            <div className="subtitle">{newAggregate.sideBreakdown[1].nWins}</div>
+                            <div className="subtitle">{' win' + (newAggregate.sideBreakdown[1].nWins > 1 || !newAggregate.sideBreakdown[1].nWins? 's' :'')}</div>
                         </div>
                         <div className='menubox'>
-                            <div className="subtitle">{aggregate.sideBreakdown[0].nWins}</div>
-                            <div className="subtitle">{' loss' + (aggregate.sideBreakdown[0].nWins > 1 ? 'es' :'')}</div>
+                            <div className="subtitle">{newAggregate.sideBreakdown[0].nWins}</div>
+                            <div className="subtitle">{' loss' + (newAggregate.sideBreakdown[0].nWins > 1 || !newAggregate.sideBreakdown[0].nWins? 'es' :'')}</div>
                         </div>
                     </div>
                     <div className='settingsItem'>
                         <div className='subtitle'>Stats</div>
                         <div className="menubox misc">
-                            <div className="subtitle">High Score: {aggregate.sideBreakdown[1].highestScore}</div>
-                            <div className="subtitle">Dice Destroyed: {aggregate.sideBreakdown[1].numDestroyed}</div>
-                            <div className="subtitle">Closest Win: {aggregate.sideBreakdown[1].closestWin.o === null ? 'None':aggregate.sideBreakdown[1].closestWin.p + ' - ' + aggregate.sideBreakdown[1].closestWin.o}</div>
-                            <div className="subtitle">Most Destroyed in a Game: {aggregate.sideBreakdown[1].mostDestroyed}</div>
-                            <div className="subtitle">Closest Defeat: {aggregate.sideBreakdown[0].closestWin.o === null ? 'None': aggregate.sideBreakdown[0].closestWin.o + ' - ' + aggregate.sideBreakdown[0].closestWin.p}</div>
-                            <div className="subtitle">Most Destroyed in a Turn: {aggregate.sideBreakdown[1].mostDestroyedTurn}</div>
-                            <div className="subtitle"><s>Perfect</s> Board Clears: {aggregate.sideBreakdown[1].numClears}</div>
-                            <div className="subtitle">Most Clears in a Game: {aggregate.sideBreakdown[1].mostClears}</div>
-                            <div className="subtitle">Playtime: {timeFormatLong(aggregate.time / 1000)}</div>
-                            <div className="subtitle">Fastest Win: {timeFormatLong(aggregate.sideBreakdown[1].fastestWinTime / 1000)}</div>
-                            <div className="subtitle">Fastest Defeat: {timeFormatLong(aggregate.sideBreakdown[0].fastestWinTime / 1000)}</div>
+                            <div className="subtitle">High Score: {newAggregate.sideBreakdown[1].highestScore}</div>
+                            <div className="subtitle">Dice Destroyed: {aggregate[1].numDestroyed + 0}</div>
+                            <div className="subtitle">Closest Win: {aggregate[1].closestWin.o === null ? 'None':aggregate[1].closestWin.p + ' - ' + aggregate[1].closestWin.o}</div>
+                            <div className="subtitle">Most Destroyed in a Game: {aggregate[1].mostDestroyed + 0}</div>
+                            <div className="subtitle">Closest Defeat: {aggregate[0].closestWin.o === null ? 'None': aggregate[0].closestWin.o + ' - ' + aggregate[0].closestWin.p}</div>
+                            <div className="subtitle">Most Destroyed in a Turn: {aggregate[1].mostDestroyedTurn + 0}</div>
+                            <div className="subtitle"><s>Perfect</s> Board Clears: {aggregate[1].numClears + 0}</div>
+                            <div className="subtitle">Most Clears in a Game: {aggregate[1].mostClears + 0}</div>
+                            <div className="subtitle">Playtime: {aggregate.time ? timeFormatLong(aggregate.time / 1000) : 'None'}</div>
+                            <div className="subtitle">Fastest Win: {aggregate[1].fastestWinTime ? timeFormatLong(aggregate[1].fastestWinTime / 1000) : 'None'}</div>
+                            <div className="subtitle">Fastest Defeat: {aggregate[0].fastestWinTime ? timeFormatLong(aggregate[0].fastestWinTime / 1000) : 'None'}</div>
                         </div>
                         <div className='subtitle'>Opponent Breakdown</div>
                         <div className="menubox settingsList opponent">

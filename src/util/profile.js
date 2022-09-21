@@ -62,7 +62,7 @@ const Profile = {
         {img : img21, name : 'Crab'},
         {img : img22, name : 'Snail'},
         {img : img23, name : 'Kitty'},
-        {img : img24, name : 'Cat'},
+        {img : img24, name : 'Zach'},
         {img : img25, name : 'Stoat'},
     ],
     ai : [
@@ -70,9 +70,9 @@ const Profile = {
         {img : img2, name : 'Flinky', skill : .25, effects : []},
         {img : img3, name : 'Klunko & Pop', skill : .5, effects : []},
         {img : img4, name : 'Shrumy', skill : .9, effects : []},
-        {img : img26, name : 'Leshy', skill : 1, effects : ['life2']},
-        {img : img27, name : 'Heket', skill : 1, effects : ['life2']},
-        {img : img28, name : 'Kallamar', skill : 1, effects : ['life2']},
+        {img : img26, name : 'Leshy', skill : .5, effects : ['life2']},
+        {img : img27, name : 'Heket', skill : .7, effects : ['life2']},
+        {img : img28, name : 'Kallamar', skill : .9, effects : ['life2']},
         {img : img29, name : 'Shamura', skill : 1, effects : ['life2']},
         {img : img30, name : 'Narinder', skill : 1, effects : ['life3']},
         {img : img5, name : 'The Fox', skill : 1, effects : ['cheat']}

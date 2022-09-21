@@ -5,7 +5,7 @@ export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
     const choices = possibleChoices(diceMatrix, turn, settings)
     if (Math.random() > profile.skill) {
         // console.log('misplay')
-        return randomSelect(choices)
+        return randomSelect(choices.filter(c=>(c.side === turn)))
     }
 
     let maxWeight = -Infinity, bestChoices = []

@@ -8,13 +8,13 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { randomInRange, score } from './util/utils.js'
+import { randomInRange } from './util/utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
 import Loading from './components/Loading.js'
 import Settings from './components/Settings.js'
-import { withCookies } from 'react-cookie';
+import Cookies from 'universal-cookie'
 
 function Menu (props) {
 
@@ -39,6 +39,7 @@ class App extends React.Component{
     super(props)
     this.keyManager = new KeyManager()
     this.server = new Server()
+    this.cookies = new Cookies()
     this.state = {
       menuProps:{
         pointerEvents: 'auto',
@@ -96,7 +97,7 @@ class App extends React.Component{
       roomID : '',
       isLoading : false,
       settingChanged : false,
-      gameSettingsProps : props.cookies.get('gameSettingsProps') || {
+      gameSettingsProps : this.cookies.get('gameSettingsProps') || {
         tubLen : 3, 
         numTubs : 3, 
         diceColor : ['#f4ebceff','#f4ebceff'],
@@ -121,31 +122,26 @@ class App extends React.Component{
         turnLimit : {rcursor : 0, range : [null, 5, 10, 25, 50, 100, 200, 500]},
         caravan : {2 : 8, 3 : 14, 4 : 21, 5 : 29}
       },
-      statsProps : props.cookies.get('statsProps') || {
+      statsProps : this.cookies.get('statsProps') || {
+        aggregate : Array(2).fill().map(()=>({
+          closestWin : {p : null, o : null},
+          numDestroyed : null,
+          mostDestroyed : null,
+          mostDestroyedTurn : null,
+          numClears : null,
+          mostClears : null,
+          fastestWinTime : null,
+        })),
         aiBreakdown : Profile.ai.map((_,i)=>({profileInd : i, nGames : 0, 
           sideBreakdown : Array(2).fill().map(()=>({
             nWins : null,
             highestScore : null,
-            closestWin : {p : null, o : null},
-            numDestroyed : null,
-            mostDestroyed : null,
-            mostDestroyedTurn : null,
-            numClears : null,
-            mostClears : null,
-            fastestWinTime : null,
           }))
         , time : 0})),
         pvpBreakdown : {profileInd : null, name : null, nGames : 0, 
           sideBreakdown : Array(2).fill().map(()=>({
             nWins : null,
-            highestScore : null,
-            closestWin : {p : null, o : null},
-            numDestroyed : null,
-            mostDestroyed : null,
-            mostDestroyedTurn : null,
-            numClears : null,
-            mostClears : null,
-            fastestWinTime : null,
+            highestScore : null
           }))
         , time : 0}
       }
@@ -156,7 +152,27 @@ class App extends React.Component{
   }
 
   statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
-    const {statsProps, gameSettingsProps} = this.state
+    let {statsProps, gameSettingsProps} = this.state
+    statsProps.aggregate = statsProps.aggregate.map((side,i)=>{
+      side.numDestroyed += destroyedList[i]
+      side.mostDestroyed = Math.max(destroyedList[i], side.mostDestroyed)
+      side.mostDestroyedTurn = Math.max(destroyedMaxTurnList[i], side.mostDestroyedTurn)
+      side.numClears += clearList[i]
+      side.mostClears = Math.max(clearList[i], side.mostClears)
+      if (i === winnerInd){
+        side.fastestWinTime = side.fastestWinTime !== null ? Math.min(side.fastestWinTime, time) : time
+        if (!gameSettingsProps.caravan){
+          const margin = side.closestWin.p - side.closestWin.o
+          const marginNew = scoreList[winnerInd] - scoreList[!winnerInd + 0]
+          if (!side.closestWin.p || marginNew < margin) {
+            side.closestWin.p = scoreList[winnerInd]
+            side.closestWin.o = scoreList[!winnerInd + 0]
+          }
+        }
+      }
+      return side
+    })
+
     let focusBreakdown
     if (gameSettingsProps.gameType === 'AI'){
       focusBreakdown = statsProps.aiBreakdown[gameSettingsProps.oppProfileInd]
@@ -169,27 +185,12 @@ class App extends React.Component{
     focusBreakdown.time += time
     focusBreakdown.sideBreakdown = focusBreakdown.sideBreakdown.map((side,i)=>{
       if (!gameSettingsProps.caravan) side.highestScore = Math.max(scoreList[i], side.highestScore)
-      side.numDestroyed += destroyedList[i]
-      side.mostDestroyed = Math.max(destroyedList[i], side.mostDestroyed)
-      side.mostDestroyedTurn = Math.max(destroyedMaxTurnList[i], side.mostDestroyedTurn)
-      side.numClears += clearList[i]
-      side.mostClears = Math.max(clearList[i], side.mostClears)
       return side
     })
     if (winnerInd !== -1){
-      focusBreakdown = focusBreakdown.sideBreakdown[winnerInd]
-      focusBreakdown.nWins++
-      focusBreakdown.fastestWinTime = !!focusBreakdown.fastestWinTime ? Math.min(focusBreakdown.fastestWinTime, time) : time
-      if (!gameSettingsProps.caravan){
-        const margin = focusBreakdown.closestWin.p - focusBreakdown.closestWin.o
-        const marginNew = scoreList[winnerInd] - scoreList[!winnerInd + 0]
-        if (!focusBreakdown.closestWin.p || marginNew < margin) {
-          focusBreakdown.closestWin.p = scoreList[winnerInd]
-          focusBreakdown.closestWin.o = scoreList[!winnerInd + 0]
-        }
-      }
+      focusBreakdown.sideBreakdown[winnerInd].nWins++
     }
-    this.props.cookies.set('statsProps', statsProps, { path: '/' });
+    this.cookies.set('statsProps', statsProps, { path: '/', sameSite : 'strict'});
     this.setState({statsProps})
   }
 
@@ -214,6 +215,7 @@ class App extends React.Component{
   }
 
   startGame(){
+    // this.cookies.set('statsProps', {a:1}, { path: '/' , sameSite : 'strict'});
     // this.clearClickable()
     //console.log('test')
     this.keyManager.clear()
@@ -279,9 +281,9 @@ class App extends React.Component{
       },
       modDscrt : (setting,i)=>{
         const {gameSettingsProps, settingsRanges} = this.state
-        const rcursor = settingsRanges[setting].rcursor
+        const rcursor = settingsRanges[setting].range.indexOf(gameSettingsProps[setting])
         if ((rcursor === 0 && i < 0) || (rcursor === settingsRanges[setting].range.length -1 && i > 0 )) return
-        settingsRanges[setting].rcursor += i
+        settingsRanges[setting].rcursor = rcursor + i
         gameSettingsProps[setting] = settingsRanges[setting].range[settingsRanges[setting].rcursor]
         this.setState({gameSettingsProps, settingsRanges, settingChanged : true})
       },
@@ -318,7 +320,7 @@ class App extends React.Component{
               const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
               gameSettingsProps.caravan = [mid-4,mid+4]
             }
-            this.props.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/' });
+            this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', sameSite : 'strict' });
             this.setState({gameSettingsProps},this.return)
           },
           enabled : true
@@ -416,7 +418,7 @@ class App extends React.Component{
     const gameSettingsProps = this.state.gameSettingsProps
     gameSettingsProps.name = Profile.cosm[i].name
     gameSettingsProps.playProfileInd = i
-    this.props.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/' });
+    this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', sameSite : 'strict' });
     this.setState({gameSettingsProps})
   }
 
@@ -805,4 +807,4 @@ class App extends React.Component{
   }
 }
 
-export default withCookies(App)
+export default App
