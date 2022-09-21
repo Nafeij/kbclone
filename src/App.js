@@ -95,7 +95,6 @@ class App extends React.Component{
       next: null,
       roomID : '',
       isLoading : false,
-      graphicRef : React.createRef(),
       settingChanged : false,
       gameSettingsProps : props.cookies.get('gameSettingsProps') || {
         tubLen : 3, 
@@ -208,7 +207,7 @@ class App extends React.Component{
     this.keyManager.clear()
     this.keyManager.cursor = 0
     let {menuProps, htprops, charSelectProps} = this.state
-    charSelectProps
+    charSelectProps.buttons.map((btn)=>({...btn, cursorID : -1}))
     menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
     htprops.cursorID = -1
     this.setState({menuProps, htprops})
@@ -245,9 +244,7 @@ class App extends React.Component{
       cursorID: 0,
       onClick: () => {
         this.return()
-      },
-      fwdref : this.state.graphicRef,
-      graphicwidth : 0
+      }
     }
     this.keyManager.push(0, htProps.onClick)
     menuProps.fadeAway = true
@@ -256,11 +253,7 @@ class App extends React.Component{
       menuProps.pointerEvents = 'none'
       this.setState({menuProps})
     }
-    this.setState({menuProps, htProps}, ()=>{
-      htProps.graphicwidth = this.state.graphicRef.current.getBoundingClientRect().width
-      this.setState({htProps})
-      window.addEventListener("resize", this.graphicOnResize)
-    })
+    this.setState({menuProps, htProps})
   }
 
   cycleSetting(propsName,settingName,change,clamp){
@@ -747,14 +740,6 @@ class App extends React.Component{
       this.setState({charSelectProps})
     }
     this.setState({gameProps, charSelectProps})
-  }
-
-  graphicOnResize(){
-    if(this.state){
-      const htProps = this.state.htProps
-      htProps.graphicwidth = this.state.graphicRef.current.getBoundingClientRect().width
-      this.setState({htProps})
-    }
   }
 
   return(callback = ()=>{}){

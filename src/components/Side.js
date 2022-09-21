@@ -4,6 +4,7 @@ import React from "react"
 import Die from "./Die"
 import Tub from "./Tub"
 import { timeFormat } from "../util/utils"
+import Bar from "./Bar"
 
 const Timer = (props) => (
     <div className="timer" style={{color : props.color}}>{props.time}</div>
@@ -25,11 +26,13 @@ class Side extends React.Component {
     }
 
     render(){
-        const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd, profile, numTubs, name, rollRef, time} = this.props
-        const dname = name ? name : profile.name
-        const isTurn = turn === id
-        const shakeClass = scoreShake && scoreShown ? 'shake' : ''
-        const timer = time === null ? time : <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/>
+        const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd, profile, numTubs, name, rollRef, time, lives, maxLives} = this.props
+        const dname = name ? name : profile.name, 
+            isTurn = turn === id,
+            shakeClass = scoreShake && scoreShown ? 'shake' : '',
+            timer = time === null || profile.skill !== undefined ? null : 
+                <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/>,
+            hBar = maxLives ? <Bar progress={(lives + 1) / (maxLives + 1)}/> : null
         return (
             <div className="side" id={id ? "player" : "opponent"}>
             <div className="board">
@@ -50,7 +53,7 @@ class Side extends React.Component {
                 <div className="info">
                     <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} style={{backgroundImage: `url(${profile.img})`, transform: (profile.skill === undefined && !id) ? 'scaleX(-1)' : 'none'}}/>
                     <h2 className="name">{`~ ${dname} ~`}</h2>
-                    <div className={`scorebox ${shakeClass}`} style={{opacity : scoreShown || time !== null ? 1 : 0}} onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}</div>
+                    <div className={`scorebox ${shakeClass}`} style={{opacity : scoreShown || time !== null || maxLives !== null ? 1 : 0}} onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}{hBar}</div>
                 </div>
             </div>
         </div>

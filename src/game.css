@@ -138,6 +138,34 @@ width: auto;
 	position: absolute;
 }
 
+.graphicbox.match .die::after {
+	color: rgb(19, 10, 3);
+	font-size: 13vmin;
+	position: absolute;
+	transform: rotate(-45deg) translate(-50%,-50%);
+	left: 26%;
+	top: 62%;
+	content: '☇';
+}
+.graphicbox.match .die:last-child::after {
+	transform: rotate(135deg) translate(-50%,-50%);
+	left: auto;
+	top: auto;
+	bottom: 142%;
+	right: 57%;
+}
+
+.graphicbox.dest .die::after {
+	display: block;
+	color: red;
+	font-size: 19vmin;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	line-height: 10vmin;
+	content: '×';
+}
+
 .footer {
 	position: absolute;
 	bottom: 5vh;
@@ -339,6 +367,10 @@ width: auto;
 	box-sizing: border-box;
 	text-align: center;
 	font-size: 1.3vmin;
+}
+
+.personal .menubox.settingsList.opponent .settingsItem .subtitle b {
+	font-size: 1.8vmin;
 }
 
 .menubox.across.personal .menubox.misc .subtitle:first-child {
@@ -1045,6 +1077,7 @@ width: auto;
 	grid-template-rows: repeat(3, minmax(0, 1fr));
 	padding: .7vmin;
 	z-index: 1;
+	position: relative;
 }
 
 .die.caravan, .die2.caravan{
@@ -1298,7 +1331,7 @@ width: auto;
 		grid-row: 1 /span 2;
 		order: 1;
         animation: movLeft .9s 1 ease-out forwards;
-		margin-bottom: 11em;
+		margin-bottom: 13em;
 		margin-top: 0;
 	}
 
@@ -1333,8 +1366,28 @@ width: auto;
 	animation: scale-away .4s 1;
 }
 
- .die.shrink-out, .die2.shrink-out {
+.die.shrink-out, .die2.shrink-out {
 	animation: scale-away .4s 1 forwards;
+}
+
+.die.shrink-out::after, .die2.shrink-out::after,
+.die.shrink-pre::after, .die2.shrink-pre::after {
+	content: "";
+	width: 102%;
+	height: 102%;
+	position: absolute;
+	border: inherit;
+	background-color: red;
+	border-color: red;
+	border-radius: inherit;
+	top: -.401em;
+	left: -.401em;
+	opacity: .8;
+	z-index: -1;
+}
+
+.die.shrink-out::after, .die2.shrink-out::after{
+	animation: color .4s 1 backwards;
 }
 
 .recover {
@@ -1366,13 +1419,17 @@ width: auto;
 }
 
 @keyframes scale-away {
-	0% { transform: scale(1) translateX(6px) }
+	0% { transform: scale(1) translateX(6px)}
 	16% { transform: scale(.83) translateX(-6px) }
 	33% { transform: scale(.67) translateX(4px) }
 	50% { transform: scale(.5) translateX(-4px) }
 	67% { transform: scale(.33) translateX(2px) }
 	83% { transform: scale(.16) translateX(-2px) }
 	100% { transform: scale(0) translateX(0) }
+}
+
+@keyframes color {
+	to {opacity: .5;}
 }
 
 @keyframes movUp {

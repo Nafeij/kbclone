@@ -110,14 +110,14 @@ function Settings (props) {
                         <div className='subtitle'>Stats</div>
                         <div className="menubox misc">
                             <div className="subtitle">High Score: {aggregate.sideBreakdown[1].highestScore}</div>
-                            <div className="subtitle">Total Dice Destroyed: {aggregate.sideBreakdown[1].numDestroyed}</div>
+                            <div className="subtitle">Dice Destroyed: {aggregate.sideBreakdown[1].numDestroyed}</div>
                             <div className="subtitle">Closest Win: {aggregate.sideBreakdown[1].closestWin.o === null ? 'None':aggregate.sideBreakdown[1].closestWin.p + ' - ' + aggregate.sideBreakdown[1].closestWin.o}</div>
                             <div className="subtitle">Most Destroyed in a Game: {aggregate.sideBreakdown[1].mostDestroyed}</div>
                             <div className="subtitle">Closest Defeat: {aggregate.sideBreakdown[0].closestWin.o === null ? 'None': aggregate.sideBreakdown[0].closestWin.o + ' - ' + aggregate.sideBreakdown[0].closestWin.p}</div>
                             <div className="subtitle">Most Destroyed in a Turn: {aggregate.sideBreakdown[1].mostDestroyedTurn}</div>
-                            <div className="subtitle">Total <s>Perfect</s> Board Clears: {aggregate.sideBreakdown[1].numClears}</div>
+                            <div className="subtitle"><s>Perfect</s> Board Clears: {aggregate.sideBreakdown[1].numClears}</div>
                             <div className="subtitle">Most Clears in a Game: {aggregate.sideBreakdown[1].mostClears}</div>
-                            <div className="subtitle">Total Playtime: {timeFormatLong(aggregate.time / 1000)}</div>
+                            <div className="subtitle">Playtime: {timeFormatLong(aggregate.time / 1000)}</div>
                             <div className="subtitle">Fastest Win: {timeFormatLong(aggregate.sideBreakdown[1].fastestWinTime / 1000)}</div>
                             <div className="subtitle">Fastest Defeat: {timeFormatLong(aggregate.sideBreakdown[0].fastestWinTime / 1000)}</div>
                         </div>
@@ -263,8 +263,8 @@ function Settings (props) {
 
             <div className={`settingsItem ${6 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>
-                    Auto-calculate
-                    <div className='text'>preview the scores before a move is made</div>
+                    Move Hinting
+                    <div className='text'>preview scores and dice before a move is made</div>
                 </div>
                 <div className="settingInput">
                     <Switch sid={0} isOn={preview} handleToggle={()=>{modBool('preview')}}/>

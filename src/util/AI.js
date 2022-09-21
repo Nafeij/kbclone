@@ -1,4 +1,4 @@
-import { randomSelect, isFull, numMatchingNum, randomInRange, defLength, score, emptySpaces, bernou, scoreTub, scoreNumTub} from "./utils"
+import { randomSelect, numMatchingNum, randomInRange, score, bernou, scoreNumTub} from "./utils"
 
 export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
     // diceMatrix = diceMatrix.map(s=>(s.map(t=>(t.map(d=>(d ? d.num : d))))))
@@ -60,9 +60,9 @@ export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
     }
 } */
 
-export function scoreAll(num, diceMatrix, choice, settings, getRaw = false){
-    diceMatrix = executeMov(num, diceMatrix, choice, settings)
-    return scoreStatic(diceMatrix, settings, choice.side, getRaw)
+export function scoreAll(num, diceMat, choice, settings, getRaw = false){
+    const {diceMatrix, changes} = executeMov(num, diceMat, choice, settings)
+    return {scores : scoreStatic(diceMatrix, settings, choice.side, getRaw), changes}
 }
 
 function scoreStatic(diceMatrix, settings, playerSide, getRaw){
@@ -76,12 +76,33 @@ function scoreStatic(diceMatrix, settings, playerSide, getRaw){
         })
     ))
 }
+    
+function executeMov(num, diceMatrix, choice, settings){
+    const onePos = diceMatrix[choice.side][choice.tub].length, changes = []
+    let removeNum = null
+    if (settings.caravan && num === 1 && onePos >= 1) {
+        removeNum = diceMatrix[choice.side][choice.tub][onePos-1]
+        if (removeNum === 1) num = null
+    }
+    diceMatrix = diceMatrix.map((s,si)=>(
+        s.map((t,ti)=>(
+            t.filter((d,di)=>{
+                let keep = d !== removeNum
+                if (si !== choice.side && ti === choice.tub) keep = keep && d !== num
+                if (!keep) changes.push({s:si,t:ti,d:di})
+                return keep
+            })
+        ))
+    ))
+    if (num) diceMatrix[choice.side][choice.tub].push(num)
+    return {diceMatrix,changes}
+}
 
-function gameComplete(position, settings){
+/* function gameComplete(position, settings){
     const {diceMatrix, turn} = position
     if (settings.ignoreFull) return diceMatrix[turn].flat().length === (settings.tubLen * settings.numTubs)
     return diceMatrix[!turn + 0].flat().length === (settings.tubLen * settings.numTubs)
-}
+} */
 
 export function cheatDice(diceMatrix, turn, numFaces, settings){
     // console.log('cheat')
@@ -143,7 +164,7 @@ function oppCost(num, diceMatrix, choice, numFaces, settings){
 
 function weighDie(num, diceMatrix, choice, settings){
 
-    if (settings.caravan) return scoreAll(num, diceMatrix, choice, settings).flat().reduce((a,b)=>(a+b))
+    if (settings.caravan) return scoreAll(num, diceMatrix, choice, settings).scores.flat().reduce((a,b)=>(a+b))
 
     const oppSide = !choice.side + 0
     const tub = diceMatrix[choice.side][choice.tub]
@@ -151,27 +172,6 @@ function weighDie(num, diceMatrix, choice, settings){
     const matches = numMatchingNum(tub, num),
         oppMatches = numMatchingNum(oppTub, num)
     return num + matches * num * 2 + score(num, oppMatches)
-}
-
-function executeMov(num, diceMatrix, choice, settings){
-    const onePos = diceMatrix[choice.side][choice.tub].length
-    let removeNum = null
-    if (settings.caravan && num === 1 && onePos >= 1) {
-        removeNum = diceMatrix[choice.side][choice.tub][onePos-1]
-        if (removeNum === 1) num = null
-    }
-    diceMatrix = diceMatrix.map((s,si)=>(
-        si === choice.side ? s.map((t)=>(
-            t.filter(d=>(d !== removeNum))
-        )) :
-        s.map((t,ti)=>(
-            ti === choice.tub ? 
-            t.filter(d=>(d !== num && d !== removeNum)) :
-            t.filter(d=>(d !== removeNum))
-        ))
-    ))
-    if (num) diceMatrix[choice.side][choice.tub].push(num)
-    return diceMatrix
 }
 
 function cHeuristic(points, settings, tLen){

@@ -2,17 +2,12 @@
 
 import React from "react";
 import Profile from "../util/Profile";
-
-const Bar = (props) => (
-    <div className="barContainer">
-        <div className="bar" style={{width : props.progress * 100 + "%"}}/>
-    </div>
-)
+import Bar from "./Bar";
 
 function CharSelect (props) {
 
     const {selectedAIInd, buttons, cursor, modAIInd, shakeSelect, onShakeDone, fadeAway, onFade} = props
-    const translation = selectedAIInd * -20
+    const translation = selectedAIInd * (-100 / Profile.ai.length)
     const translationName = selectedAIInd * -100
     const leftend = selectedAIInd === 0
     const rightend = selectedAIInd === Profile.ai.length - 1

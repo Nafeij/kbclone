@@ -4,12 +4,12 @@ import React from "react";
 
 
 const Die = React.forwardRef((props, ref) =>{
-	const {height, transition, transform, shrink, num, onMovEnd, onShrinkEnd, transitionTimingFunction, diceColor, diceBorder, pipColor, zIndex, isCaravan, marginLeft, marginTop} = props
+	const {height, transition, transform, shrink, shrinkPreview, num, onMovEnd, onShrinkEnd, transitionTimingFunction, diceColor, diceBorder, pipColor, zIndex, isCaravan, marginLeft, marginTop} = props
     // const [rnum, setNum] = useState(num);
 
 	return (
 		<div
-			className={`${num === 2 ? "die2" : "die"} ${isCaravan && num === 1? "caravan" : ""} ${shrink ? "shrink-out" : ""}`} ref={ref} style={{
+			className={`${num === 2 ? "die2" : "die"} ${isCaravan && num === 1? "caravan" : ""} ${shrink ? "shrink-out" : ""} ${shrinkPreview ? "shrink-pre" : ""}`} ref={ref} style={{
 				height,
 				transition,
 				transform,

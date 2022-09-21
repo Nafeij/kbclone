@@ -10,28 +10,11 @@ const mDieProps = {
   height : '46%'
 }
 
-const MatchGraphic = forwardRef((props, ref) => (
-  <div className="graphicbox" ref={ref}>
+const MatchGraphic = () => (
+  <div className="graphicbox match">
     <Die {...mDieProps}/>
     <Die {...mDieProps}/>
-    <div style={{
-      color: '#130a03',
-      fontSize: props.graphicwidth * 0.42,
-      position: 'absolute',
-      transform: 'rotate(-45deg)',
-      left: '15%',
-      top: '41%',
-    }}>☇</div>
-    <div style={{
-      color: '#130a03',
-      fontSize: props.graphicwidth * 0.42,
-      position: 'absolute',
-      transform: 'rotate(135deg)',
-      right: '15%',
-      bottom: '41%',
-    }}>☇</div>
   </div>
-  )
 )
 
 MatchGraphic.displayName = 'MatchGraphic'
@@ -43,28 +26,10 @@ const dDieProps = {
   height : '46%'
 }
 
-const DestroyGraphic = (props) => (
+const DestroyGraphic = () => (
   <div className="graphicbox dest">
     <Die {...dDieProps} transform='translateX(-50%)'/>
     <Die {...dDieProps} transform='translateX(-50%)'/>
-    <div style={{
-      color: 'red',
-      fontSize: props.graphicwidth * 0.5,
-      position: 'absolute',
-      left: '50%',
-      top: '-13%',
-      zIndex: 2,
-      transform: 'scaleY(0.88) translateX(-50%)'
-      }}>𐌗</div>
-    <div style={{
-      color: 'red',
-      fontSize: props.graphicwidth * 0.5,
-      position: 'absolute',
-      left: '50%',
-      top: '41%',
-      zIndex: 2,
-      transform: 'scaleY(0.88) translateX(-50%)'
-      }}>𐌗</div>
   </div>
 )
 
@@ -83,13 +48,13 @@ function HowTo (props) {
         <div className='text'>Your score is calculated by adding all your dice together.</div>
         <div className="menubox across">
             <div className="menubox">
-                <MatchGraphic ref={props.fwdref} graphicwidth={props.graphicwidth}/>
+                <MatchGraphic />
                 <div className='text red'>MATCH DICE</div>
                 <div className='text'>When dice of the same number are placed in the same column, multiply their value.</div>
             </div>
             <div className='logo red'>✵</div>
             <div className="menubox">
-                <DestroyGraphic graphicwidth={props.graphicwidth}/>
+                <DestroyGraphic />
                 <div className='text red'>DESTROY OPPONENT</div>
                 <div className='text'>Destory your opponent&rsquo;s dice by matching yours to theirs.</div>
             </div>

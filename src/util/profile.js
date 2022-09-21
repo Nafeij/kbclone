@@ -24,6 +24,16 @@ import img22 from "../img/22.png"
 import img23 from "../img/23.png"
 import img24 from "../img/24.png"
 import img25 from "../img/25.png"
+import img26 from "../img/26.png"
+
+import img27 from "../img/27.png"
+
+import img28 from "../img/28.png"
+
+import img29 from "../img/29.png"
+
+import img30 from "../img/30.png"
+
 
 /* const Profile = {
     imgs : [img0,img1,img2,img3,img4,img5],
@@ -53,13 +63,18 @@ const Profile = {
         {img : img22, name : 'Snail'},
         {img : img23, name : 'Kitty'},
         {img : img24, name : 'Cat'},
-        {img : img25, name : 'Goldfish'},
+        {img : img25, name : 'Stoat'},
     ],
     ai : [
         {img : img1, name : 'Ratau', skill : .1, effects : []},
         {img : img2, name : 'Flinky', skill : .25, effects : []},
         {img : img3, name : 'Klunko & Pop', skill : .5, effects : []},
         {img : img4, name : 'Shrumy', skill : .9, effects : []},
+        {img : img26, name : 'Leshy', skill : 1, effects : ['life2']},
+        {img : img27, name : 'Heket', skill : 1, effects : ['life2']},
+        {img : img28, name : 'Kallamar', skill : 1, effects : ['life2']},
+        {img : img29, name : 'Shamura', skill : 1, effects : ['life2']},
+        {img : img30, name : 'Narinder', skill : 1, effects : ['life3']},
         {img : img5, name : 'The Fox', skill : 1, effects : ['cheat']}
     ]
 } 
