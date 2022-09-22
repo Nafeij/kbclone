@@ -7,10 +7,10 @@ KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the La
 ## Features
 
 - Local and P2P Multiplayer
-- AI: Different Shack and Boss NPC profiles
+- AI: Shack and Boss NPCs with difficulty scaling
 - Mobile/Touch-friendly (kind of)
 - Keyboard Controls
-- Settings, custom board sizes and gamemodes
+- Settings, customizations and gamemodes
 - Game Statistics
 - Various QOL improvements
 
