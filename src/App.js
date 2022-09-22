@@ -15,6 +15,7 @@ import akey from "./img/akey.png"
 import Loading from './components/Loading.js'
 import Settings from './components/Settings.js'
 import Cookies from 'universal-cookie'
+import logo from "./img/logo.png"
 
 function Menu (props) {
 
@@ -24,9 +25,7 @@ function Menu (props) {
 
   return (<div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}} onTransitionEnd={props.onFade}>
     <div className='menubox'>
-      <div className='subtitle'>~⚅⚅⚅∽</div>
-      <div className='title'>KNUCKLECLONE</div>
-      <div className='logo'>✵</div>
+      <div className='title' style={{backgroundImage: `url(${logo})`}}/>
       <div className='text'>Based on the dice game of risk and reward from Cult of the Lamb</div>
       {Array(props.buttons.length).fill().map((_,i)=>button(i))}
     </div>

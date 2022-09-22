@@ -203,9 +203,10 @@ width: auto;
 }
 
 .title {
-	flex: 1 1;
-	font-size: 8vw;
-	font-weight: 600;
+	width: 90vmin;
+	background-size: contain;
+	aspect-ratio: 1016/393;
+	margin-bottom: 3em;
 }
 
 /* .title.rot {
@@ -713,8 +714,8 @@ width: auto;
 	transition: .1s;
 }
 
-.kbutton.space{
-	margin-top: 2em;
+.kbutton.space {
+	margin-top: 5vh;
 }
 
 .kbutton:hover, .kbutton.hovering {
