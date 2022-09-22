@@ -1,28 +1,30 @@
-# KnuckleClone
+![image](https://user-images.githubusercontent.com/20167059/191713986-709dfacb-ea60-4577-b9df-8836ee4c412a.png)
 
-Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.steampowered.com/app/1313140/Cult_of_the_Lamb/), by [Massive Monster](https://massivemonster.co/)
+KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the Lamb (2022)](https://store.steampowered.com/app/1313140/Cult_of_the_Lamb/), by [Massive Monster](https://massivemonster.co/)
 
-[Play it here](https://nafeij.github.io/kbclone/)
+<h1 align="center"><a href="https://nafeij.github.io/kbclone/">Play it here</a></h1>
 
 ## Features
 
 - Local and P2P Multiplayer
-- AI. Different NPC profiles running on a reverse-engineered game engine
+- AI: Different Shack and Boss NPC profiles
 - Mobile/Touch-friendly (kind of)
 - Keyboard Controls
-- [NEW] Settings, custom board sizes and gamemodes
+- Settings, custom board sizes and gamemodes
+- Game Statistics
+- Various QOL improvements
 
-It's quite buggy in its current state, so if you have suggestions or would like to propose a patch let me knoe in Issues.
-
-### Notice
+## Notice
 
 This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please created an exception in your browser allowing the site to set persistent cookies if you wish to save said data.
 
-### Disclamer
+## Attributions
 
-All assets are reproductions. All rights and intellectual properties belong to Massive Monster.
+All assets are reproductions. Original rights and intellectual properties belong to Massive Monster.
 
-CULT OF THE LAMB
+Title logo generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
+
+### CULT OF THE LAMB
 
 Cult of the Lamb is a rogue-like action-adventure game developed by indie developer Massive Monster and published by Devolver Digital.
 Start your own cult in a land of false prophets, venturing out into diverse and mysterious regions to build a loyal community of woodland Followers and spread your Word to become the one true cult.
