@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/20167059/191713986-709dfacb-ea60-4577-b9df-8836ee4c412a.png)
+![image](/src/img/logo.png)
 
 KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the Lamb (2022)](https://store.steampowered.com/app/1313140/Cult_of_the_Lamb/), by [Massive Monster](https://massivemonster.co/)
 
