@@ -16,7 +16,7 @@ KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the La
 
 ## Notice
 
-This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please created an exception in your browser allowing the site to set persistent cookies if you wish to save said data.
+This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please create an exception in your browser settings for this site if you wish to experience these features.
 
 ## Attributions
 
