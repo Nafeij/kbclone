@@ -14,6 +14,10 @@ Web version of the dice minigame from [Cult of the Lamb (2022)](https://store.st
 
 It's quite buggy in its current state, so if you have suggestions or would like to propose a patch let me knoe in Issues.
 
+### Notice
+
+This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please created an exception in your browser allowing the site to set persistent cookies if you wish to save said data.
+
 ### Disclamer
 
 All assets are reproductions. All rights and intellectual properties belong to Massive Monster.
