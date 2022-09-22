@@ -427,9 +427,9 @@ width: auto;
 }
 
 .scrollContainer {
-	flex: 1;
-	height: 60vh;
-	overflow: scroll;
+    flex: 1 1;
+    height: 60vh;
+    overflow-y: scroll;
 }
 
 .scrollContainer .menubox {
@@ -453,6 +453,21 @@ width: auto;
 }
 .scrollContainer .settingsItem {
 	width: 80%;
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-track {
+	border-radius: 3px;
+	width: 6px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-track:hover{
+	background: white;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 3px;
+    background: #888;
 }
 
 .scrollContainer .menubox.across .menubox .subtitle:last-child {

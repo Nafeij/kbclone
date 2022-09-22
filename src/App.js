@@ -190,7 +190,7 @@ class App extends React.Component{
     if (winnerInd !== -1){
       focusBreakdown.sideBreakdown[winnerInd].nWins++
     }
-    this.cookies.set('statsProps', statsProps, { path: '/', sameSite : 'strict'});
+    this.cookies.set('statsProps', statsProps, { path: '/', maxAge : 2147483647, sameSite : 'strict'});
     this.setState({statsProps})
   }
 
@@ -215,7 +215,7 @@ class App extends React.Component{
   }
 
   startGame(){
-    // this.cookies.set('statsProps', {a:1}, { path: '/' , sameSite : 'strict'});
+    // this.cookies.set('statsProps', {a:1}, { path: '/', maxAge : 2147483647 , sameSite : 'strict'});
     // this.clearClickable()
     //console.log('test')
     this.keyManager.clear()
@@ -320,7 +320,7 @@ class App extends React.Component{
               const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
               gameSettingsProps.caravan = [mid-4,mid+4]
             }
-            this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', sameSite : 'strict' });
+            this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge : 2147483647, sameSite : 'strict' });
             this.setState({gameSettingsProps},this.return)
           },
           enabled : true
@@ -418,7 +418,7 @@ class App extends React.Component{
     const gameSettingsProps = this.state.gameSettingsProps
     gameSettingsProps.name = Profile.cosm[i].name
     gameSettingsProps.playProfileInd = i
-    this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', sameSite : 'strict' });
+    this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge : 2147483647, sameSite : 'strict' });
     this.setState({gameSettingsProps})
   }
 
