@@ -22,7 +22,7 @@ This application uses persistent cookies (distant expiration date) to save your 
 
 All assets are reproductions. Original rights and intellectual properties belong to Massive Monster.
 
-Title logo generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
+Art and assets generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
 
 ### CULT OF THE LAMB
 
