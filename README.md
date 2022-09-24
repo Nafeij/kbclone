@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/20167059/191713986-709dfacb-ea60-4577-b9df-8836ee4c412a.png)
+![image](/src/img/logo.png)
 
 KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the Lamb (2022)](https://store.steampowered.com/app/1313140/Cult_of_the_Lamb/), by [Massive Monster](https://massivemonster.co/)
 
@@ -7,16 +7,16 @@ KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the La
 ## Features
 
 - Local and P2P Multiplayer
-- AI: Different Shack and Boss NPC profiles
+- AI: Shack and Boss NPCs with difficulty scaling
 - Mobile/Touch-friendly (kind of)
 - Keyboard Controls
-- Settings, custom board sizes and gamemodes
+- Settings, customizations and gamemodes
 - Game Statistics
 - Various QOL improvements
 
 ## Notice
 
-This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please created an exception in your browser allowing the site to set persistent cookies if you wish to save said data.
+This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please create an exception in your browser settings for this site if you wish to experience these features.
 
 ## Attributions
 
