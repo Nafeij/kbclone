@@ -12,6 +12,12 @@ const RefBox = forwardRef((props, ref) => {
     )
 })
 
+{/* <div className="stretchbox">
+            <div className="box" ref={ref}>
+                {props.children}
+            </div>
+        </div> */} //TODO
+
 RefBox.displayName = 'RefBox'
 
 class Tub extends React.Component {

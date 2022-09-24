@@ -118,6 +118,7 @@ class Game extends React.Component {
             transform: 'none',
             shrink: false,
             shrinkPreview: false,
+            cheat: false,
             num: randomInRange(numFaces) + 1,
             diceColor : this.props.settings.diceColor[turn], 
             diceBorder : this.props.settings.diceBorder[turn], 
@@ -135,12 +136,11 @@ class Game extends React.Component {
         return rect.height < rect.width ? rect.height : rect.width
     }
     
-    rollHeight(){
-        return this.state.sideProps[this.state.turn].rollRef.current.clientHeight
-    }
-
-    rollWidth(){
-        return this.state.sideProps[this.state.turn].rollRef.current.clientWidth
+    rollDim(){
+        const element = this.state.sideProps[this.state.turn].rollRef.current,
+            style = getComputedStyle(element)
+        return {rollH: element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom),
+            rollW: element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)};
     }
 
     updateCurrSide(props, other={}, callback = ()=>{}){
@@ -178,8 +178,7 @@ class Game extends React.Component {
             const {sideProps, turn} = this.state
             newDice = sideProps[turn].newDice
             const diceHeight = newDice.height
-            const rollH = this.rollHeight()
-            const rollW = this.rollWidth()
+            const {rollH, rollW} = this.rollDim()
             if (diceHeight < rollH){
                 /* console.log(rollH - diceHeight) */
                 newDice.transform = `translate(${Math.round(((rollW - diceHeight) / 2) * (Math.random()*2-1))}px,${Math.round(((rollH - diceHeight) / 2) * (Math.random()*2-1))}px)`
@@ -256,6 +255,7 @@ class Game extends React.Component {
                     if(profile.effects.includes('cheat') && Math.random() > 0.5) {
                         let best = cheatDice(numMat, turn, numFaces, this.props.settings)
                         newDice.num = best.num
+                        newDice.cheat = true
                         this.setState({sideProps},()=>{this.proccessTurn(best.tub, best.side)})
                         return
                     }

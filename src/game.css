@@ -87,7 +87,7 @@ body {
 	flex: 1 1;
 	margin: 0;
 	align-items: center;
-	gap: 1em;
+	gap: 2em;
 }
 
 .menubox.across.ssinner {
@@ -226,32 +226,34 @@ width: auto;
 }
 
 .arrowL, .arrowR {
-	font-size: 4vmin;
-	transition: .3s;
+	width: 5vmin;
+	height: 3.89vmin;
+	background-repeat: no-repeat;
+	background-size: 2900%;
+	background-position: 99% 71%;
 }
 
-.barContainer{
-	background-color: #373734;
-	width: 12vmin;
+.arrowL.greyed, .arrowR.greyed{
+	opacity: .2;
+}
+
+.arrowL{
+	transform: scaleX(-1);
+}
+
+.arrowL:not(.greyed):hover, .arrowR:not(.greyed):hover {
+	background-position: 99% 54.05%;
+}
+
+.barContainer {
 	display: block;
+	background-repeat: no-repeat;
+	background-size: contain;
 }
-.info .barContainer {
-	border: 3px solid black;
-	font-size: 2vmin;
-	position: relative;
-}
-.info .barContainer p {
-	line-height: 1em;
-	position: absolute;
-	margin: 0;
-	width: 100%;
-}
-.bar{
-	height: 1vmin;
-	background-color: red;
-}
-.info .bar {
-	height: 2vmin;
+.bar {
+	height: 100%;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 .difficulty {
@@ -313,6 +315,20 @@ width: auto;
 	font-family: roboto thin, roboto, calibri;
 }
 
+.squiggle {
+	display: inline-block;
+	height: 2vmin;
+	width: 6vmin;
+	background-size: 1180%;
+	background-position: 92.8% 87.5%;
+	margin: 0 0.3em;
+	vertical-align: middle;
+}
+
+.squiggle:nth-child(2n) {
+	transform: scaleX(-1);
+}
+
 .menubox.settingsList {
 	width: 80vw;
 	max-width: 1500px;
@@ -331,6 +347,8 @@ width: auto;
 	max-width: 1500px;
 	width: 80vw;
 	gap: .7em;
+	height: 3vmin;
+	flex: none;
 }
 
 .Tab {
@@ -761,25 +779,47 @@ width: auto;
     animation: movUp .9s 1 ease-out forwards;
 }
 
-.rollbox { /*number 1 victory royale*/
+.rollbox {/*number 1 victory royale*/
 	width: 12rem;
 	aspect-ratio: 5/3;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	position: relative;
-	background-color: #181716;
-	border: 2vmin solid #242321;
 	box-sizing: border-box;
-	transition: .3s;
-	box-shadow: 0 3vmin 0 0 #181716;
 	margin-bottom: 3vmin;
+	background-repeat: no-repeat;
+	background-size: 366% 256%;
+	background-position: 94.76% 3.1%;
+	padding: 3%;
 }
 
-.rollboxhover{
-	background-color: #252321;
-	border-color: #4c4840;
-	box-shadow: 0 3vmin 0 0 #252321;
+.rollbox::after {
+	background: inherit;
+	content: "";
+	background-position: 54.91% 3.1%;
+	opacity: 0;
+	transition: .3s;
+	position: absolute;
+	top: 0; bottom: 0; left: 0; right: 0;
+}
+
+.rollbox.rollboxhover::after{
+	opacity: 1;
+}
+
+.rollbox.rollboxBoss::before {
+	background: inherit;
+	content: "";
+	background-position: 2.2% 97.1%;
+	transition: .3s;
+	position: absolute;
+	top: -15%;
+	left: -10%;
+	padding: 11% 8%;
+	background-size: 316% 187%;
+	width: 100%;
+	height: 100%;
 }
 
 .name {
@@ -1423,19 +1463,29 @@ width: auto;
 }
 
 .die.shrink-out::after, .die2.shrink-out::after,
-.die.shrink-pre::after, .die2.shrink-pre::after {
+.die.shrink-pre::after, .die2.shrink-pre::after,
+.die.cheated::after, .die2.cheated::after {
 	content: "";
 	width: 102%;
 	height: 102%;
 	position: absolute;
 	border: inherit;
-	background-color: red;
-	border-color: red;
 	border-radius: inherit;
 	top: -.401em;
 	left: -.401em;
 	opacity: .8;
 	z-index: -1;
+}
+
+.die.cheated::after, .die2.cheated::after {
+	background-color: #01d5a2;
+	border-color: #01d5a2;
+}
+
+.die.shrink-out::after, .die2.shrink-out::after,
+.die.shrink-pre::after, .die2.shrink-pre::after {
+	background-color: red!important;
+	border-color: red!important;
 }
 
 .die.shrink-out::after, .die2.shrink-out::after{

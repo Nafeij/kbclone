@@ -445,8 +445,6 @@ class App extends React.Component{
         },
       ],
       modAIInd : (i)=>this.modAIInd(i),
-      shakeSelect : false,
-      onShakeDone : ()=>{},
       fadeAway : false,
       onFade : ()=>{}
     }

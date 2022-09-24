@@ -1,9 +1,11 @@
 /* eslint react/prop-types: 0 */
 
-import React from "react";
-import { SketchPicker } from "react-color";
-import Profile from "../util/Profile";
-import { timeFormatLong } from "../util/utils";
+import React from "react"
+import { SketchPicker } from "react-color"
+import Profile from "../util/Profile"
+import { timeFormatLong } from "../util/utils"
+import sprites from "../img/sprites.png"
+import Squiggle from "./Squiggle"
 
 const Switch = ({ isOn, handleToggle, sid}) => {
     return (
@@ -65,12 +67,12 @@ function Settings (props) {
     if (showProfiles) offset = Math.floor(Profile.cosm.length / 4)
     return (<div className='menu settings'>
       <div className='menubox'>
-        <div className='subtitle'>~ Settings ~</div>
+        <div className='subtitle'><Squiggle/>Settings<Squiggle/></div>
         <div className="menubox across TabBar">
-            <div className="arrowL" style={{opacity : 1 === cursor ? 1 : .2}}>⯇</div>
+            <div className={`arrowL ${tabs[activeTab] === 'gameplay' ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>switchTab(0)}/>
             <div className={`Tab ${tabs[activeTab] === 'gameplay' ? 'hovering':''}`} onClick={()=>switchTab(0)}>Gameplay</div>
             <div className={`Tab ${tabs[activeTab] === 'personal' ? 'hovering':''}`} onClick={()=>switchTab(1)}>Profile</div>
-            <div className="arrowR" style={{opacity : 1 === cursor ? 1 : .2}}>⯈</div>
+            <div className={`arrowR ${tabs[activeTab] === 'personal' ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>switchTab(1)}/>
         </div>
         <div className="menubox across personal" style={{display : tabs[activeTab] === 'personal' ? 'flex' : 'none'}}>
             {showProfiles ? <div className="scrollContainer">
@@ -223,33 +225,33 @@ function Settings (props) {
             <div className={`settingsItem ${2 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Number of Rows</div>
                 <div className="settingInput">
-                    <div className="arrowL" style={{opacity : tubLen <= 2 ? .2 : 1}} onClick={()=>{if (tubLen > 2) mod('tubLen',-1)}}>⯇</div>
+                    <div className={`arrowL ${tubLen <= 2 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLen > 2) mod('tubLen',-1)}}/>
                     {tubLen}
-                    <div className="arrowR" style={{opacity : tubLen >= 4 ? .2 : 1}} onClick={()=>{if (tubLen < 4) mod('tubLen',1)}}>⯈</div>
+                    <div className={`arrowR ${tubLen >= 4 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLen < 4) mod('tubLen',1)}}/>
                 </div>
             </div>
             <div className={`settingsItem ${3 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Number of Columns</div>
                 <div className="settingInput">
-                    <div className="arrowL" style={{opacity : numTubs <= 3 ? .2 : 1}} onClick={()=>{if (numTubs > 3) mod('numTubs',-1)}}>⯇</div>
+                    <div className={`arrowL ${numTubs <= 3 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubs > 3) mod('numTubs',-1)}}/>
                     {numTubs}
-                    <div className="arrowR" style={{opacity : numTubs >= 5 ? .2 : 1}} onClick={()=>{if (numTubs < 5) mod('numTubs',1)}}>⯈</div>
+                    <div className={`arrowR ${numTubs >= 5 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubs < 5) mod('numTubs',1)}}/>
                 </div>
             </div>
             <div className={`settingsItem ${4 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Turn Timer</div>
                 <div className="settingInput">
-                    <div className="arrowL" style={{opacity : time === null ? .2 : 1}} onClick={()=>{modDscrt('time',-1)}}>⯇</div>
+                    <div className={`arrowL ${time === null ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('time',-1)}}/>
                     {time ? time + (time > 1 ? ' seconds' : ' second') : 'None'}
-                    <div className="arrowR" style={{opacity : time >= 60 ? .2 : 1}} onClick={()=>{modDscrt('time',1)}}>⯈</div>
+                    <div className={`arrowR ${time >= 60 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('time',1)}}/>
                 </div>
             </div>
             <div className={`settingsItem ${5 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Turn Limit</div>
                 <div className="settingInput">
-                    <div className="arrowL" style={{opacity : turnLimit === null ? .2 : 1}} onClick={()=>{modDscrt('turnLimit',-1)}}>⯇</div>
+                    <div className={`arrowL ${turnLimit === null ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('turnLimit',-1)}}/>
                     {turnLimit ? turnLimit + ' turns' : 'None'}
-                    <div className="arrowR" style={{opacity : turnLimit >= 500 ? .2 : 1}} onClick={()=>{modDscrt('turnLimit',1)}}>⯈</div>
+                    <div className={`arrowR ${turnLimit >= 500 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('turnLimit',1)}}/>
                 </div>
             </div>
 
