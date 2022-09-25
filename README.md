@@ -8,23 +8,23 @@ KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the La
 
 - Local and P2P Multiplayer
 - AI: Shack and Boss NPCs with difficulty scaling
-- Mobile/Touch-friendly (kind of)
+- Mobile-friendly (kind of)
 - Keyboard Controls
 - Settings, customizations and gamemodes
-- Game Statistics
-- Various QOL improvements
+- User Statistics
+- QOL improvements
 
 ## Notice
 
-This application uses persistent cookies (distant expiration date) to save your user info, settings and statistics. Please create an exception in your browser settings for this site if you wish to experience these features.
+This application uses persistent cookies to save your preferences, settings and statistics. Please create an exception in your browser settings for this site if you wish to experience these features.
 
 ## Attributions
 
-All assets are reproductions. Original rights and intellectual properties belong to Massive Monster.
+All assets are either original or reproductions. Original rights and intellectual properties belong to Massive Monster.
 
-Title logo generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
+Art and assets generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
 
-### CULT OF THE LAMB
+#### CULT OF THE LAMB
 
 Cult of the Lamb is a rogue-like action-adventure game developed by indie developer Massive Monster and published by Devolver Digital.
 Start your own cult in a land of false prophets, venturing out into diverse and mysterious regions to build a loyal community of woodland Followers and spread your Word to become the one true cult.
