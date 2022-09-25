@@ -100,8 +100,20 @@ export function timeFormatLong(sec){
         seconds + 's'
 }
 
+export function eleDimensions(element){
+    if (!element) return {height: 0, width: 0}
+    const style = getComputedStyle(element)
+    return {height: element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom),
+        width: element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)};
+}
+
 export function timeFormat(seconds){
     if (seconds < 0) return '--'
     // const hours = Math.floor((total / 1000 / 60 / 60) % 24);
     return seconds > 9 ? seconds : '0' + seconds
+}
+
+export function caravanBounds(tubLen){
+    const mid = (tubLen/2)**2
+    return [Math.floor(mid*3.5*.91),Math.ceil(mid*6*1.1)]
 }

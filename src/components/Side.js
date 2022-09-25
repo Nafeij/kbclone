@@ -3,7 +3,7 @@
 import React from "react"
 import Die from "./Die"
 import Tub from "./Tub"
-import { timeFormat } from "../util/utils"
+import { eleDimensions, timeFormat } from "../util/utils"
 import Bar from "./Bar"
 import rollerImg from "../img/sprites.png"
 import heartsImg from "../img/hearts.png"
@@ -18,6 +18,8 @@ class Side extends React.Component {
         const id = this.props.id
         return (<Tub
             {...this.props.tubProps[i]}
+            boxAspectRatio={this.props.boxAspectRatio}
+            tubLen={this.props.tubLen}
             key = {i}
             diceList={this.props.diceMatrix[i]}
             clickable={this.props.tubsClickable}
@@ -30,8 +32,8 @@ class Side extends React.Component {
 
     render(){
         const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd,
-            profile, numTubs, name, rollRef, time, lives, maxLives} = this.props
-        const dname = name ? name : profile.name, 
+            profile, numTubs, name, rollRef, tubsRef, time, lives, maxLives, boxAspectRatio, tubLen, tubsDim} = this.props,
+            dname = name ? name : profile.name, 
             isTurn = turn === id,
             shakeClass = scoreShake && scoreShown ? 'shake' : '',
             timer = time === null || profile.skill !== undefined ? null : 
@@ -48,19 +50,30 @@ class Side extends React.Component {
                         // console.log('test')
                         hasSlid()
                     }}}> 
-                    <div className={`rollbox ${isTurn && slid? "rollboxhover" : ""} ${maxLives? 'rollboxBoss' :''}`} style={{backgroundImage: `url(${rollerImg})`}} ref={rollRef}>
+                    <div className={`rollbox ${isTurn && slid? "rollboxhover" : ""} ${profile.effects && !!profile.effects.length ? 'rollboxBoss' :''}`} 
+                        style={{backgroundImage: `url(${rollerImg})`}} ref={rollRef}>
                         {newDice ? <Die {...newDice} ref={newDice.fwdref}/> : null}
                     </div>
                 </div>
-                <div className="tubs">
-                    <div className="tubbox" style={{gridTemplateColumns: `repeat(${numTubs},minmax(0,1fr))`}}>
+                <div className="tubs" ref={tubsRef}>
+                    <div className="tubbox" style={{
+                        maxWidth: tubsDim.height * boxAspectRatio * (numTubs/tubLen),
+                        maxHeight: tubsDim.width * (1/boxAspectRatio) * (tubLen/numTubs)
+                    }}>
                         {Array(numTubs).fill().map((_,i)=>this.renderTub(i))}
                     </div>
                 </div>
                 <div className="info">
-                    <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} style={{backgroundImage: `url(${profile.img})`, transform: (profile.skill === undefined && !id) ? 'scaleX(-1)' : 'none'}}/>
+                    <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} 
+                        style={{ 
+                            backgroundImage: `url(${profile.img})`, 
+                            transform: (profile.skill === undefined && !id) ? 'scaleX(-1)' : 'none'
+                        }}
+                    />
                     <h2 className="name"><Squiggle/>{dname}<Squiggle/></h2>
-                    <div className={`scorebox ${shakeClass}`} style={{opacity : scoreShown || time !== null || maxLives !== null ? 1 : 0}} onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}{hBar}</div>
+                    <div className={`scorebox ${shakeClass}`}
+                        style={{opacity : scoreShown || time !== null || maxLives !== null ? 1 : 0}} 
+                        onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}{hBar}</div>
                 </div>
             </div>
         </div>

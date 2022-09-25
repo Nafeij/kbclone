@@ -3,7 +3,7 @@
 import React from "react"
 import { SketchPicker } from "react-color"
 import Profile from "../util/Profile"
-import { timeFormatLong } from "../util/utils"
+import { caravanBounds, timeFormatLong } from "../util/utils"
 import sprites from "../img/sprites.png"
 import Squiggle from "./Squiggle"
 
@@ -33,9 +33,11 @@ function Settings (props) {
     // console.log(props.cursorID + ' : ' + props.cursor)
     // console.log(props.graphicwidth)
 
-    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name} = props.gameSettingsProps
-    const {mod, modDscrt, modBool, modSpec, modVal, settingsRanges, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props
-    const combiBreakdown = statsProps.aiBreakdown.slice()
+    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name} = props.gameSettingsProps,
+    {mod, modDscrt, modBool, modSpec, modVal, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props,
+    combiBreakdown = statsProps.aiBreakdown.slice(),
+    tubLenInLimit = {l: tubLen > 2 && tubLen > numTubs - 2, r: tubLen < numTubs + 2},
+    numTubsInLimit = {l: numTubs > 2 && numTubs > tubLen - 2, r: numTubs < tubLen + 2}
     combiBreakdown.push(statsProps.pvpBreakdown)
     const aggregate = statsProps.aggregate,
         newAggregate = combiBreakdown.reduce((pObj, cObj)=>{
@@ -225,17 +227,17 @@ function Settings (props) {
             <div className={`settingsItem ${2 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Number of Rows</div>
                 <div className="settingInput">
-                    <div className={`arrowL ${tubLen <= 2 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLen > 2) mod('tubLen',-1)}}/>
+                    <div className={`arrowL ${!tubLenInLimit.l ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLenInLimit.l) mod('tubLen',-1)}}/>
                     {tubLen}
-                    <div className={`arrowR ${tubLen >= 4 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLen < 4) mod('tubLen',1)}}/>
+                    <div className={`arrowR ${!tubLenInLimit.r ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLenInLimit.r) mod('tubLen',1)}}/>
                 </div>
             </div>
             <div className={`settingsItem ${3 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>Number of Columns</div>
                 <div className="settingInput">
-                    <div className={`arrowL ${numTubs <= 3 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubs > 3) mod('numTubs',-1)}}/>
+                    <div className={`arrowL ${!numTubsInLimit.l ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubsInLimit.l) mod('numTubs',-1)}}/>
                     {numTubs}
-                    <div className={`arrowR ${numTubs >= 5 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubs < 5) mod('numTubs',1)}}/>
+                    <div className={`arrowR ${!numTubsInLimit.r ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubsInLimit.r) mod('numTubs',1)}}/>
                 </div>
             </div>
             <div className={`settingsItem ${4 === cursor ? 'hovering' : ''}`}>
@@ -286,7 +288,7 @@ function Settings (props) {
             <div className={`settingsItem ${9 === cursor ? 'hovering' : ''}`}>
                 <div className='subtitle'>
                     Caravan Rules
-                    <div className='text'>{`over ${settingsRanges.caravan[tubLen] - 5}, under ${settingsRanges.caravan[tubLen] + 5}, ones are Jokers`}</div>
+                    <div className='text'>{`over ${caravanBounds(tubLen)[0] - 1}, under ${caravanBounds(tubLen)[1] + 1}, ones are Jokers`}</div>
                 </div>
                 <div className="settingInput">
                     <Switch sid={3} isOn={!!caravan} handleToggle={()=>{modSpec('caravan')}}/>

@@ -8,7 +8,7 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { randomInRange } from './util/utils.js'
+import { caravanBounds, randomInRange } from './util/utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
@@ -119,8 +119,7 @@ class App extends React.Component{
       },
       settingsRanges : {
         time : {rcursor : 0, range : [null, 1, 5, 10, 20, 30, 60]},
-        turnLimit : {rcursor : 0, range : [null, 5, 10, 25, 50, 100, 200, 500]},
-        caravan : {2 : 8, 3 : 14, 4 : 21, 5 : 29}
+        turnLimit : {rcursor : 0, range : [null, 5, 10, 25, 50, 100, 200, 500]}
       },
       statsProps : this.cookies.get('statsProps') || {
         aggregate : Array(2).fill().map(()=>({
@@ -294,11 +293,10 @@ class App extends React.Component{
       },
       modSpec : (setting)=>{
         if (setting === 'caravan') {
-          const {gameSettingsProps, settingsRanges} = this.state
+          const {gameSettingsProps} = this.state
           if (gameSettingsProps.caravan) gameSettingsProps.caravan = null
           else {
-            const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
-            gameSettingsProps.caravan = [mid-4,mid+4]
+            gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
           }
           this.setState({gameSettingsProps, settingChanged : true})
           //console.log(gameSettingsProps.caravan)
@@ -315,10 +313,9 @@ class App extends React.Component{
         {
           text : 'Go Back',
           onClick: () => {
-            const {gameSettingsProps, settingsRanges} = this.state
+            const {gameSettingsProps} = this.state
             if (gameSettingsProps.caravan){
-              const mid = settingsRanges.caravan[gameSettingsProps.tubLen]
-              gameSettingsProps.caravan = [mid-4,mid+4]
+              gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
             }
             this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge: this.maxAge, sameSite : 'strict' });
             this.setState({gameSettingsProps},this.return)

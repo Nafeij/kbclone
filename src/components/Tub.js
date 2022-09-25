@@ -1,12 +1,12 @@
 /* eslint react/prop-types: 0 */
 
 import React, { forwardRef } from "react"
-import {defLength, isFull, timeFormat} from '../util/utils';
+import {isFull} from '../util/utils';
 import Die from "./Die";
 
 const RefBox = forwardRef((props, ref) => {
     return (
-        <div className="box" ref={ref}>
+        <div className="box" ref={ref} style={{aspectRatio : props.aspectRatio}}>
             {props.children}
         </div>
     )
@@ -23,7 +23,7 @@ RefBox.displayName = 'RefBox'
 class Tub extends React.Component {
 
     renderBox(i){
-        return <RefBox key={i} ref={this.props.boxRefs[i]}>
+        return <RefBox key={i} aspectRatio={this.props.boxAspectRatio} ref={this.props.boxRefs[i]}>
             {this.props.diceList[i] ? (<Die {...this.props.diceList[i]} ref={this.props.diceList[i].fwdref}/>) : null}
         </RefBox>
     }

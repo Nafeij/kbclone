@@ -3,7 +3,7 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
-import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat} from '../util/utils';
+import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions} from '../util/utils';
 import KeyManager from "../util/KeyManager.js";
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";
@@ -11,7 +11,7 @@ import Loading from "./Loading.js";
 import Profile from "../util/Profile.js";
 
 
-const scale = .95, numFaces = 6
+const scale = .95, numFaces = 6, boxAspectRatio = 7/5
 
 class Game extends React.Component {
     constructor(props){
@@ -33,7 +33,6 @@ class Game extends React.Component {
             ),
             tubProps: Array.from({length:2},(_,i)=>(
                 Array.from({length: props.settings.numTubs}, (_,j) => ({
-                    tubLen: props.settings.tubLen,
                     startShake: false,
                     animClass: '',
                     onScoreAnimEnd: ()=>{},
@@ -55,7 +54,11 @@ class Game extends React.Component {
                     profile: i ? Profile.cosm[props.settings.playProfileInd] : oppProfile,
                     name : i ? props.settings.name : props.settings.oppName,
                     rollRef : React.createRef(),
+                    tubsRef : React.createRef(),
                     numTubs: props.settings.numTubs,
+                    tubLen: props.settings.tubLen,
+                    tubsDim: eleDimensions(null),
+                    boxAspectRatio,
                     time : props.settings.time === null ? props.settings.time : -1,
                     maxLives : !i ? numLives : null,
                     lives : !i ? numLives : null,
@@ -135,13 +138,6 @@ class Game extends React.Component {
         const rect = this.state.tubProps[this.state.turn][0].boxRefs[0].current.getBoundingClientRect()
         return rect.height < rect.width ? rect.height : rect.width
     }
-    
-    rollDim(){
-        const element = this.state.sideProps[this.state.turn].rollRef.current,
-            style = getComputedStyle(element)
-        return {rollH: element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom),
-            rollW: element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)};
-    }
 
     updateCurrSide(props, other={}, callback = ()=>{}){
         return this.setState(prevState => ({
@@ -178,10 +174,10 @@ class Game extends React.Component {
             const {sideProps, turn} = this.state
             newDice = sideProps[turn].newDice
             const diceHeight = newDice.height
-            const {rollH, rollW} = this.rollDim()
-            if (diceHeight < rollH){
+            const {height, width} = eleDimensions(this.state.sideProps[this.state.turn].rollRef.current)
+            if (diceHeight < height){
                 /* console.log(rollH - diceHeight) */
-                newDice.transform = `translate(${Math.round(((rollW - diceHeight) / 2) * (Math.random()*2-1))}px,${Math.round(((rollH - diceHeight) / 2) * (Math.random()*2-1))}px)`
+                newDice.transform = `translate(${Math.round(((width - diceHeight) / 2) * (Math.random()*2-1))}px,${Math.round(((height - diceHeight) / 2) * (Math.random()*2-1))}px)`
             }
             const interval = setInterval(()=>{
                 const {sideProps, turn} = this.state
@@ -886,8 +882,17 @@ class Game extends React.Component {
         } */
     }
 
+    tubSizeOnResize(){
+        let {sideProps} = this.state
+        sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
+        this.setState({sideProps})
+    }
+
 
     componentDidMount(){
+        let {sideProps} = this.state
+        sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
+        window.addEventListener("resize", ()=>{this.tubSizeOnResize()})
         if (this.props.settings.gameType === 'PVP'){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
@@ -895,7 +900,11 @@ class Game extends React.Component {
             this.setState({turn, flytextProps})
             return
         }
-        this.setState({turn : randomInRange(2)})
+        this.setState({turn : randomInRange(2), sideProps})
+    }
+
+    componentWillUnmount(){
+        window.removeEventListener("resize", ()=>{this.tubSizeOnResize()})
     }
 
     render(){

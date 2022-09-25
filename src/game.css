@@ -825,6 +825,7 @@ width: auto;
 .name {
 	margin: -1vmin 0 0 0;
 	font-size: calc(1.4vh + 1vw);
+	white-space:nowrap;
 }
 
 .tubs {
@@ -833,9 +834,9 @@ width: auto;
     position: relative;
     animation: movDown .9s 1 ease-out forwards;
 	height: 100%;
-	display: flex;
+/* 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: center; */
 }
 
 #player .tubs {
@@ -844,11 +845,16 @@ width: auto;
 
 .tubbox {
 	display: flex;
-	/* margin: auto; */
-	flex: 1 1 auto;
-	/* grid-template-columns: repeat(5,minmax(0,1fr)); */
+	flex-direction: row;
 	height: 100%;
 	align-items: center;
+	width: 100%;
+	margin: auto;
+	/* max-width: calc(var(--parentHeight) * 7/5 * 3/3);
+	max-height: calc(var(--parentWidth) * 5/7 * 3/3); */
+	top: 50%;
+	position: relative;
+	transform: translateY(-50%);
 	padding-bottom: 3em;
 }
 
@@ -857,16 +863,15 @@ width: auto;
 	padding-bottom: 0;
 }
 
-
-
 .tub, .tubB, .tubC {
-	position: relative;
-	padding: 0 4px;
+	padding: 1%;
+	width: 100%;
+	height: 100%;
 	display: flex;
-	flex-direction: column;
 	justify-content: center;
-	flex: 1;
-	max-height: 100%
+	align-items: center;
+	flex-direction: column;
+	position: relative;
 }
 
 .tub::before, .tubB::before, .tubC::before {
@@ -879,10 +884,6 @@ width: auto;
 	left: 0;
 	background: transparent;
 }
-
-/* .tub:first-child, .tubB:first-child {grid-column-start: 2;}
-.tub:nth-child(2), .tubB:nth-child(2) {grid-column-start: 3;}
-.tub:last-child, .tubB:last-child {grid-column-start: 4;} */
 
 .scorer {
 	margin: 0;
@@ -904,9 +905,10 @@ width: auto;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	aspect-ratio: 7/5;
+	width: 100%;
 	background-color: #191711;
-	margin: 6px;
+	box-sizing: border-box;
+	margin: 5%;
 }
 
 .info {
@@ -1318,10 +1320,6 @@ width: auto;
 		grid-column: 2 /span 1;
 	}
 
- 	.tubbox {
-		grid-template-columns: repeat(4,minmax(0,1fr));
-	}
-
 
 /*  	.tub#left, .tubB#left {grid-column-start: 1;}
 	.tub#mid, .tubB#mid {grid-column-start: 2;}
@@ -1435,14 +1433,6 @@ width: auto;
 		margin-bottom: 8em;
 		margin-top: 0;
 	}
-
-/* 	#player .tubbox, .tubbox {
-		grid-template-columns: repeat(3,minmax(0,1fr)); 
-	} */
-
-/* 	.tub#left, .tubB#left {grid-column-start: 1;}
-	.tub#mid, .tubB#mid {grid-column-start: 2;}
-	.tub#right, .tubB#right {grid-column-start: 3;}  */
 
 	.rollbox {
 		width: 25rem;
