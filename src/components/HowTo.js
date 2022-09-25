@@ -28,8 +28,8 @@ const dDieProps = {
 
 const DestroyGraphic = () => (
   <div className="graphicbox dest">
-    <Die {...dDieProps} transform='translateX(-50%)'/>
-    <Die {...dDieProps} transform='translateX(-50%)'/>
+    <Die {...dDieProps} translate='-50% 0'/>
+    <Die {...dDieProps} translate='-50% 0'/>
   </div>
 )
 

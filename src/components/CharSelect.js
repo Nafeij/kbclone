@@ -35,7 +35,7 @@ function CharSelect (props) {
             <div className='menubox'>
                 <div className='subtitle'><Squiggle/>Select Opponent<Squiggle/></div>
                 <div className="slidePaneContainer">
-                    <div className="slidePane" style={{transform : `translateX(${translation}%)`}}>
+                    <div className="slidePane" style={{translate : translation + '%'}}>
                         {Profile.ai.map((p, i)=>(
                             <div key={i} className={`pfp simp ${i === selectedAIInd ? 'simphover':''}`} style={{backgroundImage: `url(${p.img})`}}/>
                         ))}
@@ -45,7 +45,7 @@ function CharSelect (props) {
                     <div className={`arrowL ${leftend ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
                     <div className={`charInfo ${buttons[0].cursorID === cursor ? 'charInfohover' : ''}`} onClick={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
-                        <div className="slidePane" style={{transform : `translateX(${translationName}%)`}}>
+                        <div className="slidePane" style={{translate: translationName + '%'}}>
                         {Profile.ai.map((p, i)=>(
                             <div key={i} className={`subtitle ${i === selectedAIInd ? '':'subtitlehide'}`}>{p.name}</div>
                         ))}

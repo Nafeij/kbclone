@@ -147,7 +147,7 @@ function Settings (props) {
                                         }</div>
                                         <div className='subtitle'>High Score: {statsProps.pvpBreakdown.sideBreakdown[0].highestScore ? statsProps.pvpBreakdown.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(statsProps.pvpBreakdown.time / 1000)}</div>
                                     </div>
-                                    <div className='pfp' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, transform : 'scaleX(-1)'}}/>
+                                    <div className='pfp' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, scale : '-1 1'}}/>
                                 </div>
                             </div>
                         : null}

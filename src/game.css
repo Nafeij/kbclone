@@ -120,7 +120,7 @@ width: auto;
 	width: 85%;
 	left: 50%;
 	top: 50%;
-	transform: translate(-50%,-50%);
+	translate: -50% -50%;
 	z-index: -1;
 }
 
@@ -142,13 +142,15 @@ width: auto;
 	color: rgb(19, 10, 3);
 	font-size: 13vmin;
 	position: absolute;
-	transform: rotate(-45deg) translate(-50%,-50%);
+	rotate: -45deg;
+	translate: -50% -50%;
 	left: 26%;
 	top: 62%;
 	content: '☇';
 }
 .graphicbox.match .die:last-child::after {
-	transform: rotate(135deg) translate(-50%,-50%);
+	rotate: 135deg;
+	translate:-50% -50%;
 	left: auto;
 	top: auto;
 	bottom: 142%;
@@ -161,7 +163,7 @@ width: auto;
 	font-size: 19vmin;
 	position: absolute;
 	left: 50%;
-	transform: translateX(-50%);
+	translate: -50%;
 	line-height: 10vmin;
 	content: '×';
 }
@@ -238,7 +240,7 @@ width: auto;
 }
 
 .arrowL{
-	transform: scaleX(-1);
+	scale: -1 1;
 }
 
 .arrowL:not(.greyed):hover, .arrowR:not(.greyed):hover {
@@ -326,7 +328,7 @@ width: auto;
 }
 
 .squiggle:nth-child(2n) {
-	transform: scaleX(-1);
+	scale: -1 1;
 }
 
 .menubox.settingsList {
@@ -623,7 +625,7 @@ width: auto;
 .pickWrapper {
 	display: none;
 	position: absolute;
-	transform: translateX(-50%);
+	translate: -50% 0;
 	left: 50%;
 	z-index: 0;
 }
@@ -646,7 +648,7 @@ width: auto;
 	position: absolute;
 	bottom: 0;
 	left: 50%;
-	transform: translateX(-50%);
+	translate: -50% 0;
 }
   
 .react-switch-label {
@@ -678,7 +680,7 @@ width: auto;
   
 .react-switch-checkbox:checked + .react-switch-label .react-switch-button {
 	left: calc(100% - 4px);
-	transform: translateX(-100%);
+	translate: -100% 0;
 }
 
 .turnCounter {
@@ -696,8 +698,7 @@ width: auto;
 	padding: 1em;
 	position: absolute;
 	top: 0;
-	-webkit-transform: translate(-50%,-50%);
-	transform: translate(-50%,-50%);
+	translate: -50% -50%;
 	width: 96px;
 }
 
@@ -854,7 +855,7 @@ width: auto;
 	max-height: calc(var(--parentWidth) * 5/7 * 3/3); */
 	top: 50%;
 	position: relative;
-	transform: translateY(-50%);
+	translate: 0 -50%;
 	padding-bottom: 3em;
 }
 
@@ -864,7 +865,7 @@ width: auto;
 }
 
 .tub, .tubB, .tubC {
-	padding: 1%;
+	padding: 1.5%;
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -892,7 +893,6 @@ width: auto;
 	width: 100%;
 	font-size: calc(1.5vh + 1.5vw);
 	text-align: center;
-	transform: none;
 	top: 100%;
 }
 
@@ -972,7 +972,7 @@ width: auto;
 	background: transparent;
 	left: 0;
 	top: 0;
-	transform: translateX(0);
+	translate: 0;
 }
 
 .ssBox.profile{
@@ -1077,13 +1077,13 @@ width: auto;
 	width: 25vmin;
 	filter: none;
 	opacity: 0;
-	transform: scale(.8);
+	scale: .8;
 	margin-right: -20vmin;
 }
 
 .pfp.simphover{
 	opacity: 1;
-	transform: none;
+	scale: 1;
 }
 
 .ssBox.profile .pfp {
@@ -1115,7 +1115,7 @@ width: auto;
 	background: transparent;
 	left: 0;
 	top: 0;
-	transform: translateX(0);
+	translate: 0;
 }
 
 .charInfo:hover::before, .charInfohover::before {
@@ -1255,10 +1255,10 @@ width: auto;
 }
 @keyframes lds-ring {
 0% {
-	transform: rotate(0deg);
+	rotate: 0deg;
 }
 100% {
-	transform: rotate(360deg);
+	rotate: 360deg;
 }
 }
 
@@ -1270,7 +1270,7 @@ width: auto;
 	position: absolute;
 	color: white;
 	top: 50%;
-	transform: translate(0, -50%);
+	translate: 0 -50%;
 	width: 200%;
 	font-size: calc(2.5vh + 2.5vw);
 	font-weight: bold;
@@ -1283,7 +1283,7 @@ width: auto;
 }
 
 #flytext.show {
-	transform : translate(-25%, -50%);
+	translate: -25% -50%;
 	opacity : 1;
 	pointer-events : auto
 }
@@ -1355,17 +1355,17 @@ width: auto;
 
 	.tub.hover:hover::before, .tub.hover.hovering::before {
 		background: red;
-		transform: scale(1);
+		scale: 1;
 	}
 
 	.tubB.hover:hover::before, .tubB.hover.hovering::before {
 		background: black;
-		transform: scale(1);
+		scale: 1;
 	}
 
 	.tubC.hover:hover::before, .tubC.hover.hovering::before {
 		background: #01d5a2;
-		transform: scale(1);
+		scale: 1;
 	}
 }
 
@@ -1482,9 +1482,9 @@ width: auto;
 	animation: color .4s 1 backwards;
 }
 
-.recover {
+/* .recover {
 	animation: releaseTranslate .6s ease-out both;
-}
+} */
 
 .scorebox.shake, .scorer.shake, .die
 .tubB.shake::before, .charInfo.shake::before,
@@ -1501,23 +1501,23 @@ width: auto;
 } */
 
 @keyframes shake-h-anim {
-	0% { transform: translateX(6px) }
-	16% { transform: translateX(-6px) }
-	33% { transform: translateX(4px) }
-	50% { transform: translateX(-4px) }
-	67% { transform: translateX(2px) }
-	83% { transform: translateX(-2px) }
-	100% { transform: translateX(0) }
+	0% { translate: 6px}
+	16% { translate: -6px}
+	33% { translate: 4px}
+	50% { translate: -4px}
+	67% { translate: 2px}
+	83% { translate: -2px}
+	100% { translate: 0}
 }
 
 @keyframes scale-away {
-	0% { transform: scale(1) translateX(6px)}
-	16% { transform: scale(.83) translateX(-6px) }
-	33% { transform: scale(.67) translateX(4px) }
-	50% { transform: scale(.5) translateX(-4px) }
-	67% { transform: scale(.33) translateX(2px) }
-	83% { transform: scale(.16) translateX(-2px) }
-	100% { transform: scale(0) translateX(0) }
+	0% { scale: 1; translate:6px}
+	16% { scale: .83; translate:-6px}
+	33% { scale: .67; translate:4px}
+	50% { scale: .5; translate:-4px}
+	67% { scale: .33; translate:2px}
+	83% { scale: .16; translate:-2px}
+	100% { scale: 0; translate:0}
 }
 
 @keyframes color {
@@ -1544,11 +1544,11 @@ width: auto;
 	to {left:0}
 }
 
-@keyframes releaseTranslate {
-    to {transform: none;}
-}
+/* @keyframes releaseTranslate {
+    to {translate: none;}
+} */
 
 /* @keyframes scale-pop {
-	0% { transform: scale(2) }
-	100% { transform: scale(1) }
+	0% { scale: 2}
+	100% { scale: 1}
 } */

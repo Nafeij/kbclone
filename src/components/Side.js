@@ -67,7 +67,7 @@ class Side extends React.Component {
                     <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} 
                         style={{ 
                             backgroundImage: `url(${profile.img})`, 
-                            transform: (profile.skill === undefined && !id) ? 'scaleX(-1)' : 'none'
+                            scale: (profile.skill === undefined && !id) ? '-1 1' : 'none'
                         }}
                     />
                     <h2 className="name"><Squiggle/>{dname}<Squiggle/></h2>

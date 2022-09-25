@@ -32,7 +32,7 @@ class Tub extends React.Component {
         const {
             tubLen, diceList, clickable, startShake, 
             animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score, scoreTransform, cursor, cursorID, caravan, scoreHover} = this.props
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, cursor, cursorID, caravan, scoreHover} = this.props
         const active = cursor === cursorID 
         const fillClass = (
                 caravan && 
@@ -58,7 +58,7 @@ class Tub extends React.Component {
             onAnimationEnd={onShakeAnimEnd}>
             {ordering.map((i)=>this.renderBox(i))}
             <h1 className={`scorer ${animClass}`}
-                onAnimationEnd={onScoreAnimEnd} style={{transform : scoreTransform}}>
+                onAnimationEnd={onScoreAnimEnd} style={{scale : scoreScale}}>
                     {score}
             </h1>
         </div>

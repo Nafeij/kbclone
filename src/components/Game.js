@@ -38,7 +38,7 @@ class Game extends React.Component {
                     onScoreAnimEnd: ()=>{},
                     score: null,
                     boxRefs: Array(props.settings.tubLen).fill().map(React.createRef),
-                    scoreTransform: 'none',
+                    scoreScale: 'none',
                     cursorID: -1,
                     caravan : props.settings.caravan,
                     scoreHover : this.props.settings.preview ? (h)=>{this.scoreHover(h,i,j)} : ()=>{}
@@ -118,7 +118,8 @@ class Game extends React.Component {
             height: this.boxMin() * scale,
             transition: '.3s',
             transitionTimingFunction: 'ease-in',
-            transform: 'none',
+            translate: 'none',
+            scale: 'none',
             shrink: false,
             shrinkPreview: false,
             cheat: false,
@@ -177,7 +178,7 @@ class Game extends React.Component {
             const {height, width} = eleDimensions(this.state.sideProps[this.state.turn].rollRef.current)
             if (diceHeight < height){
                 /* console.log(rollH - diceHeight) */
-                newDice.transform = `translate(${Math.round(((width - diceHeight) / 2) * (Math.random()*2-1))}px,${Math.round(((height - diceHeight) / 2) * (Math.random()*2-1))}px)`
+                newDice.translate = Math.round(((width - diceHeight) / 2) * (Math.random()*2-1))+ "px " + Math.round(((height - diceHeight) / 2) * (Math.random()*2-1)) + "px"
             }
             const interval = setInterval(()=>{
                 const {sideProps, turn} = this.state
@@ -293,8 +294,7 @@ class Game extends React.Component {
         const newDice = sideProps[turn].newDice
         if (newDice.fwdref.current) {
             // this.proccessTurn(evaluate(diceMatrix, newDice.num, 0, turn))
-            if (newDice.transform !== 'none') newDice.transform = newDice.transform + ' scale(0)'
-            else newDice.transform = 'scale(0)'
+            newDice.scale = 0
             newDice.onMovEnd = ()=>{
                 sideProps[turn].newDice = null
                 this.setState({sideProps, turn: !turn + 0}, this.checkEnd)
@@ -363,19 +363,18 @@ class Game extends React.Component {
         const transX = destRect.x - srcRect.x + (destRect.width - srcRect.width) / 2
         const transY = destRect.y - srcRect.y + (destRect.height - srcRect.height) / 2
         if (srcPos === null){
-            if (newDice.transform && newDice.transform !== 'none'){
-                const orig = [...newDice.transform.matchAll(/-?\d+/g)].flat()
-                newDice.transform = `translate(${Math.round(transX) + Number(orig[0])}px, ${Math.round(transY) + Number(orig[1])}px)`
-            } else newDice.transform = `translate(${Math.round(transX)}px, ${Math.round(transY)}px)`
+            const orig = [...newDice.translate.matchAll(/-?\d+/g)].flat()
+            newDice.translate = (Math.round(transX) + Number(orig[0])) + "px " + 
+                    (Math.round(transY) + Number(orig[1])) + "px"
             newDice.transitionTimingFunction = 'ease-in-out'
         } else {
-            newDice.transform = `translate(${Math.round(transX)}px, ${Math.round(transY)}px)`
+            newDice.translate = Math.round(transX) + "px " + Math.round(transY) + "px"
         }
         newDice.zIndex = 2
         return new Promise((resolve) =>{
             newDice.onMovEnd = ()=>{
                 newDice.onMovEnd = ()=>{}
-                newDice.transform = ''
+                newDice.translate = 'none'
                 newDice.zIndex = 0
                 newDice.height = (scale * 100) + '%'
                 const num = newDice.num
@@ -754,7 +753,7 @@ class Game extends React.Component {
             const tubProp = tubProps[side][tub]
             if (tubProp.animClass !== '') resolve()
             tubProp.animClass = ''
-            tubProp.scoreTransform = 'none'
+            tubProp.scoreScale = 'none'
             if (tubProp.score !== newScore){
                 if (newScore) {
                     this.setState({tubProps},()=>{
@@ -771,13 +770,13 @@ class Game extends React.Component {
                 } else {
                     this.setState({tubProps},()=>{
                         tubProp.animClass = 'shrink-out'
-                        tubProp.scoreTransform = 'scale(0)'
+                        tubProp.scoreScale = 0
                         tubProp.onScoreAnimEnd = ()=>{
                             tubProp.score = newScore
                             tubProp.animClass = ''
                             tubProp.onScoreAnimEnd = ()=>{}
                             this.setState({tubProps},()=>{
-                                tubProp.scoreTransform = 'none'
+                                tubProp.scoreScale = 'none'
                                 this.setState({tubProps})
                             })
                             resolve()
@@ -798,7 +797,7 @@ class Game extends React.Component {
         if (isFull(diceMatrix[i][j])) return
         const settings = this.props.settings, newDice = sideProps[turn].newDice.num
         const numMat = convertToNumMat(diceMatrix)
-        const {scores, changes} = scoreAll(isHover ? newDice : null, numMat, {side : i, tub : j}, settings, true)
+        const {scores, changes} = scoreAll(isHover ? newDice : null, numMat, turn, {side : i, tub : j}, settings, true)
         if (isHover) {
             changes.forEach(t=>{
                 diceMatrix[t.s][t.t][t.d].shrinkPreview = true

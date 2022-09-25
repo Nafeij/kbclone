@@ -4,7 +4,7 @@ import React from "react";
 
 
 const Die = React.forwardRef((props, ref) =>{
-	const {height, transition, transform, shrink, shrinkPreview, cheat, num, onMovEnd, onShrinkEnd,
+	const {height, transition, translate, scale, shrink, shrinkPreview, cheat, num, onMovEnd, onShrinkEnd,
 		transitionTimingFunction, diceColor, diceBorder, pipColor, zIndex, isCaravan, marginLeft, marginTop} = props
     // const [rnum, setNum] = useState(num);
 
@@ -18,7 +18,8 @@ const Die = React.forwardRef((props, ref) =>{
 			} ref={ref} style={{
 				height,
 				transition,
-				transform,
+				translate,
+				scale,
 				transitionTimingFunction,
 				backgroundColor: diceColor,
 				borderColor: diceBorder,
@@ -34,17 +35,5 @@ const Die = React.forwardRef((props, ref) =>{
 })
 
 Die.displayName = 'Die'
-
-/* Die.defaultProps = {
-	height: '100px',
-	transition: 'none',
-	transform: 'none',
-	roll: true,
-	shrink: false,
-	num: 1,
-	onRollEnd: ()=>{},
-	onMovEnd: ()=>{},
-	onShrinkEnd: ()=>{}
-} */
 
 export default Die
