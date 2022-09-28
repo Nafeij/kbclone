@@ -425,7 +425,7 @@ width: auto;
 }
 
 .personal .menubox.settingsList.opponent .settingsItem .subtitle b {
-	font-size: 1.8vmin;
+	font-size: 1.6em;
 }
 
 .menubox.across.personal .menubox.misc .subtitle:first-child {
@@ -1078,7 +1078,7 @@ width: auto;
 	filter: none;
 	opacity: 0;
 	scale: .8;
-	margin-right: -20vmin;
+	margin-right: -15vmin;
 }
 
 .pfp.simphover{

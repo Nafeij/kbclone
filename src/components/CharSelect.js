@@ -9,11 +9,12 @@ import skullBImg from "../img/skulls_blue.png"
 import heartsImg from "../img/hearts.png"
 import sprites from "../img/sprites.png"
 import Squiggle from "./Squiggle"
+import SlidePane from "./SlidePane";
 
 function CharSelect (props) {
 
-    const {selectedAIInd, buttons, cursor, modAIInd, fadeAway, onFade} = props,
-        translation = selectedAIInd * (-100 / Profile.ai.length),
+    const {selectedAIInd, buttons, cursor, modAIInd, fadeAway, onFade, modSetAIInd} = props,
+        translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100,
         leftend = selectedAIInd === 0,
         rightend = selectedAIInd === Profile.ai.length - 1
@@ -35,20 +36,20 @@ function CharSelect (props) {
             <div className='menubox'>
                 <div className='subtitle'><Squiggle/>Select Opponent<Squiggle/></div>
                 <div className="slidePaneContainer">
-                    <div className="slidePane" style={{translate : translation + '%'}}>
+                    <SlidePane translateX={translation} releaseCallback={modSetAIInd} numSep={Profile.ai.length}>
                         {Profile.ai.map((p, i)=>(
                             <div key={i} className={`pfp simp ${i === selectedAIInd ? 'simphover':''}`} style={{backgroundImage: `url(${p.img})`}}/>
                         ))}
-                    </div>
+                    </SlidePane>
                 </div>
                 <div className="menubox across cselect">
                     <div className={`arrowL ${leftend ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
                     <div className={`charInfo ${buttons[0].cursorID === cursor ? 'charInfohover' : ''}`} onClick={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{translate: translationName + '%'}}>
-                        {Profile.ai.map((p, i)=>(
-                            <div key={i} className={`subtitle ${i === selectedAIInd ? '':'subtitlehide'}`}>{p.name}</div>
-                        ))}
+                            {Profile.ai.map((p, i)=>(
+                                <div key={i} className={`subtitle ${i === selectedAIInd ? '':'subtitlehide'}`}>{p.name}</div>
+                            ))}
                         </div>
                     </div>
                     <div className="difficulty" style={{gridColumn : effect ? '1 /span 1' : '1 /span 2'}}>

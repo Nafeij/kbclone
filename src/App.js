@@ -442,10 +442,15 @@ class App extends React.Component{
         },
       ],
       modAIInd : (i)=>this.modAIInd(i),
+      modSetAIInd: (i)=>this.modSetAIInd(i),
       fadeAway : false,
       onFade : ()=>{}
     }
-    this.keyManager.push([-1, 0, 1], [()=>{this.startAIGame()},()=>{this.modAIInd(-1)},()=>{this.modAIInd(1)}])
+    this.keyManager.push([-1, 0, 1], [
+      ()=>{this.startAIGame()},
+      ()=>{this.modAIInd(-1)},
+      ()=>{this.modAIInd(1)}
+    ])
     this.keyManager.push(1, charSelectProps.buttons[1].onClick)
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
@@ -454,6 +459,24 @@ class App extends React.Component{
       this.setState({menuProps})
     }
     this.setState({menuProps, charSelectProps})
+  }
+
+  modAIInd(i){
+    const pLength = Profile.ai.length
+    // console.log(this.state.selectedAIInd)
+    if ((this.state.selectedAIInd > 0 && i === -1) 
+      || (this.state.selectedAIInd < pLength - 1 && i === 1)) {
+        this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
+      }
+    else this.shakeSelect()
+  }
+
+  modSetAIInd(i){
+    if (i > 0 || i <= -1){ return }
+    const pLength = Profile.ai.length, selectedAIInd = Math.round(pLength * -i)
+    if (selectedAIInd !== this.state.selectedAIInd){
+      this.setState({selectedAIInd})
+    }
   }
 
   showFlytext(text){
@@ -700,13 +723,6 @@ class App extends React.Component{
       this.setState({serverSetupProps})
     }
     this.setState({serverSetupProps})
-  }
-
-  modAIInd(i){
-    const pLength = Profile.ai.length
-    // console.log(this.state.selectedAIInd)
-    if ((this.state.selectedAIInd > 0 && i === -1) || (this.state.selectedAIInd < pLength - 1 && i === 1)) this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
-    else this.shakeSelect()
   }
 
   shakeSelect(){
