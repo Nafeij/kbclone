@@ -1295,8 +1295,8 @@ width: auto;
 	pointer-events: none !important;
 }
 
-@media screen and (max-width: 1000px) {
-	.fcontain:last-child, .symb.backSymb {display: none;}
+@media screen and (max-width: 900px) {
+	.fcontain:not(.mobile), .symb.backSymb {display: none !important;}
 }
 
 @media (min-width: 820px){

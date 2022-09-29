@@ -801,7 +801,7 @@ class App extends React.Component{
         {(flytextProps) ? <Flytext {...flytextProps} /> : null}
         <Loading show={isLoading}/>
         <div className='footer'>
-          <div className="fcontain" style={{display : gameProps ? 'flex' : 'none'}} onClick={()=>{
+          <div className="fcontain mobile" style={{display : gameProps ? 'flex' : 'none'}} onClick={()=>{
                           /* this.clearClickable() */
                           this.return()}}>
             <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
