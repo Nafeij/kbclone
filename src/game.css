@@ -1,7 +1,7 @@
 * {
 	-webkit-user-select: none;
 	user-select: none;
-	font-family: 'Markazi Text','Piazzolla','Scheherazade New','Times New Roman', Times, serif;
+	/* font-family: 'Markazi Text','Piazzolla','Scheherazade New','Times New Roman', Times, serif; */
 	line-height: 1.1em;
 }
 
@@ -161,7 +161,7 @@ width: auto;
 .graphicbox.dest .die::after {
 	display: block;
 	color: red;
-	font-size: 35vmin;
+	font-size: 25vmin;
 	position: absolute;
 	left: 50%;
 	translate: -50%;
