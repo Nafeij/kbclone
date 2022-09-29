@@ -204,6 +204,10 @@ width: auto;
 	aspect-ratio: 1;
 }
 
+.dragSymb {
+	aspect-ratio: 2;
+}
+
 .title {
 	width: 90vmin;
 	background-size: contain;
@@ -228,8 +232,8 @@ width: auto;
 }
 
 .arrowL, .arrowR {
-	width: 5vmin;
-	height: 3.89vmin;
+	width: 5vh;
+	height: 3.89vh;
 	background-repeat: no-repeat;
 	background-size: 2900%;
 	background-position: 99% 71%;
@@ -421,7 +425,7 @@ width: auto;
 	height: 100%;
 	box-sizing: border-box;
 	text-align: center;
-	font-size: 100%;
+	font-size: 1.8vmin;
 }
 
 .personal .menubox.settingsList.opponent .settingsItem .subtitle b {
@@ -700,6 +704,7 @@ width: auto;
 	top: 0;
 	translate: -50% -50%;
 	width: 96px;
+	z-index: 99;
 }
 
 .turnCounter p {

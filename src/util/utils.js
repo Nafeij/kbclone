@@ -17,6 +17,14 @@ export function defLength(array){
     return array.filter((e)=>(e !== null)).length
 }
 
+export function clamp(num, min, max){
+    return Math.min(Math.max(num, min), max)
+}
+
+export function strictMod(a,n){
+  return ((a % n) + n) % n;
+}
+
 export function firstSpace(array){
     for (let index = 0; index < array.length; index++) {
         if (!array[index]) return index

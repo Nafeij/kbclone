@@ -8,10 +8,11 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { caravanBounds, randomInRange } from './util/utils.js'
+import { caravanBounds, randomInRange, strictMod } from './util/utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
+import dkey from "./img/dkey.png"
 import Loading from './components/Loading.js'
 import Settings from './components/Settings.js'
 import Cookies from 'universal-cookie'
@@ -464,11 +465,12 @@ class App extends React.Component{
   modAIInd(i){
     const pLength = Profile.ai.length
     // console.log(this.state.selectedAIInd)
-    if ((this.state.selectedAIInd > 0 && i === -1) 
-      || (this.state.selectedAIInd < pLength - 1 && i === 1)) {
-        this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
-      }
-    else this.shakeSelect()
+    // if ((this.state.selectedAIInd > 0 && i === -1) 
+    //   || (this.state.selectedAIInd < pLength - 1 && i === 1)) {
+    //     this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
+    //   }
+    // else this.shakeSelect()
+    this.setState((prevstate)=>({selectedAIInd : strictMod(prevstate.selectedAIInd + i, pLength)}))
   }
 
   modSetAIInd(i){
@@ -806,6 +808,9 @@ class App extends React.Component{
           </div>
           <div className="fcontain">
             <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
+          </div>
+          <div className="fcontain" style={{display : charSelectProps ? 'flex' : 'none'}}>
+            <div className="symb dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
           </div>
         </div>
         {settingsProps ? <Settings {...settingsProps} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} cursor={cursor} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/> : null}

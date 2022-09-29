@@ -15,9 +15,7 @@ function CharSelect (props) {
 
     const {selectedAIInd, buttons, cursor, modAIInd, fadeAway, onFade, modSetAIInd} = props,
         translation = -selectedAIInd / Profile.ai.length,
-        translationName = selectedAIInd * -100,
-        leftend = selectedAIInd === 0,
-        rightend = selectedAIInd === Profile.ai.length - 1
+        translationName = selectedAIInd * -100
     let effect = null, cheat = false
     Profile.ai[selectedAIInd].effects.forEach(e=>{
         switch (e) {
@@ -40,14 +38,14 @@ function CharSelect (props) {
                         {Profile.ai.map((p, i)=>(
                             <div key={i} className="pfp simp" style={{
                                 backgroundImage: `url(${p.img})`,
-                                opacity: i === selectedAIInd ? 1 : .1,
-	                            scale: i === selectedAIInd ? '1' : '.8',
+                                opacity: i === selectedAIInd ? 1 : .2,
+	                            scale: i === selectedAIInd ? '1' : '.7',
                             }}/>
                         ))}
                     </SlidePane>
                 </div>
                 <div className="menubox across cselect">
-                    <div className={`arrowL ${leftend ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
+                    <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
                     <div className={`charInfo ${buttons[0].cursorID === cursor ? 'charInfohover' : ''}`} onClick={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{translate: translationName + '%'}}>
@@ -71,7 +69,7 @@ function CharSelect (props) {
                     </div>
                     : null}
                     </div>
-                    <div className={`arrowR ${rightend ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(1)} />
+                    <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(1)} />
                 </div>
                 <div className={`kbutton space ${buttons[1].cursorID === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
             </div>

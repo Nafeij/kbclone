@@ -1,8 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react";
-
-const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+import { clamp } from "../util/utils";
 
 class SlidePane extends React.Component{
 	constructor(props){
@@ -62,20 +61,14 @@ class SlidePane extends React.Component{
 	  e.stopPropagation()
 	  e.preventDefault()
   }
-
-  strictMod(a,n){
-    return ((a % n) + n) % n;
-  }
   
   onMouseMove(e) {
-    const {dragging, relX, initTranslate, translateX} = this.state,
-      sepRatio = 0.5/this.props.numSep
+    const {dragging, relX, initTranslate, translateX} = this.state
     if (!dragging) return
     const width = this.selfRef.current.clientWidth,
       delta = (e.pageX - relX) / width
     this.setState({
-      // translateX: clamp(delta + initTranslate, -((this.props.numSep-1)/this.props.numSep),0),
-      translateX: this.strictMod((delta+initTranslate-sepRatio),-1)+sepRatio,
+      translateX: clamp(delta + initTranslate, -((this.props.numSep-1)/this.props.numSep),0),
     }, ()=>{
       // console.log(delta + ' ' + this.props.numSep)
       this.props.releaseCallback(translateX)
@@ -85,24 +78,16 @@ class SlidePane extends React.Component{
   }
   
   render(){
+    const translateX = this.state.dragging ? this.state.translateX : this.props.translateX
     return (
-      <div>
-        <div className="slidePane"
-          ref={this.selfRef} 
-          style={{
-            translate: (this.state.dragging ? this.state.translateX : this.props.translateX)*100 + '%',
-            transition: this.state.dragging ? 'none' : '.3s'
-          }}>
-          {this.props.children}
-        </div>
-        <div className="slidePane"
-          style={{
-            translate: (this.state.dragging ? this.state.translateX : this.props.translateX)*100 + (this.state.translateX < -.5 ? 100:-100) + '%',
-            transition: this.state.dragging ? 'none' : '.3s'
-          }}>
-          {this.props.children}
-        </div>
-      </div>
+      <div className="slidePane"
+      ref={this.selfRef} 
+      style={{
+        translate: translateX *100 + '%',
+        transition: this.state.dragging ? 'none' : '.3s',
+      }}>
+      {this.props.children}
+     </div>
     )
   }
 }
