@@ -1073,17 +1073,10 @@ width: auto;
 	filter: grayscale(80%) brightness(60%);
 }
 
-.pfp.simp, .pfp.simphover{
+.pfp.simp{
 	width: 25vmin;
 	filter: none;
-	opacity: 0;
-	scale: .8;
-	margin-right: -15vmin;
-}
-
-.pfp.simphover{
-	opacity: 1;
-	scale: 1;
+	margin-right: -4vmin;
 }
 
 .ssBox.profile .pfp {

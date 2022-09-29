@@ -472,8 +472,9 @@ class App extends React.Component{
   }
 
   modSetAIInd(i){
-    if (i > 0 || i <= -1){ return }
-    const pLength = Profile.ai.length, selectedAIInd = Math.round(pLength * -i)
+    const pLength = Profile.ai.length
+    if (i > 0.5/pLength || i <= -1){ return }
+    const selectedAIInd = Math.round((pLength * -i)%(pLength-0.5))
     if (selectedAIInd !== this.state.selectedAIInd){
       this.setState({selectedAIInd})
     }
