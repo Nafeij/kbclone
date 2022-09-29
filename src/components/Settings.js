@@ -113,7 +113,7 @@ function Settings (props) {
                             <div className="subtitle">Most Destroyed in a Turn: {aggregate[1].mostDestroyedTurn + 0}</div>
                             <div className="subtitle">Board Clears: {aggregate[1].numClears + 0}</div>
                             <div className="subtitle">Most Clears in a Game: {aggregate[1].mostClears + 0}</div>
-                            <div className="subtitle">Playtime: {aggregate.time ? timeFormatLong(aggregate.time / 1000) : 'None'}</div>
+                            <div className="subtitle">Playtime: {newAggregate.time ? timeFormatLong(newAggregate.time / 1000) : 'None'}</div>
                             <div className="subtitle">Fastest Win: {aggregate[1].fastestWinTime ? timeFormatLong(aggregate[1].fastestWinTime / 1000) : 'None'}</div>
                             <div className="subtitle">Fastest Defeat: {aggregate[0].fastestWinTime ? timeFormatLong(aggregate[0].fastestWinTime / 1000) : 'None'}</div>
                         </div>
