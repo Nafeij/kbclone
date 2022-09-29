@@ -583,7 +583,7 @@ class Game extends React.Component {
         }
         
         if (ignoreFull) return numDice[turn] >= max
-        return numDice[!turn+0] >= max
+        return numDice[!turn+0] >= max || numDice[turn] >= max
         // return diceMatrix[turn].flat().filter(e=>e).length > 4
     }
 
