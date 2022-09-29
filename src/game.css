@@ -245,7 +245,7 @@ width: auto;
 }
 
 .arrowL{
-	scale: -1 1;
+	transform: scaleX(-1);
 }
 
 .arrowL:not(.greyed):hover, .arrowR:not(.greyed):hover {
@@ -426,11 +426,7 @@ width: auto;
 	height: 100%;
 	box-sizing: border-box;
 	text-align: center;
-	font-size: 1.8vmin;
-}
-
-.personal .menubox.settingsList.opponent .settingsItem .subtitle b {
-	font-size: 1.6em;
+	font-size: 1.5vmin;
 }
 
 .menubox.across.personal .menubox.misc .subtitle:first-child {
