@@ -138,29 +138,30 @@ width: auto;
 	position: absolute;
 }
 
+.graphicbox.match .die:last-child::after {
+	bottom: 170%;
+	left: auto;
+	right: 0;
+	rotate: 135deg;
+	top: auto;
+	translate: -50% 0;
+}
+
 .graphicbox.match .die::after {
-	color: rgb(19, 10, 3);
+	color: #130a03;
+	content: "☇";
 	font-size: 13vmin;
+	left: 0;
 	position: absolute;
 	rotate: -45deg;
-	translate: -50% -50%;
-	left: 26%;
-	top: 62%;
-	content: '☇';
-}
-.graphicbox.match .die:last-child::after {
-	rotate: 135deg;
-	translate:-50% -50%;
-	left: auto;
-	top: auto;
-	bottom: 142%;
-	right: 57%;
+	top: 170%;
+	translate: 50% 0;
 }
 
 .graphicbox.dest .die::after {
 	display: block;
 	color: red;
-	font-size: 19vmin;
+	font-size: 35vmin;
 	position: absolute;
 	left: 50%;
 	translate: -50%;
@@ -689,7 +690,6 @@ width: auto;
 
 .turnCounter {
 	align-items: center;
-	aspect-ratio: 1;
 	background: #111;
 	border: .5em solid #e80016;
 	border-radius: 50%;
@@ -703,17 +703,18 @@ width: auto;
 	position: absolute;
 	top: 0;
 	translate: -50% -50%;
-	width: 96px;
+	width: 9vmin;
+	height: 9vmin;
 	z-index: 99;
 }
 
 .turnCounter p {
-	font-size: 2.5vh;
+	font-size: 3vmin;
 	margin: 0;
 }
 
 .turnCounter p:last-child {
-	font-size: .8vh;
+	font-size: .8vmin;
 }
   
 /* .react-switch-label:active .react-switch-button {
