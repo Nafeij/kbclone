@@ -7,7 +7,7 @@ KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the La
 ## Features
 
 - Local and P2P Multiplayer
-- AI: Shack and Boss NPCs with difficulty scaling
+- AI: Lonely Shack and Boss NPCs with difficulty scaling
 - Mobile-friendly (kind of)
 - Keyboard Controls
 - Settings, customizations and gamemodes
@@ -16,13 +16,13 @@ KnuckleClone is a web-based adaptation of the dice minigame from [Cult of the La
 
 ## Notice
 
-This application uses persistent cookies to save your preferences, settings and statistics. Please create an exception in your browser settings for this site if you wish to experience these features.
+This app uses persistent cookies to save your preferences, settings and statistics. Please create an exception for this website in your browser settings if you wish to experience these features.
 
 ## Attributions
 
 All assets are either original or reproductions. Original rights and intellectual properties belong to Massive Monster.
 
-Art and assets generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
+Art generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
 
 #### CULT OF THE LAMB
 
