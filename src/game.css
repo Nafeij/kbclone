@@ -1093,12 +1093,12 @@ width: auto;
 
 .charInfo {
 	display: grid;
-	gap: 1.75rem;
+	gap: 4vmin;
 	background-color: #232822;
 	border: solid red;
 	border-width: 0;
 	transition: .3s;
-	padding: 3vmin 4vmin 5vmin 4vmin;
+	padding: 4vmin;
 	min-width: 30vmin;
 	min-height: 13vmin;
 	margin: 1em 0;

@@ -14,21 +14,21 @@ class SlidePane extends React.Component{
       wrapSwitch: false
 		}
     this.selfRef = React.createRef();
-    this.onMouseUp = this.onMouseUp.bind(this)
-    this.onMouseMove = this.onMouseMove.bind(this)
-    this.onMouseDown = this.onMouseDown.bind(this)
-    document.addEventListener('mousedown', this.onMouseDown)
+    this.onPointerUp = this.onPointerUp.bind(this)
+    this.onPointerMove = this.onPointerMove.bind(this)
+    this.onPointerDown = this.onPointerDown.bind(this)
+    document.addEventListener('pointerdown', this.onPointerDown)
   }
   
   componentDidUpdate(props,state){
   	if (this.state.dragging && !state.dragging) {
-      document.addEventListener('mousemove', this.onMouseMove)
-      document.addEventListener('mouseup', this.onMouseUp)
-      document.removeEventListener('mousedown', this.onMouseDown)
+      document.addEventListener('pointermove', this.onPointerMove)
+      document.addEventListener('pointerup', this.onPointerUp)
+      document.removeEventListener('pointerdown', this.onPointerDown)
     } else if (!this.state.dragging && state.dragging) {
-      document.removeEventListener('mousemove', this.onMouseMove)
-      document.removeEventListener('mouseup', this.onMouseUp)
-      document.addEventListener('mousedown', this.onMouseDown)
+      document.removeEventListener('pointermove', this.onPointerMove)
+      document.removeEventListener('pointerup', this.onPointerUp)
+      document.addEventListener('pointerdown', this.onPointerDown)
       // this.props.releaseCallback(this.state.translateX)
     } else if (this.props.hasWrapped && !props.hasWrapped){
       this.setState({wrapSwitch : !state.wrapSwitch})
@@ -36,13 +36,13 @@ class SlidePane extends React.Component{
   }
 
   componentWillUnmount(){
-    document.removeEventListener('mousemove', this.onMouseMove)
-    document.removeEventListener('mouseup', this.onMouseUp)
-    document.removeEventListener('mousedown', this.onMouseDown)
+    document.removeEventListener('pointermove', this.onPointerMove)
+    document.removeEventListener('pointerup', this.onPointerUp)
+    document.removeEventListener('pointerdown', this.onPointerDown)
   }
   
-  onMouseDown(e){
-	  // only left mouse button
+  onPointerDown(e){
+	  // only left pointer button
     if (this.state.dragging || e.button !== 0) return
     const rect = this.selfRef.current.getBoundingClientRect()
     if (e.pageY < rect.top || e.pageY > rect.bottom) return
@@ -56,7 +56,7 @@ class SlidePane extends React.Component{
 	  e.preventDefault()
   }
   
-  onMouseUp(e) {
+  onPointerUp(e) {
 	  this.setState({
       dragging: false,
       initTranslate: null
@@ -65,7 +65,7 @@ class SlidePane extends React.Component{
 	  e.preventDefault()
   }
   
-  onMouseMove(e) {
+  onPointerMove(e) {
     const {dragging, relX, initTranslate, translateX, wrapSwitch} = this.state,
     sepRatio = 0.5/this.props.numSep
     if (!dragging) return
