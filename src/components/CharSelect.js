@@ -13,7 +13,8 @@ import SlidePane from "./SlidePane";
 
 function CharSelect (props) {
 
-    const {selectedAIInd, buttons, cursor, modAIInd, fadeAway, onFade, modSetAIInd} = props,
+    const {selectedAIInd, buttons, cursor, modAIInd, 
+            fadeAway, onFade, modSetAIInd, hasWrapped} = props,
         translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100
     let effect = null, cheat = false
@@ -34,12 +35,12 @@ function CharSelect (props) {
             <div className='menubox'>
                 <div className='subtitle'><Squiggle/>Select Opponent<Squiggle/></div>
                 <div className="slidePaneContainer">
-                    <SlidePane translateX={translation} releaseCallback={modSetAIInd} numSep={Profile.ai.length}>
+                    <SlidePane translateX={translation} hasWrapped={hasWrapped} releaseCallback={modSetAIInd} numSep={Profile.ai.length}>
                         {Profile.ai.map((p, i)=>(
                             <div key={i} className="pfp simp" style={{
                                 backgroundImage: `url(${p.img})`,
-                                opacity: i === selectedAIInd ? 1 : .2,
-	                            scale: i === selectedAIInd ? '1' : '.7',
+                                opacity: i === selectedAIInd ? 1 : .6,
+	                            scale: i === selectedAIInd ? '1' : '.8',
                             }}/>
                         ))}
                     </SlidePane>

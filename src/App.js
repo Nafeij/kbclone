@@ -445,6 +445,7 @@ class App extends React.Component{
       modAIInd : (i)=>this.modAIInd(i),
       modSetAIInd: (i)=>this.modSetAIInd(i),
       fadeAway : false,
+      hasWrapped: false,
       onFade : ()=>{}
     }
     this.keyManager.push([-1, 0, 1], [
@@ -463,14 +464,17 @@ class App extends React.Component{
   }
 
   modAIInd(i){
-    const pLength = Profile.ai.length
+    const pLength = Profile.ai.length, 
+      {charSelectProps, selectedAIInd} = this.state,
+      newInd = selectedAIInd + i
     // console.log(this.state.selectedAIInd)
     // if ((this.state.selectedAIInd > 0 && i === -1) 
     //   || (this.state.selectedAIInd < pLength - 1 && i === 1)) {
     //     this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
     //   }
     // else this.shakeSelect()
-    this.setState((prevstate)=>({selectedAIInd : strictMod(prevstate.selectedAIInd + i, pLength)}))
+    charSelectProps.hasWrapped = newInd < 0 || newInd > pLength-1
+    this.setState({selectedAIInd : strictMod(newInd, pLength), charSelectProps})
   }
 
   modSetAIInd(i){
