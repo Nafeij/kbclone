@@ -28,7 +28,9 @@ function ServerSetup (props) {
             </div> : null}
             {!showProfiles ?
             <div className={`ssBox ${lock ? 'lock' : ''}`}>
-                <input className={shake ? 'shake' : ''} value={roomID} type='text' placeholder="XXXX" size="4" readOnly={lock} onFocus={onFocus} onBlur={onBlur} maxLength="4" onChange={evt => setID(evt)} onAnimationEnd={onShakeDone}/>
+                <span>
+                    <input className={shake ? 'shake' : ''} value={roomID} type='text' placeholder="XXXX" size="4" readOnly={lock} onFocus={onFocus} onBlur={onBlur} maxLength="4" onChange={evt => setID(evt)} onAnimationEnd={onShakeDone}/>
+                </span>
                 <div className="menubox across ssinner" >
                     {Array(buttons.length - 2).fill().map((_,i)=>button(i+2))}
                 </div>

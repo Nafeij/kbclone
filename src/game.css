@@ -61,7 +61,7 @@ body {
 }
 
 .menubox {
-	z-index: 1;
+	z-index: 0;
 	flex: 1 1;
 	display: flex;
 	align-items: center;
@@ -69,6 +69,10 @@ body {
 	text-align: center;
 	width: 100vw;
 	justify-content: center;
+}
+
+.menu > .menubox{
+	z-index: 1;
 }
 
 .menubox .kbutton {
@@ -567,6 +571,11 @@ width: auto;
 	display: flex;
 	flex: 1 1 4em;
 	align-items: center;
+	z-index: 0;
+}
+
+.settingsItem:hover, .settingsItem.hovering{
+	z-index: 1;
 }
 
 .settingInput {
@@ -611,7 +620,8 @@ width: auto;
 	z-index: 0;
 }
 
-.settingInput .menubox:hover, .settingsItem.hovering .settingInput .menubox {
+.settingInput .menubox:hover, 
+.settingInput .menubox.hovering{
 	z-index: 1;
 }
 
@@ -628,12 +638,11 @@ width: auto;
 	position: absolute;
 	translate: -50% 0;
 	left: 50%;
-	z-index: 0;
 }
 
-.testColor:hover .pickWrapper, .testColor.hovering .pickWrapper, .pickWrapper:hover{
+.settingInput .menubox:hover .pickWrapper, 
+.settingInput .menubox.hovering .pickWrapper{
 	display: block;
-	z-index: 1;
 }
 
 .react-switch-checkbox {
@@ -1012,6 +1021,7 @@ width: auto;
 	background: #171916;
 	border: none;
 	box-shadow: 2px 2px #d52f2f;
+	caret-color: #d52f2f;
 	color: white;
 	outline: none;
 	padding: 0.5em;
@@ -1025,11 +1035,26 @@ width: auto;
 	text-transform: uppercase;
 }
 
-.ssBox input:last-child {
+.ssBox input:last-child:not(:first-child) {
 	text-transform: none;
 	letter-spacing: 0;
 	flex: 3;
 	width: 0;
+}
+
+.ssBox span {
+	position: relative;
+}
+
+.ssBox.lock span::after {
+	content: "copied to clipboard";
+	position: absolute;
+	bottom: -10%;
+	translate: 0 100%;
+	left: 0;
+	width: 100%;
+	font-size: calc(.5vh + .5vw);
+	opacity: 0.5;
 }
 
 .ssBox input:focus{

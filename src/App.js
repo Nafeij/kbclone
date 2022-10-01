@@ -633,6 +633,7 @@ class App extends React.Component{
       this.showFlytext("Connection Failed")
       this.shakeServer()
     })
+    navigator.clipboard.writeText(roomID)
     this.setState({serverSetupProps, username, roomID, isLoading : true})
   }
 
@@ -767,7 +768,6 @@ class App extends React.Component{
   return(callback = ()=>{}){
     // this.clearClickable()
     // this.keyManager.clicked = false
-    window.removeEventListener("resize", this.graphicOnResize)
     this.keyManager.initCursorUpdate(()=>{
       this.setState({cursor: this.keyManager.cursor})
     })

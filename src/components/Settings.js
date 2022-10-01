@@ -80,7 +80,7 @@ function Settings (props) {
             {showProfiles ? <div className="scrollContainer">
                 <div className="formGrid">
                     {Profile.cosm.map((p,i)=>(
-                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/4) && pcursor === i % 4? 'hovering':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/4) && pcursor === i % 4? 'hovering':''}`} loading='lazy' style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
                     ))}
                 </div>
             </div> : null}
@@ -130,7 +130,7 @@ function Settings (props) {
                                         }</div>
                                         <div key={i*6+5} className='subtitle'>High Score: {p.sideBreakdown[0].highestScore ? p.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(p.time / 1000)}</div>
                                     </div>
-                                    <div key={i*6+1} className='pfp' style={{backgroundImage: `url(${Profile.ai[p.profileInd].img})`}}/>
+                                    <div key={i*6+1} className='pfp' loading='lazy' style={{backgroundImage: `url(${Profile.ai[p.profileInd].img})`}}/>
                                 </div>
                             ))}
                         </div>
@@ -147,7 +147,7 @@ function Settings (props) {
                                         }</div>
                                         <div className='subtitle'>High Score: {statsProps.pvpBreakdown.sideBreakdown[0].highestScore ? statsProps.pvpBreakdown.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(statsProps.pvpBreakdown.time / 1000)}</div>
                                     </div>
-                                    <div className='pfp' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, scale : '-1 1'}}/>
+                                    <div className='pfp' loading='lazy' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, scale : '-1 1'}}/>
                                 </div>
                             </div>
                         : null}
@@ -164,9 +164,9 @@ function Settings (props) {
                 <div className={`settingsItem ${4 + offset === cursor ? 'hovering' : ''}`}>
                     <div className='subtitle'>Colors</div>
                     <div className="settingInput">
-                        <div className="menubox">
+                        <div className={`menubox ${4 + offset === cursor && 0 === pcursor? 'hovering' : ''}`}>
                             Dice: 
-                            <div className={`testColor ${4 + offset === cursor && 0 === pcursor? 'hovering' : ''}`} style={{background: diceColor[1]}}>
+                            <div className="testColor" style={{background: diceColor[1]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceColor[1]} onChange={(color)=>{
                                         modColor('diceColor',1,color)
@@ -174,17 +174,17 @@ function Settings (props) {
                                 </div>
                             </div>
                         </div>
-                        <div className="menubox">
+                        <div className={`menubox ${4 + offset === cursor && 1 === pcursor? 'hovering' : ''}`}>
                             Border: 
-                            <div className={`testColor ${4 + offset === cursor && 1 === pcursor? 'hovering' : ''}`} style={{background: diceBorder[1]}}>
+                            <div className="testColor" style={{background: diceBorder[1]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceBorder[1]} onChange={(color)=>{modColor('diceBorder',1,color)}}/>
                                 </div>
                             </div>
                         </div>
-                        <div className="menubox">
+                        <div className={`menubox ${4 + offset === cursor && 2 === pcursor? 'hovering' : ''}`}>
                             Pip: 
-                            <div className={`testColor ${4 + offset === cursor && 2 === pcursor? 'hovering' : ''}`} style={{background: pipColor[1]}}>
+                            <div className="testColor" style={{background: pipColor[1]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={pipColor[1]} onChange={(color)=>{modColor('pipColor',1,color)}}/>
                                 </div>
@@ -195,25 +195,27 @@ function Settings (props) {
                 <div className={`settingsItem ${5 + offset === cursor ? 'hovering' : ''}`}>
                     <div className='subtitle'>Opponent Colors</div>
                     <div className="settingInput">
-                        <div className="menubox">
+                        <div className={`menubox ${5 + offset === cursor && 0 === pcursor? 'hovering' : ''}`}>
                             Dice: 
-                            <div className={`testColor ${5 + offset === cursor && 0 === pcursor? 'hovering' : ''}`} style={{background: diceColor[0]}}>
+                            <div className="testColor" style={{background: diceColor[0]}}>
                                 <div className="pickWrapper" >
-                                    <SketchPicker color={diceColor[0]} onChange={(color)=>{modColor('diceColor',0,color)}}/>
+                                    <SketchPicker color={diceColor[0]} onChange={(color)=>{
+                                        modColor('diceColor',0,color)
+                                    }}/>
                                 </div>
                             </div>
                         </div>
-                        <div className="menubox">
+                        <div className={`menubox ${5 + offset === cursor && 1 === pcursor? 'hovering' : ''}`}>
                             Border: 
-                            <div className={`testColor ${5 + offset === cursor && 1 === pcursor? 'hovering' : ''}`} style={{background: diceBorder[0]}}>
+                            <div className="testColor" style={{background: diceBorder[0]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceBorder[0]} onChange={(color)=>{modColor('diceBorder',0,color)}}/>
                                 </div>
                             </div>
                         </div>
-                        <div className="menubox">
+                        <div className={`menubox ${5 + offset === cursor && 2 === pcursor? 'hovering' : ''}`}>
                             Pip: 
-                            <div className={`testColor ${5 + offset === cursor && 2 === pcursor? 'hovering' : ''}`} style={{background: pipColor[0]}}>
+                            <div className="testColor" style={{background: pipColor[0]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={pipColor[0]} onChange={(color)=>{modColor('pipColor',0,color)}}/>
                                 </div>

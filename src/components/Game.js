@@ -188,7 +188,6 @@ class Game extends React.Component {
             },100);
             setTimeout(() => {
                 clearInterval(interval)
-                window.addEventListener("resize", ()=>{this.heightOnResize()})
                 const {diceMatrix, sideProps, turn, gameTime} = this.state
                 const {profile , newDice} = sideProps[turn]
                 if (this.props.settings.gameType === 'PVP'){
@@ -381,7 +380,6 @@ class Game extends React.Component {
                 const diceMatrix = this.state.diceMatrix.slice()
                 if (srcPos !== null) diceMatrix[turn][tubId][srcPos] = null
                 diceMatrix[turn][tubId][destPos] = newDice
-                window.removeEventListener("resize", this.heightOnResize)
                 // if (srcPos) console.log(newDice)
                 return this.updateCurrSide({newDice:null}, {diceMatrix}, ()=>{
                     resolve(num)
@@ -874,24 +872,20 @@ class Game extends React.Component {
             newDice.height = this.boxMin() * scale
             updateCurrSide({newDice : newDice})
         } catch (e) {}
-/*         if (this.state && this.state.sideProps && sideProps && this.state.tubProps[0].boxRefs[0].current) {
-            const newDice = this.state.newDice
-            newDice.height = this.boxHeight() * scale
-            this.setState({newDice : newDice}) 
-        } */
     }
 
     tubSizeOnResize(){
-        let {sideProps} = this.state
-        sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
-        this.setState({sideProps})
+        try{
+            let {sideProps} = this.state
+            sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
+            this.setState({sideProps})
+        } catch (e) {}
     }
 
 
     componentDidMount(){
         let {sideProps} = this.state
         sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
-        window.addEventListener("resize", ()=>{this.tubSizeOnResize()})
         if (this.props.settings.gameType === 'PVP'){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
@@ -900,10 +894,13 @@ class Game extends React.Component {
             return
         }
         this.setState({turn : randomInRange(2), sideProps})
+        window.addEventListener("resize", this.heightOnResize)
+        window.addEventListener("resize", this.tubSizeOnResize)
     }
 
     componentWillUnmount(){
-        window.removeEventListener("resize", ()=>{this.tubSizeOnResize()})
+        window.removeEventListener("resize", this.tubSizeOnResize)
+        window.removeEventListener("resize", this.heightOnResize)
     }
 
     render(){
