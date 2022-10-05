@@ -5,7 +5,7 @@ import Die from "./Die"
 
 const mDieProps = {
   diceColor: "#ecd77a",
-  diceBorder: "#cdbe60",
+  diceBorder: "#cdbe61",
   num : 6,
   height : '46%'
 }
