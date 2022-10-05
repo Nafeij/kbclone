@@ -25,13 +25,9 @@ import img23 from "../img/23.png"
 import img24 from "../img/24.png"
 import img25 from "../img/25.png"
 import img26 from "../img/26.png"
-
 import img27 from "../img/27.png"
-
 import img28 from "../img/28.png"
-
 import img29 from "../img/29.png"
-
 import img30 from "../img/30.png"
 
 
