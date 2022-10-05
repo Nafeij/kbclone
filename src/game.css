@@ -9,7 +9,7 @@ html {overflow: hidden;}
 
 body {
 	margin: 0;
-	background: linear-gradient(to right, rgb(17, 17, 17), rgba(17, 17, 17) 20%, rgb(0,0,17) 25%, rgb(137,118,100) 38%, rgb(137,118,100) 61%, rgb(187,0,17) 74%, rgba(17, 17, 17) 79%, rgba(17, 17, 17));
+	background: linear-gradient(to right, rgb(17, 17, 17), rgba(17, 17, 17) 20%, rgb(187,0,17) 25%, rgb(137,118,100) 38%, rgb(137,118,100) 61%, rgb(187,0,17) 74%, rgba(17, 17, 17) 79%, rgba(17, 17, 17));
 	overflow: hidden;
 	position: relative;
 	height: 100vh;
