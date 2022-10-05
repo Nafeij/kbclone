@@ -1,6 +1,6 @@
-import { randomSelect, numMatchingNum, randomInRange, score, bernou, scoreNumTub} from "./utils"
+import { randomSelect, randomInRange, scoreNumTub} from "./utils"
 
-export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
+export function evaluate(diceMatrix, num, profile, turn, settings, turnCount){
     const choices = possibleChoices(diceMatrix, turn, settings)
     if (Math.random() > profile.skill) {
         // console.log('misplay')
@@ -9,13 +9,17 @@ export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
 
     let maxWeight = -Infinity, bestChoices = []
     for (const choice of choices) {
+        const {weight, diceMatNew} = weighDie(num, diceMatrix, turn, choice, settings)
 
-        let currWeight = weighDie(num, diceMatrix, turn, choice, settings)
+        if (gameComplete(diceMatNew, turnCount, turn, settings)
+            && winner(diceMatNew, settings) === turn){
+            return choice
+        }
 
-        if (currWeight > maxWeight) {
-            maxWeight = currWeight
+        if (weight > maxWeight) {
+            maxWeight = weight
             bestChoices = [choice]
-        } else if (currWeight === maxWeight) {
+        } else if (weight === maxWeight) {
             bestChoices.push(choice)
         }
     }
@@ -53,7 +57,7 @@ export function evaluate(diceMatrix, num, profile, turn, numFaces, settings){
 
 export function scoreAll(num, diceMat, turn, choice, settings, getRaw = false){
     const {diceMatrix, changes} = executeMov(num, diceMat, choice, settings)
-    return {scores : scoreStatic(diceMatrix, settings, turn, getRaw), changes}
+    return {scores : scoreStatic(diceMatrix, settings, turn, getRaw), changes, diceMatrix}
 }
 
 function scoreStatic(diceMatrix, settings, playerSide, getRaw){
@@ -92,28 +96,77 @@ function executeMov(num, diceMatrix, choice, settings){
     return {diceMatrix,changes}
 }
 
+function gameComplete(diceMat, turnCount, turn, settings){
+    const {turnLimit, ignoreFull, tubLen, numTubs} = settings
+
+    const numDice = diceMat.map(s=>(s.flat().length)),
+        max = tubLen * numTubs
+    
+    if (turnLimit && turnCount <= -.5){
+        return true
+    }
+    
+    if (ignoreFull) return numDice[turn] >= max
+    return numDice[!turn+0] >= max || numDice[turn] >= max
+}
+
+function winner(diceMat, settings){
+    let scoreList
+    if (settings.caravan){
+        scoreList = diceMat.map(s=>(
+            s.map(t=>scoreNumTub(t)).filter(sc=>(
+                sc >= settings.caravan[0] && 
+                sc <= settings.caravan[1]
+            ))
+        ))
+        if (scoreList[1].length !== scoreList[0].length){
+            return (scoreList[1].length > scoreList[0].length) + 0
+        } else {
+            scoreList[0].sort().reverse()
+            scoreList[1].sort().reverse()
+            for (let i = 0; i < scoreList[0].length; i++) {
+                if (scoreList[1][i] !== scoreList[0][i]){
+                    return (scoreList[1][i] > scoreList[0][i]) + 0
+                }
+            }
+        }
+    } else {
+        scoreList = diceMat.map(s=>(
+            s.map(t=>scoreNumTub(t)).reduce((a,b)=>(a+b),0)
+        ))
+        if (scoreList[1] !== scoreList[0]) return (scoreList[1] > scoreList[0]) + 0
+    }
+    return -1
+}
+
 /* function gameComplete(position, settings){
     const {diceMatrix, turn} = position
     if (settings.ignoreFull) return diceMatrix[turn].flat().length === (settings.tubLen * settings.numTubs)
     return diceMatrix[!turn + 0].flat().length === (settings.tubLen * settings.numTubs)
 } */
 
-export function cheatDice(diceMatrix, turn, numFaces, settings){
+export function cheatDice(diceMatrix, turn, numFaces, settings, turnCount){
     // console.log('cheat')
     const choices = possibleChoices(diceMatrix, turn, settings)
-    let num = 1 + randomInRange(numFaces), bestChoice = randomSelect(choices), weight = -Infinity
+    let bestNum = 1 + randomInRange(numFaces), bestChoice = randomSelect(choices), maxWeight = -Infinity
     for (const choice of choices) {
-        for (let face = 1; face <= numFaces; face++){
-            let currWeight = weighDie(face, diceMatrix, turn, choice, settings)
+        for (let num = 1; num <= numFaces; num++){
+            
+            const {weight, diceMatNew} = weighDie(num, diceMatrix, turn, choice, settings)
 
-            if (currWeight > weight || (currWeight === weight && face > num)) {
-                weight = currWeight
+            if (gameComplete(diceMatNew, turnCount, turn, settings)
+                && winner(diceMatNew, settings) === turn){
+                return {num, side : choice.side, tub : choice.tub}
+            }
+    
+            if (weight > maxWeight || (weight === maxWeight && num > bestNum)) {
+                maxWeight = weight
                 bestChoice = choice
-                num = face
+                bestNum = num
             }
         }
     }
-    return {num, side : bestChoice.side, tub : bestChoice.tub}
+    return {num: bestNum, side : bestChoice.side, tub : bestChoice.tub}
 }
 
 /* function oppCost(num, diceMatrix, choice, numFaces, settings){
@@ -150,7 +203,8 @@ export function cheatDice(diceMatrix, turn, numFaces, settings){
 
 
 function weighDie(num, diceMatrix, turn, choice, settings){
-    return scoreAll(num, diceMatrix, turn, choice, settings).scores.flat().reduce((a,b)=>(a+b))
+    const {scores, _, diceMatrix:diceMatNew} = scoreAll(num, diceMatrix, turn, choice, settings)
+    return {weight:scores.flat().reduce((a,b)=>(a+b)), diceMatNew}
 }
 
 function cHeuristic(points, settings, tLen){
@@ -177,7 +231,7 @@ function possibleChoices(diceMatrix, side, settings){
 }
 
 /* function possibleChoices2(diceMatrix, side, settings, num){
-    const choices = new PriorityQueue({ comparator: function(a, b) { return b.w - a.w; }})
+    const choices = new PriorityQueue({ comparator: function(a, b) { return a.w - b.w; }})
     , oppSide = !side + 0
     for (let tub = 0; tub < settings.numTubs; tub++) {
         if (diceMatrix[side][tub].length < settings.tubLen){
@@ -188,15 +242,4 @@ function possibleChoices(diceMatrix, side, settings){
         }
     }
     return choices
-} */
-
-/* export function cheatDice(diceMatrix, turn){
-    const randinit = randomInRange(6) + 1
-    // const arr = diceMatrix.flat().flat().filter(n=>n)
-    const arr = diceMatrix.map((e,i)=>{
-        if (i === turn) return e.filter(t=>!isFull(t)).flat().filter(v=>v).map(v=>v.num)
-        else return e.flat().filter(v=>v).map(v=>v.num)
-    }).flat().filter(e=>e)
-    if (!arr.length) return randinit
-    return mostCommon(arr)[0]
 } */

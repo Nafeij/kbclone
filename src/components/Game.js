@@ -249,13 +249,13 @@ class Game extends React.Component {
                 } else if (this.props.settings.gameType === 'AI' && !turn){
                     const numMat = convertToNumMat(diceMatrix)
                     if(profile.effects.includes('cheat') && Math.random() > 0.5) {
-                        let best = cheatDice(numMat, turn, numFaces, this.props.settings)
+                        let best = cheatDice(numMat, turn, numFaces, this.props.settings, this.state.turnCount)
                         newDice.num = best.num
                         newDice.cheat = true
                         this.setState({sideProps},()=>{this.proccessTurn(best.tub, best.side)})
                         return
                     }
-                    const choice = evaluate(numMat, newDice.num, profile, turn, numFaces, this.props.settings)
+                    const choice = evaluate(numMat, newDice.num, profile, turn, this.props.settings, this.state.turnCount)
                     this.proccessTurn(choice.tub, choice.side)
                 } else {
                     this.setTubClickable()
@@ -446,8 +446,7 @@ class Game extends React.Component {
                 ))
             ))
             if (scoreList[1].length !== scoreList[0].length){
-                if (scoreList[1].length > scoreList[0].length) winnerInd = 1
-                else winnerInd = 0
+                winnerInd = (scoreList[1].length > scoreList[0].length) + 0
                 scoreList[0] = scoreList[0].length; scoreList[1] = scoreList[1].length
             } else {
                 scoreList[0].sort().reverse()
@@ -455,8 +454,7 @@ class Game extends React.Component {
                 let win = false
                 for (let i = 0; i < scoreList[0].length; i++) {
                     if (scoreList[1][i] !== scoreList[0][i]){
-                        if (scoreList[1][i] > scoreList[0][i]) winnerInd = 1
-                        else winnerInd = 0
+                        winnerInd = (scoreList[1][i] > scoreList[0][i]) + 0
                         scoreList[0] = scoreList[0][i]
                         scoreList[1] = scoreList[1][i]
                         win = true
@@ -472,11 +470,7 @@ class Game extends React.Component {
             scoreList = diceMatrix.map(s=>(
                 s.map(t=>scoreTub(t)).reduce((a,b)=>(a+b),0)
             ))
-            if (scoreList[1] > scoreList[0]){
-                winnerInd = 1
-            } else if (scoreList[1] < scoreList[0]){
-                winnerInd = 0
-            }
+            if (scoreList[1] !== scoreList[0]) winnerInd = (scoreList[1] > scoreList[0]) + 0
         }
 
         if (winnerInd >= 0){
@@ -795,7 +789,7 @@ class Game extends React.Component {
         if (isFull(diceMatrix[i][j])) return
         const settings = this.props.settings, newDice = sideProps[turn].newDice.num
         const numMat = convertToNumMat(diceMatrix)
-        const {scores, changes} = scoreAll(isHover ? newDice : null, numMat, turn, {side : i, tub : j}, settings, true)
+        const {scores, changes, _} = scoreAll(isHover ? newDice : null, numMat, turn, {side : i, tub : j}, settings, true)
         if (isHover) {
             changes.forEach(t=>{
                 diceMatrix[t.s][t.t][t.d].shrinkPreview = true
