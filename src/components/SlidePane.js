@@ -10,8 +10,7 @@ class SlidePane extends React.Component{
 			translateX: this.props.translateX,
       initTranslate: null,
       dragging: false,
-      relX: null,
-      wrapSwitch: false
+      relX: null
 		}
     this.selfRef = React.createRef();
     this.onPointerUp = this.onPointerUp.bind(this)
@@ -19,7 +18,7 @@ class SlidePane extends React.Component{
     this.onPointerDown = this.onPointerDown.bind(this)
     document.addEventListener('pointerdown', this.onPointerDown)
   }
-  
+
   componentDidUpdate(props,state){
   	if (this.state.dragging && !state.dragging) {
       document.addEventListener('pointermove', this.onPointerMove)
@@ -30,8 +29,6 @@ class SlidePane extends React.Component{
       document.removeEventListener('pointerup', this.onPointerUp)
       document.addEventListener('pointerdown', this.onPointerDown)
       // this.props.releaseCallback(this.state.translateX)
-    } else if (this.props.hasWrapped && !props.hasWrapped){
-      this.setState({wrapSwitch : !state.wrapSwitch})
     }
   }
 
@@ -40,7 +37,7 @@ class SlidePane extends React.Component{
     document.removeEventListener('pointerup', this.onPointerUp)
     document.removeEventListener('pointerdown', this.onPointerDown)
   }
-  
+
   onPointerDown(e){
 	  // only left pointer button
     if (this.state.dragging || e.button !== 0) return
@@ -55,7 +52,7 @@ class SlidePane extends React.Component{
 	  e.stopPropagation()
 	  e.preventDefault()
   }
-  
+
   onPointerUp(e) {
 	  this.setState({
       dragging: false,
@@ -64,9 +61,9 @@ class SlidePane extends React.Component{
 	  e.stopPropagation()
 	  e.preventDefault()
   }
-  
+
   onPointerMove(e) {
-    const {dragging, relX, initTranslate, translateX, wrapSwitch} = this.state,
+    const {dragging, relX, initTranslate, translateX} = this.state,
     sepRatio = 0.5/this.props.numSep
     if (!dragging) return
     const width = this.selfRef.current.clientWidth,
@@ -86,7 +83,7 @@ class SlidePane extends React.Component{
   renderPane(isFake){
     const translateX = this.state.dragging ? this.state.translateX : this.props.translateX,
       margin  = 1/this.props.numSep,
-      toMod = isFake ^ !this.state.wrapSwitch,
+      toMod = isFake ^ this.props.hasWrapped,
       toModTL = toMod ? (translateX < -.5+margin ? 100:-100) : 0,
       toModTR = toMod ? (translateX >= -.5 && translateX <= -.5+margin) : false
     return (
@@ -100,7 +97,7 @@ class SlidePane extends React.Component{
       </div>
     )
   }
-  
+
   render(){
     const maskSize = 50*Math.ceil(this.props.numSep)
     return (

@@ -99,13 +99,13 @@ class App extends React.Component{
       isLoading : false,
       settingChanged : false,
       gameSettingsProps : this.cookies.get('gameSettingsProps') || {
-        tubLen : 3, 
-        numTubs : 3, 
+        tubLen : 3,
+        numTubs : 3,
         diceColor : ['#f4ebceff','#f4ebceff'],
-        diceBorder : ['#d7cbb3ff', '#d7cbb3ff'], 
-        pipColor : ['#382020ff','#382020ff'], 
+        diceBorder : ['#d7cbb3ff', '#d7cbb3ff'],
+        pipColor : ['#382020ff','#382020ff'],
         // time : 120
-        time : null, 
+        time : null,
         pickable : false,
         ignoreFull : false,
         preview : false,
@@ -132,13 +132,13 @@ class App extends React.Component{
           mostClears : null,
           fastestWinTime : null,
         })),
-        aiBreakdown : Profile.ai.map((_,i)=>({profileInd : i, nGames : 0, 
+        aiBreakdown : Profile.ai.map((_,i)=>({profileInd : i, nGames : 0,
           sideBreakdown : Array(2).fill().map(()=>({
             nWins : null,
             highestScore : null,
           }))
         , time : 0})),
-        pvpBreakdown : {profileInd : null, name : null, nGames : 0, 
+        pvpBreakdown : {profileInd : null, name : null, nGames : 0,
           sideBreakdown : Array(2).fill().map(()=>({
             nWins : null,
             highestScore : null
@@ -378,7 +378,7 @@ class App extends React.Component{
             this.state.settingsProps.switchTab(newTab)
           }])
         if (destTab === 0){
-          this.keyManager.push([-1,0,1], 
+          this.keyManager.push([-1,0,1],
             [()=>{},()=>{if (this.state.gameSettingsProps.tubLen > 2) settingsProps.mod('tubLen',-1)},
             ()=>{if (this.state.gameSettingsProps.tubLen < 4) settingsProps.mod('tubLen',1)}])
           this.keyManager.push([-1,0,1], [
@@ -464,17 +464,18 @@ class App extends React.Component{
   }
 
   modAIInd(i){
-    const pLength = Profile.ai.length, 
+    const pLength = Profile.ai.length,
       {charSelectProps, selectedAIInd} = this.state,
-      newInd = selectedAIInd + i
+      newInd = selectedAIInd + i,
+      inbounds = (0 <= newInd && newInd <= pLength-1)
     // console.log(this.state.selectedAIInd)
-    // if ((this.state.selectedAIInd > 0 && i === -1) 
+    // if ((this.state.selectedAIInd > 0 && i === -1)
     //   || (this.state.selectedAIInd < pLength - 1 && i === 1)) {
     //     this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
     //   }
     // else this.shakeSelect()
-    charSelectProps.hasWrapped = newInd < 0 || newInd > pLength-1
-    this.setState({selectedAIInd : strictMod(newInd, pLength), charSelectProps})
+    charSelectProps.hasWrapped ^= !inbounds
+    this.setState({selectedAIInd : strictMod(newInd, pLength), charSelectProps,})
   }
 
   modSetAIInd(i){
@@ -682,8 +683,8 @@ class App extends React.Component{
     if(this.server.isHost){
       turn = randomInRange(2)
       this.server.send({
-        name, 
-        turn : !turn + 0, 
+        name,
+        turn : !turn + 0,
         gameSettingsProps,
         oppProfileInd : playProfileInd})
       let init = await this.server.recv()
@@ -700,7 +701,7 @@ class App extends React.Component{
         diceColor, diceBorder, pipColor,
         name : gameSettingsProps.name,
         playProfileInd : gameSettingsProps.playProfileInd,
-        oppName : init.name, 
+        oppName : init.name,
         oppProfileInd : init.oppProfileInd
       }
     }
@@ -795,10 +796,10 @@ class App extends React.Component{
   componentWillUnmount(){
     this.server.close()
   }
-  
+
   render(){
     const {flytextProps,isLoading,gameProps,settingsProps,gameSettingsProps,statsProps,
-      settingsRanges, cursor, settingChanged, serverSetupProps, roomID, charSelectProps, 
+      settingsRanges, cursor, settingChanged, serverSetupProps, roomID, charSelectProps,
       selectedAIInd, htProps, menuProps} = this.state
     return (
       <div>
