@@ -29,6 +29,9 @@ import img27 from "../img/27.png"
 import img28 from "../img/28.png"
 import img29 from "../img/29.png"
 import img30 from "../img/30.png"
+import img31 from "../img/31.png"
+import img32 from "../img/32.png"
+import img33 from "../img/33.png"
 
 
 /* const Profile = {
@@ -60,6 +63,9 @@ const Profile = {
         {img : img23, name : 'Kitty'},
         {img : img24, name : 'Zach'},
         {img : img25, name : 'Stoat'},
+        {img : img31, name : 'Conch'},
+        {img : img32, name : 'Margaret'},
+        {img : img33, name : 'Greggory'},
     ],
     ai : [
         {img : img1, name : 'Ratau', skill : .1, effects : []},
@@ -73,6 +79,6 @@ const Profile = {
         {img : img30, name : 'Narinder', skill : 1, effects : ['life3']},
         {img : img5, name : 'The Fox', skill : 1, effects : ['cheat']}
     ]
-} 
+}
 
 export default Profile
