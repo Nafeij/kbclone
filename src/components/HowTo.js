@@ -1,6 +1,6 @@
 /* eslint react/prop-types: 0 */
 
-import React, { forwardRef } from "react"
+import React from "react"
 import Die from "./Die"
 
 const mDieProps = {
@@ -34,14 +34,14 @@ const DestroyGraphic = () => (
 )
 
 function HowTo (props) {
-  
+
     const button = (msg)=>(
       <div className={`kbutton space ${props.cursorID === props.cursor ? 'hovering' : ''}`} onClick={() => props.onClick()}>{msg}</div>
     )
 
     // console.log(props.cursorID + ' : ' + props.cursor)
     // console.log(props.graphicwidth)
-  
+
     return (<div className='menu'>
       <div className='menubox'>
         <div className='subtitle'>~ HOW TO PLAY ∽</div>

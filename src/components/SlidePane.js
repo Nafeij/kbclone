@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react";
-import { clamp, strictMod } from "../util/utils";
+import { strictMod } from "../util/utils";
 
 class SlidePane extends React.Component{
 	constructor(props){

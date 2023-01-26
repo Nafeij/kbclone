@@ -97,7 +97,7 @@ class Game extends React.Component {
                 ]
             },
             cursor: this.keyManager.cursor,
-            turn: 0, 
+            turn: 0,
             rolled: false,
             slid: false,
             dkey: 0,
@@ -124,8 +124,8 @@ class Game extends React.Component {
             shrinkPreview: false,
             cheat: false,
             num: randomInRange(numFaces) + 1,
-            diceColor : this.props.settings.diceColor[turn], 
-            diceBorder : this.props.settings.diceBorder[turn], 
+            diceColor : this.props.settings.diceColor[turn],
+            diceBorder : this.props.settings.diceBorder[turn],
             pipColor : this.props.settings.pipColor[turn],
             zIndex: 1,
             onMovEnd: ()=>{},
@@ -363,7 +363,7 @@ class Game extends React.Component {
         const transY = destRect.y - srcRect.y + (destRect.height - srcRect.height) / 2
         if (srcPos === null){
             const orig = [...newDice.translate.matchAll(/-?\d+/g)].flat()
-            newDice.translate = (Math.round(transX) + Number(orig[0])) + "px " + 
+            newDice.translate = (Math.round(transX) + Number(orig[0])) + "px " +
                     (Math.round(transY) + Number(orig[1])) + "px"
             newDice.transitionTimingFunction = 'ease-in-out'
         } else {
@@ -387,7 +387,7 @@ class Game extends React.Component {
             }
             if (srcPos) this.setState({diceMatrix})
         })
-        
+
     }
 
     async proccessTurn(i, turn = this.state.turn){
@@ -437,11 +437,11 @@ class Game extends React.Component {
     async gameEnd(){
         const {statUpdate, settings} = this.props
         const {gameTime, diceMatrix, sideProps} = this.state
-        let winnerInd = -1, scoreList, time = Date.now() - gameTime 
+        let winnerInd = -1, scoreList, time = Date.now() - gameTime
         if (settings.caravan){
             scoreList = diceMatrix.map(s=>(
                 s.map(t=>scoreTub(t)).filter(sc=>(
-                    sc >= settings.caravan[0] && 
+                    sc >= settings.caravan[0] &&
                     sc <= settings.caravan[1]
                 ))
             ))
@@ -524,7 +524,8 @@ class Game extends React.Component {
             this.setState({flytextProps,isLoading : true})
             if(this.server.isHost){
                 this.server.send(!turn + 0)
-                const msg = await this.server.recv()
+                await this.server.recv()
+                //const msg = await this.server.recv()
                 // console.log(msg)
             } else {
                 turn = await this.server.recv()
@@ -563,7 +564,7 @@ class Game extends React.Component {
             s.prevDiceNum = numDice[i]
             return s
         })
-        
+
         if (turnLimit){
             if (turnCount <= -0.5){
                 this.setState({sideProps})
@@ -573,7 +574,7 @@ class Game extends React.Component {
         } else {
             this.setState({sideProps})
         }
-        
+
         if (ignoreFull) return numDice[turn] >= max
         return numDice[!turn+0] >= max || numDice[turn] >= max
         // return diceMatrix[turn].flat().filter(e=>e).length > 4
@@ -718,19 +719,17 @@ class Game extends React.Component {
             const numMatch = numMatchingDice(diceMatrix[turn][i], dice.num);
             newScore += dice.num * numMatch;
             switch (numMatch) {
-                case this.props.settings.tubLen:
-                    dice.diceColor = "#ecd77a"; 
-                    dice.diceBorder = "#cdbe61"; 
+                case this.props.settings.tubLen == 1:
+                    dice.diceColor = "#ecd77a";
+                    dice.diceBorder = "#cdbe61";
                     break;
-                case this.props.settings.tubLen - 1:
-                    if (this.props.settings.tubLen > 2){
-                        dice.diceColor = "#72adcf"; 
-                        dice.diceBorder = "#6297b6"; 
-                        break;
-                    }
+                case this.props.settings.tubLen > 2:
+                    dice.diceColor = "#72adcf";
+                    dice.diceBorder = "#6297b6";
+                    break;
                 default:
-                    dice.diceColor = this.props.settings.diceColor[turn]; 
-                    dice.diceBorder = this.props.settings.diceBorder[turn];  
+                    dice.diceColor = this.props.settings.diceColor[turn];
+                    dice.diceBorder = this.props.settings.diceBorder[turn];
                     break;
             }
         }
@@ -758,7 +757,7 @@ class Game extends React.Component {
                             resolve()
                         }
                         this.setState({tubProps})
-                    })                    
+                    })
                 } else {
                     this.setState({tubProps},()=>{
                         tubProp.animClass = 'shrink-out'
@@ -789,7 +788,7 @@ class Game extends React.Component {
         if (isFull(diceMatrix[i][j])) return
         const settings = this.props.settings, newDice = sideProps[turn].newDice.num
         const numMat = convertToNumMat(diceMatrix)
-        const {scores, changes, _} = scoreAll(isHover ? newDice : null, numMat, turn, {side : i, tub : j}, settings, true)
+        const [scores, changes ,] = scoreAll(isHover ? newDice : null, numMat, turn, {side : i, tub : j}, settings, true)
         if (isHover) {
             changes.forEach(t=>{
                 diceMatrix[t.s][t.t][t.d].shrinkPreview = true
@@ -815,15 +814,15 @@ class Game extends React.Component {
     renderSide(side){
         return (<Side
             {...this.state.sideProps[side]}
-            tubProps={this.state.tubProps[side]} 
-            diceMatrix={this.state.diceMatrix[side]} 
+            tubProps={this.state.tubProps[side]}
+            diceMatrix={this.state.diceMatrix[side]}
             turn={this.state.turn}
-            rollDice={() => this.rollDice()} 
+            rollDice={() => this.rollDice()}
             rolled={this.state.rolled}
             hasSlid={() => this.hasSlid()}
             slid={this.state.slid}
-            proccessClick={(i,t) => this.proccessClick(i,t)} 
-            onShakeAnimEnd={(i,t) => this.onShakeAnimEnd(i,t)} 
+            proccessClick={(i,t) => this.proccessClick(i,t)}
+            onShakeAnimEnd={(i,t) => this.onShakeAnimEnd(i,t)}
             onSideScoreAnimEnd={() => this.onSideScoreAnimEnd(side)}
             id={side}
             cursor={this.state.cursor}
@@ -847,7 +846,7 @@ class Game extends React.Component {
         }
     }
 
-    
+
     onShakeAnimEnd(i, turn){
         const tubProps = this.state.tubProps
         tubProps[turn][i].startShake = false
@@ -864,7 +863,7 @@ class Game extends React.Component {
         try{
             const newDice = this.state.sideProps[this.state.turn]
             newDice.height = this.boxMin() * scale
-            updateCurrSide({newDice : newDice})
+            this.updateCurrSide({newDice : newDice})
         } catch (e) {}
     }
 

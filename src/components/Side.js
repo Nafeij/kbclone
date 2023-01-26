@@ -3,7 +3,7 @@
 import React from "react"
 import Die from "./Die"
 import Tub from "./Tub"
-import { eleDimensions, timeFormat } from "../util/utils"
+import { timeFormat } from "../util/utils"
 import Bar from "./Bar"
 import rollerImg from "../img/sprites.png"
 import heartsImg from "../img/hearts.png"
@@ -25,7 +25,7 @@ class Side extends React.Component {
             clickable={this.props.tubsClickable}
             flip={this.props.id}
             proccessClick={() => {if (this.props.tubsClickable) this.props.proccessClick(i, id)}}
-            onShakeAnimEnd={() => this.props.onShakeAnimEnd(i, id)} 
+            onShakeAnimEnd={() => this.props.onShakeAnimEnd(i, id)}
             cursor={this.props.cursor}
         />)
     }
@@ -33,24 +33,24 @@ class Side extends React.Component {
     render(){
         const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd,
             profile, numTubs, name, rollRef, tubsRef, time, lives, maxLives, boxAspectRatio, tubLen, tubsDim} = this.props,
-            dname = name ? name : profile.name, 
+            dname = name ? name : profile.name,
             isTurn = turn === id,
             shakeClass = scoreShake && scoreShown ? 'shake' : '',
-            timer = time === null || profile.skill !== undefined ? null : 
+            timer = time === null || profile.skill !== undefined ? null :
                 <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/>,
             hBar = maxLives ? <Bar progress={(lives + 1) / 3}
                 fillImg={heartsImg}
-                dim={{width: '8.14vmin', height : '3vmin'}}/> 
+                dim={{width: '8.14vmin', height : '3vmin'}}/>
                 : null
         return (
             <div className="side" id={id ? "player" : "opponent"}>
             <div className="board">
-                <div 
+                <div
                     className='roller' onAnimationEnd={()=>{if (isTurn && !rolled){
                         // console.log('test')
                         hasSlid()
-                    }}}> 
-                    <div className={`rollbox ${isTurn && slid? "rollboxhover" : ""} ${profile.effects && !!profile.effects.length ? 'rollboxBoss' :''}`} 
+                    }}}>
+                    <div className={`rollbox ${isTurn && slid? "rollboxhover" : ""} ${profile.effects && !!profile.effects.length ? 'rollboxBoss' :''}`}
                         style={{backgroundImage: `url(${rollerImg})`}} ref={rollRef}>
                         {newDice ? <Die {...newDice} ref={newDice.fwdref}/> : null}
                     </div>
@@ -64,15 +64,15 @@ class Side extends React.Component {
                     </div>
                 </div>
                 <div className="info">
-                    <div className={`pfp ${isTurn && slid? "" : "pfphover"}`} 
-                        style={{ 
-                            backgroundImage: `url(${profile.img})`, 
+                    <div className={`pfp ${isTurn && slid? "" : "pfphover"}`}
+                        style={{
+                            backgroundImage: `url(${profile.img})`,
                             scale: (profile.skill === undefined && !id) ? '-1 1' : 'none'
                         }}
                     />
                     <h2 className="name"><Squiggle/>{dname}<Squiggle/></h2>
                     <div className={`scorebox ${shakeClass}`}
-                        style={{opacity : scoreShown || time !== null || maxLives !== null ? 1 : 0}} 
+                        style={{opacity : scoreShown || time !== null || maxLives !== null ? 1 : 0}}
                         onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}{hBar}</div>
                 </div>
             </div>

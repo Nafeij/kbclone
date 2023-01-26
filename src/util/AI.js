@@ -74,7 +74,7 @@ function scoreStatic(diceMatrix, settings, playerSide, getRaw){
         })
     ))
 }
-    
+
 function executeMov(num, diceMatrix, choice, settings){
     const onePos = diceMatrix[choice.side][choice.tub].length, changes = []
     let removeNum = null
@@ -101,11 +101,11 @@ function gameComplete(diceMat, turnCount, turn, settings){
 
     const numDice = diceMat.map(s=>(s.flat().length)),
         max = tubLen * numTubs
-    
+
     if (turnLimit && turnCount <= -.5){
         return true
     }
-    
+
     if (ignoreFull) return numDice[turn] >= max
     return numDice[!turn+0] >= max || numDice[turn] >= max
 }
@@ -115,7 +115,7 @@ function winner(diceMat, settings){
     if (settings.caravan){
         scoreList = diceMat.map(s=>(
             s.map(t=>scoreNumTub(t)).filter(sc=>(
-                sc >= settings.caravan[0] && 
+                sc >= settings.caravan[0] &&
                 sc <= settings.caravan[1]
             ))
         ))
@@ -151,14 +151,14 @@ export function cheatDice(diceMatrix, turn, numFaces, settings, turnCount){
     let bestNum = 1 + randomInRange(numFaces), bestChoice = randomSelect(choices), maxWeight = -Infinity
     for (const choice of choices) {
         for (let num = 1; num <= numFaces; num++){
-            
+
             const {weight, diceMatNew} = weighDie(num, diceMatrix, turn, choice, settings)
 
             if (gameComplete(diceMatNew, turnCount, turn, settings)
                 && winner(diceMatNew, settings) === turn){
                 return {num, side : choice.side, tub : choice.tub}
             }
-    
+
             if (weight > maxWeight || (weight === maxWeight && num > bestNum)) {
                 maxWeight = weight
                 bestChoice = choice
@@ -203,7 +203,7 @@ export function cheatDice(diceMatrix, turn, numFaces, settings, turnCount){
 
 
 function weighDie(num, diceMatrix, turn, choice, settings){
-    const {scores, _, diceMatrix:diceMatNew} = scoreAll(num, diceMatrix, turn, choice, settings)
+    const [scores,  , diceMatNew] = scoreAll(num, diceMatrix, turn, choice, settings)
     return {weight:scores.flat().reduce((a,b)=>(a+b)), diceMatNew}
 }
 

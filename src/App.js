@@ -305,7 +305,7 @@ class App extends React.Component{
       },
       modColor : (setting,side,color)=>{
         const gameSettingsProps = this.state.gameSettingsProps
-        const a = ((color.rgb.a * 255) | 1 << 8).toString(16).slice(1)
+        const a = (((color.rgb.a * 255) | 1) << 8).toString(16).slice(1)
         gameSettingsProps[setting][side] = color.hex + a
         this.setState({gameSettingsProps, settingChanged : true})
       },
