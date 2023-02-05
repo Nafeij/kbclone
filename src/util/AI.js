@@ -57,7 +57,7 @@ export function evaluate(diceMatrix, num, profile, turn, settings, turnCount){
 
 export function scoreAll(num, diceMat, turn, choice, settings, getRaw = false){
     const {diceMatrix, changes} = executeMov(num, diceMat, choice, settings)
-    return {scores : scoreStatic(diceMatrix, settings, turn, getRaw), changes, diceMatrix}
+    return [scoreStatic(diceMatrix, settings, turn, getRaw), changes, diceMatrix]
 }
 
 function scoreStatic(diceMatrix, settings, playerSide, getRaw){
