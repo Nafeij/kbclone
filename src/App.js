@@ -162,8 +162,8 @@ class App extends React.Component{
       if (i === winnerInd){
         side.fastestWinTime = side.fastestWinTime !== null ? Math.min(side.fastestWinTime, time) : time
         if (!gameSettingsProps.caravan){
-          const margin = side.closestWin.p - side.closestWin.o
-          const marginNew = scoreList[winnerInd] - scoreList[!winnerInd + 0]
+          const margin = side.closestWin.p / side.closestWin.o
+          const marginNew = scoreList[winnerInd] / scoreList[!winnerInd + 0]
           if (!side.closestWin.p || marginNew < margin) {
             side.closestWin.p = scoreList[winnerInd]
             side.closestWin.o = scoreList[!winnerInd + 0]
