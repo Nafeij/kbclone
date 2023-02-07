@@ -5,19 +5,22 @@
 	line-height: 1.1em;
 }
 
-html {overflow: hidden;}
+html {
+	overflow: hidden;
+	height: 100%;
+}
 
 body {
 	margin: 0;
 	background: linear-gradient(to right, rgb(17, 17, 17), rgba(17, 17, 17) 20%, rgb(187,0,17) 25%, rgb(137,118,100) 38%, rgb(137,118,100) 61%, rgb(187,0,17) 74%, rgba(17, 17, 17) 79%, rgba(17, 17, 17));
 	overflow: hidden;
 	position: relative;
-	height: 100vh;
+	height: 100%;
 }
 
 .menu {
 	position: absolute;
-	height: 100vh;
+	height: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -620,7 +623,7 @@ width: auto;
 	z-index: 0;
 }
 
-.settingInput .menubox:hover, 
+.settingInput .menubox:hover,
 .settingInput .menubox.hovering{
 	z-index: 1;
 }
@@ -640,7 +643,7 @@ width: auto;
 	left: 50%;
 }
 
-.settingInput .menubox:hover .pickWrapper, 
+.settingInput .menubox:hover .pickWrapper,
 .settingInput .menubox.hovering .pickWrapper{
 	display: block;
 }
@@ -660,7 +663,7 @@ width: auto;
 	left: 50%;
 	translate: -50% 0;
 }
-  
+
 .react-switch-label {
 	display: flex;
 	align-items: center;
@@ -674,7 +677,7 @@ width: auto;
 	margin: auto;
 	height: 5vmin;
 }
-  
+
 .react-switch-label .react-switch-button {
 	content: '';
 	position: absolute;
@@ -687,7 +690,7 @@ width: auto;
 	box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
 	aspect-ratio: 1/1;
 }
-  
+
 .react-switch-checkbox:checked + .react-switch-label .react-switch-button {
 	left: calc(100% - 4px);
 	translate: -100% 0;
@@ -721,7 +724,7 @@ width: auto;
 .turnCounter p:last-child {
 	font-size: .8vmin;
 }
-  
+
 /* .react-switch-label:active .react-switch-button {
 	width: 60px;
 } */
@@ -1400,13 +1403,13 @@ width: auto;
 		display: grid;
 		grid-template-rows: repeat(2,minmax(0,1fr));
 	}
-	
+
 	.side {
 		grid-row: 1 / span 1;
 		grid-column: 1 / 1;
 		max-height: none;
 	}
-	
+
 	#player {
 		grid-row: 2 / span 1;
 	}
@@ -1551,12 +1554,12 @@ width: auto;
 }
 
 @keyframes movUp {
-    from {top:100vh}
+    from {top:100%}
 	to {top:0}
 }
 
 @keyframes movDown {
-    from {top:-100vh}
+    from {top:-100%}
 	to {top:0}
 }
 
