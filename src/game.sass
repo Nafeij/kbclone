@@ -168,7 +168,7 @@ html
 
 body
   margin: 0
-  background: linear-gradient(to right, rgb(17, 17, 17), rgba(17, 17, 17) 20%, rgb(187, 0, 17) 25%, rgb(137, 118, 100) 38%, rgb(137, 118, 100) 61%, rgb(187, 0, 17) 74%, rgba(17, 17, 17) 79%, rgba(17, 17, 17))
+  background: linear-gradient(to right, rgb(67, 0, 17), rgb(187, 0, 17) 25%, rgb(137, 118, 100) 38%, rgb(137, 118, 100) 61%, rgb(187, 0, 17) 74%, rgb(67, 0, 17))
   overflow: hidden
   position: relative
   height: 100%
@@ -218,7 +218,7 @@ body
 
 .menubox
   z-index: 0
-  flex: 1 1
+  flex: 3
   display: flex
   align-items: center
   flex-direction: column
@@ -231,8 +231,8 @@ body
 
 .menubox.across
   flex-direction: row
-  width: 60vw
-  margin: 8em 0
+  width: 75%
+  margin: 4rem 0
 
 .menubox.across.cselect
   width: auto
@@ -330,8 +330,8 @@ body
 
 .footer
   position: absolute
-  bottom: 5vh
-  left: 3vw
+  bottom: 2vmin
+  left: 2vmin
   display: flex
   gap: 2.6em
   z-index: 3
@@ -370,7 +370,7 @@ body
 
 .subtitle
   flex: 1 1
-  font-size: 4vmin
+  font-size: 2rem
   font-weight: 400
   opacity: 1
   transition: .3s
@@ -378,33 +378,19 @@ body
 .subtitlehide
   opacity: 0
 
+.arrowR, .arrowL
+  width: 2rem
+  height: 1.556rem
+  background-repeat: no-repeat
+  background-size: 2900%
+  background-position: 99% 71%
+
+  &:not(.greyed)
+    &:hover
+      background-position: 99% 54.05%
 .arrowL
-  width: 5vh
-  height: 3.89vh
-  background-repeat: no-repeat
-  background-size: 2900%
-  background-position: 99% 71%
   transform: scaleX(-1)
-
-  &:not(.greyed)
-    &:hover
-      background-position: 99% 54.05%
-
-.arrowR
-  width: 5vh
-  height: 3.89vh
-  background-repeat: no-repeat
-  background-size: 2900%
-  background-position: 99% 71%
-
-  &:not(.greyed)
-    &:hover
-      background-position: 99% 54.05%
-
-.arrowL.greyed
-  opacity: .2
-
-.arrowR.greyed
+.arrowL.greyed, .arrowR.greyed
   opacity: .2
 
 .barContainer
@@ -448,7 +434,7 @@ body
 
 .logo
   flex: 1 1
-  font-size: calc(4vh + 4vw)
+  font-size: 4rem
   font-weight: 400
 
 .logo.red
@@ -461,7 +447,7 @@ body
 
 .text
   flex: 1 1
-  font-size: calc(1vh + 1vw)
+  font-size: .9rem
 
 .squiggle
   display: inline-block
@@ -476,11 +462,10 @@ body
     scale: -1 1
 
 .menubox.settingsList
-  width: 80vw
+  width: 90%
   max-width: 1500px
-  gap: 1.5vh
+  gap: 4%
   text-align: left
-  height: 60vh
   flex: auto
   justify-content: center
 
@@ -488,11 +473,10 @@ body
   margin: 1.2em 0
   align-items: end
   justify-content: center
-  font-size: 2vmin
+  font-size: 1rem
   max-width: 1500px
-  width: 80vw
+  width: 90%
   gap: .7em
-  height: 3vmin
   flex: none
 
 .Tab
@@ -538,15 +522,13 @@ body
     border-color: red
 
 .menubox.across.personal
-  margin: 0
+  margin: 0 0 5% 0
   align-items: stretch
-  width: 80vw
-  padding: 0 3vw
+  width: 90%
   box-sizing: border-box
-  gap: 3em
+  gap: 1rem
   flex-direction: column
-  max-height: 70vh
-  max-width: 1500px
+  max-height: 60vh
 
   .menubox.misc
     .subtitle
@@ -554,25 +536,21 @@ body
       font-weight: normal
       opacity: 1
       letter-spacing: normal
-      padding: .5em
-      height: 100%
       box-sizing: border-box
       text-align: center
-      font-size: 1.5vmin
+      font-size: .7rem
 
       &:first-child
         grid-column: 1 /span 2
 
   .pfp
-    width: 25vmin
-    margin-top: 10%
+    width: 45%
 
   .formGrid
     .pfp
       width: auto
 
-    grid-template-columns: repeat(4, 1fr)
-    margin: 0 4vmin
+    grid-template-columns: repeat(3, 1fr)
 
   .menubox.settingsList
     flex: 1 1
@@ -589,21 +567,20 @@ body
 
     .subtitle
       flex: none
-      padding: 1em
+      padding: .5rem
 
   input
-    font-size: 4vmin
+    font-size: 2rem
     color: $color_1
     outline: none
     box-sizing: border-box
     background-color: transparent
-    letter-spacing: 0.04em
+    letter-spacing: .14rem
     text-align: center
     -webkit-user-select: text
     user-select: text
     border: none
     box-shadow: none
-    width: 75%
     font-family: $font-family_2
 
     &:focus
@@ -616,12 +593,12 @@ body
       max-width: 25%
 
   .kbutton
-    width: 15vmin
-    padding: 1vmin
+    width: max-content
+    padding: 3%
     clip-path: none
     border: none
     border-radius: 3px
-    font-size: 2vmin
+    font-size: 1rem
     background-color: #222
 
 .menubox.stats
@@ -638,16 +615,14 @@ body
     font-weight: normal
     opacity: 1
     letter-spacing: normal
-    padding: .5em
-    height: 100%
     box-sizing: border-box
     text-align: center
-    font-size: 1.5vmin
+    font-size: .7rem
 
   height: auto
 
   .pfp
-    width: 15vmin
+    width: 30%
     margin: 0
 
 .menubox.misc
@@ -664,16 +639,16 @@ body
     width: 100%
 
   .menubox.across
-    margin: 1em 0 0 0
+    margin: 3% 0
     width: 80%
     border: 2px solid #555
-    padding: 1em 5vmin
+    padding: 1rem
     box-sizing: border-box
-
+    border-radius: 3px
     .menubox
       .subtitle
         &:last-child
-          font-size: 1.8vmin
+          font-size: .8rem
 
   .menubox.score
     width: 100%
@@ -722,20 +697,20 @@ body
 
   .subtitle
     font-family: $font-family_3
-    font-size: 2vmin
+    font-size: 1rem
     font-style: italic
-    letter-spacing: .07em
+    letter-spacing: .14rem
     opacity: .5
     font-weight: bold
     flex: 1
 
   .text
-    font-size: 1.6vmin
+    font-size: .7rem
     font-weight: 100
-    letter-spacing: .05em
+    letter-spacing: .05rem
     font-style: normal
     color: $color_5
-    text-indent: 2em
+    text-indent: 1.5rem
     margin: 0
 
 .settingsItem.hovering
@@ -749,12 +724,12 @@ body
   display: flex
   align-items: center
   justify-content: space-between
-  font-size: 2.5vmin
+  font-size: 1.2rem
 
   .menubox
     width: auto
     position: relative
-    font-size: 1.6vmin
+    font-size: 1rem
     flex-direction: row
     gap: 1em
     justify-content: center
@@ -773,7 +748,7 @@ body
       display: block
 
 .testColor
-  width: 2vw
+  width: 1rem
   aspect-ratio: 1
   border-radius: 3px
   position: relative
@@ -864,13 +839,13 @@ body
   text-align: center
 
 .kbutton
-  font-size: calc(1vh + 1vw)
+  font-size: 1rem
   color: $color_7
   position: relative
   background-color: transparent
-  padding: .9vh 5vw
-  clip-path: polygon(0% 0%, 100% 0%, calc(100% - 2.5vh) 50%, 100% 100%, 0% 100%, 2.5vh 50%)
-  border: .5vh solid transparent
+  padding: 0.5rem 1rem
+  clip-path: polygon(0% 0%, 100% 0%, calc(100% - 1rem) 50%, 100% 100%, 0% 100%, 1rem 50%)
+  border: 0.4rem solid transparent
   transition: .1s
 
   &:hover
@@ -878,8 +853,6 @@ body
     border-color: maroon
     color: $color_1
 
-.kbutton.space
-  margin-top: 5vh
 
 .kbutton.hovering
   background-color: red !important
@@ -984,11 +957,10 @@ body
 
 .board
   display: grid
-  grid-template-columns: 2fr 1fr
-  gap: 3rem
-  padding: 2em
-  height: 95%
-  grid-auto-rows: minmax(100px, auto)
+  grid-template-columns: 1fr 1fr
+  height: 100%
+  width: 100%
+  grid-auto-rows: minmax(180px, auto)
 
 .roller
   display: flex
@@ -1008,7 +980,7 @@ body
     animation: movUp .9s 1 ease-out forwards
 
   .tubbox
-    padding-top: 3em
+    padding-top: 2rem
     padding-bottom: 0
 
   .scorer
@@ -1085,12 +1057,10 @@ body
   top: 50%
   position: relative
   translate: 0 -50%
-  padding-bottom: 3em
+  padding-bottom: 2rem
 
 .tub
-  padding: 1.5%
   width: 100%
-  height: 100%
   display: flex
   justify-content: center
   align-items: center
@@ -1152,7 +1122,7 @@ body
   position: absolute
   left: 0
   width: 100%
-  font-size: calc(1.5vh + 1.5vw)
+  font-size: 2rem
   text-align: center
   top: 100%
 
@@ -1160,10 +1130,10 @@ body
   display: flex
   justify-content: center
   align-items: center
-  width: 100%
+  width: 95%
   background-color: #191711
   box-sizing: border-box
-  margin: 5%
+  margin: 2.5%
 
 .info
   display: flex
@@ -1180,7 +1150,7 @@ body
   gap: 0.5em
 
 .scorebox
-  font-size: calc(1.5vh + 1.5vw)
+  font-size: 2rem
   display: flex
   flex-direction: row
   justify-content: center
@@ -1559,7 +1529,7 @@ body
 #result
   margin: 0
 
-@media screen and (max-width: 900px)
+@media screen and (max-aspect-ratio: 8/9)
   .fcontain
     &:not(.mobile)
       display: none !important
@@ -1567,7 +1537,7 @@ body
   .symb.backSymb
     display: none !important
 
-@media (min-width: 820px)
+@media (min-aspect-ratio: 8/9)
   .menubox.across.personal
     flex-direction: row
 
@@ -1636,7 +1606,7 @@ body
       background: #01d5a2
       scale: 1
 
-@media (min-width: 1280px)
+@media (min-aspect-ratio: 4/3)
   .game
     display: grid
     grid-template-rows: repeat(2, minmax(0, 1fr))
