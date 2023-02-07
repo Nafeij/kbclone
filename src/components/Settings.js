@@ -3,7 +3,7 @@
 import React from "react"
 import { SketchPicker } from "react-color"
 import Profile from "../util/Profile"
-import { caravanBounds, timeFormatLong } from "../util/utils"
+import { caravanBounds, timeFormatLong } from "../util/Utils"
 import sprites from "../img/sprites.png"
 import Squiggle from "./Squiggle"
 
@@ -124,7 +124,7 @@ function Settings (props) {
                                     <div key={i*6+2} className='menubox'>
                                         <div key={i*6+3} className='subtitle'><b>{Profile.ai[p.profileInd].name}</b></div>
                                         <div key={i*6+4} className='subtitle'>{
-                                        (!p.nGames ? 'No' : p.nGames) + ' Game' + (p.nGames > 1 || !p.nGames? 's' :'') + ', ' + 
+                                        (!p.nGames ? 'No' : p.nGames) + ' Game' + (p.nGames > 1 || !p.nGames? 's' :'') + ', ' +
                                         (!p.sideBreakdown[0].nWins ? 'No' : p.sideBreakdown[0].nWins) + ' Win' + (p.sideBreakdown[0].nWins > 1 || !p.sideBreakdown[0].nWins ? 's' :'') + ', ' +
                                         (!p.sideBreakdown[1].nWins ? 'No' : p.sideBreakdown[1].nWins) + ' Loss' + (p.sideBreakdown[1].nWins > 1 || !p.sideBreakdown[1].nWins ? 'es' :'')
                                         }</div>
@@ -135,13 +135,13 @@ function Settings (props) {
                             ))}
                         </div>
                         {statsProps.pvpBreakdown.name ? <div className='subtitle'>Online Opponents</div> : null}
-                        {statsProps.pvpBreakdown.name ? 
+                        {statsProps.pvpBreakdown.name ?
                             <div className="menubox settingsList opponent">
                                 <div className='settingsItem'>
                                     <div className='menubox'>
                                         <div className='subtitle'>Most Recent: <b>{statsProps.pvpBreakdown.name}</b></div>
                                         <div className='subtitle'>{
-                                        (!statsProps.pvpBreakdown.nGames ? 'No' : statsProps.pvpBreakdown.nGames) + ' Game' + (statsProps.pvpBreakdown.nGames > 1 || !statsProps.pvpBreakdown.nGames? 's' :'') + ', ' + 
+                                        (!statsProps.pvpBreakdown.nGames ? 'No' : statsProps.pvpBreakdown.nGames) + ' Game' + (statsProps.pvpBreakdown.nGames > 1 || !statsProps.pvpBreakdown.nGames? 's' :'') + ', ' +
                                         (!statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[1].nWins) + ' Win' + (statsProps.pvpBreakdown.sideBreakdown[1].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 's' :'') + ', ' +
                                         (!statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[0].nWins) + ' Loss' + (statsProps.pvpBreakdown.sideBreakdown[0].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'es' :'')
                                         }</div>
@@ -165,7 +165,7 @@ function Settings (props) {
                     <div className='subtitle'>Colors</div>
                     <div className="settingInput">
                         <div className={`menubox ${4 + offset === cursor && 0 === pcursor? 'hovering' : ''}`}>
-                            Dice: 
+                            Dice:
                             <div className="testColor" style={{background: diceColor[1]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceColor[1]} onChange={(color)=>{
@@ -175,7 +175,7 @@ function Settings (props) {
                             </div>
                         </div>
                         <div className={`menubox ${4 + offset === cursor && 1 === pcursor? 'hovering' : ''}`}>
-                            Border: 
+                            Border:
                             <div className="testColor" style={{background: diceBorder[1]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceBorder[1]} onChange={(color)=>{modColor('diceBorder',1,color)}}/>
@@ -183,7 +183,7 @@ function Settings (props) {
                             </div>
                         </div>
                         <div className={`menubox ${4 + offset === cursor && 2 === pcursor? 'hovering' : ''}`}>
-                            Pip: 
+                            Pip:
                             <div className="testColor" style={{background: pipColor[1]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={pipColor[1]} onChange={(color)=>{modColor('pipColor',1,color)}}/>
@@ -196,7 +196,7 @@ function Settings (props) {
                     <div className='subtitle'>Opponent Colors</div>
                     <div className="settingInput">
                         <div className={`menubox ${5 + offset === cursor && 0 === pcursor? 'hovering' : ''}`}>
-                            Dice: 
+                            Dice:
                             <div className="testColor" style={{background: diceColor[0]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceColor[0]} onChange={(color)=>{
@@ -206,7 +206,7 @@ function Settings (props) {
                             </div>
                         </div>
                         <div className={`menubox ${5 + offset === cursor && 1 === pcursor? 'hovering' : ''}`}>
-                            Border: 
+                            Border:
                             <div className="testColor" style={{background: diceBorder[0]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={diceBorder[0]} onChange={(color)=>{modColor('diceBorder',0,color)}}/>
@@ -214,7 +214,7 @@ function Settings (props) {
                             </div>
                         </div>
                         <div className={`menubox ${5 + offset === cursor && 2 === pcursor? 'hovering' : ''}`}>
-                            Pip: 
+                            Pip:
                             <div className="testColor" style={{background: pipColor[0]}}>
                                 <div className="pickWrapper" >
                                     <SketchPicker color={pipColor[0]} onChange={(color)=>{modColor('pipColor',0,color)}}/>

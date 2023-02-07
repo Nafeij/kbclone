@@ -3,7 +3,7 @@
 import React from "react"
 import Die from "./Die"
 import Tub from "./Tub"
-import { timeFormat } from "../util/utils"
+import { timeFormat } from "../util/Utils"
 import Bar from "./Bar"
 import rollerImg from "../img/sprites.png"
 import heartsImg from "../img/hearts.png"

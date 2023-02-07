@@ -3,7 +3,7 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
-import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions} from '../util/utils';
+import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions} from '../util/Utils.js';
 import KeyManager from "../util/KeyManager.js";
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";

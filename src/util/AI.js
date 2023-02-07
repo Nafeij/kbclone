@@ -1,4 +1,4 @@
-import { randomSelect, randomInRange, scoreNumTub} from "./utils"
+import { randomSelect, randomInRange, scoreNumTub} from "./Utils"
 
 export function evaluate(diceMatrix, num, profile, turn, settings, turnCount){
     const choices = possibleChoices(diceMatrix, turn, settings)

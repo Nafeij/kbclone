@@ -8,7 +8,7 @@ import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
 import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
-import { caravanBounds, randomInRange, strictMod } from './util/utils.js'
+import { caravanBounds, randomInRange, strictMod } from './util/Utils.js'
 import Flytext from './components/Flytext.js'
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
