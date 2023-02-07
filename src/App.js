@@ -802,7 +802,7 @@ class App extends React.Component{
       settingsRanges, cursor, settingChanged, serverSetupProps, roomID, charSelectProps,
       selectedAIInd, htProps, menuProps} = this.state
     return (
-      <div>
+      <div id='app'>
         {(flytextProps) ? <Flytext {...flytextProps} /> : null}
         <Loading show={isLoading}/>
         <div className='footer'>
