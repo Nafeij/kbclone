@@ -1,0 +1,1698 @@
+$color_1: white
+$color_2: #130a03
+$color_3: red
+$color_4: black
+$color_5: #01d5a2
+$color_6: #fff
+$color_7: gray
+$font-family_1: roboto thin, roboto, calibri
+$font-family_2: "Times New Roman", Times, serif
+$font-family_3: Open Sans, "Gill Sans", sans-serif
+$font-family_4: "Courier New", Courier, monospace
+
+/* .title.rot {
+ *	transform: rotate(45deg);
+ *}
+/* .react-switch-label:active .react-switch-button {
+ *	width: 60px;
+ *}
+/* .dice {
+ *	background: url("dices.png") 0 center / cover no-repeat;
+ *	aspect-ratio: 1/1;
+ *	flex: .8 .8 0;
+ *	background-position-x: 0;
+ *	z-index: 1;
+ *}
+/* This selects the last pip of odd-valued dice (1, 3, 5) and positions the pip in the center
+@keyframes lds-ring
+  0%
+    rotate: 0deg
+
+  100%
+    rotate: 360deg
+
+/*  	.tub#left, .tubB#left {grid-column-start: 1;}
+ *	.tub#mid, .tubB#mid {grid-column-start: 2;}
+ *	.tub#right, .tubB#right {grid-column-start: 3;}
+ *
+ *	.tub:first-child, .tubB:first-child {grid-column-start: 1;}
+ *    .tub:nth-child(2), .tubB:nth-child(2) {grid-column-start: 2;}
+ *    .tub:last-child, .tubB:last-child {grid-column-start: 3;}
+/* .scale-pop {
+ *	animation: scale-pop .3s 1;
+ *}
+/* .recover {
+ *	animation: releaseTranslate .6s ease-out both;
+ *}
+/* .dice .release-translate {
+ *    animation: releaseTranslate .6s ease-out both;
+ *}
+@keyframes shake-h-anim
+  0%
+    translate: 6px
+
+  16%
+    translate: -6px
+
+  33%
+    translate: 4px
+
+  50%
+    translate: -4px
+
+  67%
+    translate: 2px
+
+  83%
+    translate: -2px
+
+  100%
+    translate: 0
+
+@keyframes scale-away
+  0%
+    scale: 1
+    translate: 6px
+
+  16%
+    scale: .83
+    translate: -6px
+
+  33%
+    scale: .67
+    translate: 4px
+
+  50%
+    scale: .5
+    translate: -4px
+
+  67%
+    scale: .33
+    translate: 2px
+
+  83%
+    scale: .16
+    translate: -2px
+
+  100%
+    scale: 0
+    translate: 0
+
+@keyframes color
+  to
+    opacity: .5
+
+@keyframes movUp
+  from
+    top: 100%
+
+  to
+    top: 0
+
+@keyframes movDown
+  from
+    top: -100%
+
+  to
+    top: 0
+
+@keyframes movLeft
+  from
+    left: -100vw
+
+  to
+    left: 0
+
+@keyframes movRight
+  from
+    left: 100vw
+
+  to
+    left: 0
+
+/* @keyframes releaseTranslate {
+ *    to {translate: none;}
+ *}
+/* @keyframes scale-pop {
+ *	0% { scale: 2}
+ *	100% { scale: 1}
+ *}
+*
+  -webkit-user-select: none
+  user-select: none
+  line-height: 1.1em
+
+html
+  overflow: hidden
+  height: 100%
+
+#root
+  overflow: hidden
+  height: 100%
+
+  > div
+    > .lds-ring
+      div
+        border-color: white transparent transparent transparent
+
+    > #flytext
+      box-shadow: 0 0 0 calc(48.1vh - 1.3vw) rgba(0, 0, 0, 0.7)
+
+      ~
+        *
+          pointer-events: none !important
+
+#app
+  overflow: hidden
+  height: 100%
+
+body
+  margin: 0
+  background: linear-gradient(to right, rgb(17, 17, 17), rgba(17, 17, 17) 20%, rgb(187, 0, 17) 25%, rgb(137, 118, 100) 38%, rgb(137, 118, 100) 61%, rgb(187, 0, 17) 74%, rgba(17, 17, 17) 79%, rgba(17, 17, 17))
+  overflow: hidden
+  position: relative
+  height: 100%
+
+.menu
+  position: absolute
+  height: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  text-align: center
+  color: $color_1
+  top: 0
+  left: 0
+  width: 100vw
+  background: rgb(137, 118, 100)
+  z-index: 2
+
+  &::before
+    width: 100%
+    height: 100%
+    display: block
+    content: ""
+    position: absolute
+    background: rgb(187, 0, 17)
+    clip-path: polygon(0 10em, 10em 0, calc(100% - 10em) 0, 100% 10em, 100% calc(100% - 10em), calc(100% - 10em) 100%, 10em 100%, 0% calc(100% - 10em))
+
+  &::after
+    width: 100%
+    height: 100%
+    display: block
+    content: ""
+    position: absolute
+    background: rgb(17, 17, 17)
+    clip-path: polygon(0 15em, 15em 0, calc(100% - 15em) 0, 100% 15em, 100% calc(100% - 15em), calc(100% - 15em) 100%, 15em 100%, 0% calc(100% - 15em))
+
+  > .menubox
+    z-index: 1
+
+.menu.fadeable
+  opacity: 1
+  transition: opacity .5s
+
+.menu.fadeable.hide
+  transition: opacity .5s
+  opacity: 0
+
+.menubox
+  z-index: 0
+  flex: 1 1
+  display: flex
+  align-items: center
+  flex-direction: column
+  text-align: center
+  width: 100vw
+  justify-content: center
+
+  .kbutton
+    width: 8em
+
+.menubox.across
+  flex-direction: row
+  width: 60vw
+  margin: 8em 0
+
+.menubox.across.cselect
+  width: auto
+  flex: 1 1
+  margin: 0
+  align-items: center
+  gap: 2em
+
+.menubox.across.ssinner
+  margin: 0
+  align-items: center
+  width: 100%
+  justify-content: space-around
+
+.menubox.across.ssouter
+  width: auto
+
+.ssBox.profile
+  .menubox
+    flex: 2
+
+  flex-direction: row
+
+  .kbutton
+    font-size: 1.8vmin
+    padding: .8vmin
+    width: 11vmin
+
+  .pfp
+    width: 100%
+
+.graphicbox
+  flex: 1 1
+  aspect-ratio: 1/1
+  width: 25vmin
+  position: relative
+
+  &::before
+    background-color: #423f36
+    border-radius: 10px
+    aspect-ratio: 1/1
+    content: ""
+    position: absolute
+    width: 85%
+    left: 50%
+    top: 50%
+    translate: -50% -50%
+    z-index: -1
+
+  .die
+    &:nth-of-type(2)
+      right: 0
+      position: absolute
+      bottom: 0
+
+.graphicbox.dest
+  .die
+    left: 50%
+    position: absolute
+
+    &:nth-of-type(2)
+      left: 50%
+      position: absolute
+
+    &::after
+      display: block
+      color: $color_3
+      font-size: 25vmin
+      position: absolute
+      left: 50%
+      translate: -50%
+      line-height: 10vmin
+      content: '×'
+
+.graphicbox.match
+  .die
+    &:last-child
+      &::after
+        bottom: 170%
+        left: auto
+        right: 0
+        rotate: 135deg
+        top: auto
+        translate: -50% 0
+
+    &::after
+      color: $color_2
+      content: "☇"
+      font-size: 13vmin
+      left: 0
+      position: absolute
+      rotate: -45deg
+      top: 170%
+      translate: 50% 0
+
+.footer
+  position: absolute
+  bottom: 5vh
+  left: 3vw
+  display: flex
+  gap: 2.6em
+  z-index: 3
+  justify-content: center
+  align-items: center
+  color: $color_1
+
+  .text
+    font-size: 2vh
+
+.fcontain
+  display: flex
+  flex-direction: row
+  gap: 1.2vw
+  align-items: center
+  justify-content: center
+
+.symb
+  background-size: contain
+  height: 3vh
+  background-repeat: no-repeat
+  flex: 1 1 auto
+  aspect-ratio: 2.8
+
+.backSymb
+  aspect-ratio: 1
+
+.dragSymb
+  aspect-ratio: 2
+
+.title
+  width: 90vmin
+  background-size: contain
+  aspect-ratio: 1016/393
+  margin-bottom: 3em
+
+.subtitle
+  flex: 1 1
+  font-size: 4vmin
+  font-weight: 400
+  opacity: 1
+  transition: .3s
+
+.subtitlehide
+  opacity: 0
+
+.arrowL
+  width: 5vh
+  height: 3.89vh
+  background-repeat: no-repeat
+  background-size: 2900%
+  background-position: 99% 71%
+  transform: scaleX(-1)
+
+  &:not(.greyed)
+    &:hover
+      background-position: 99% 54.05%
+
+.arrowR
+  width: 5vh
+  height: 3.89vh
+  background-repeat: no-repeat
+  background-size: 2900%
+  background-position: 99% 71%
+
+  &:not(.greyed)
+    &:hover
+      background-position: 99% 54.05%
+
+.arrowL.greyed
+  opacity: .2
+
+.arrowR.greyed
+  opacity: .2
+
+.barContainer
+  display: block
+  background-repeat: no-repeat
+  background-size: contain
+
+.bar
+  height: 100%
+  background-repeat: no-repeat
+  background-size: cover
+
+.difficulty
+  display: flex
+  flex-direction: column
+  text-align: center
+  align-items: center
+  grid-column: 1 /span 1
+
+  &:last-child
+    grid-column: 2 /span 1
+    min-width: 7vmin
+
+  .pip
+    height: 1.7vmin
+    width: auto
+    box-shadow: none
+
+  .menubox.across
+    width: 100%
+    height: auto
+    margin: 0
+    flex: none
+    gap: .7vmin
+
+  .text.red
+    margin: 0 0 .6em 0
+    font-size: calc(.9vh + .9vw)
+    font-style: italic
+    font-family: $font-family_1
+
+.logo
+  flex: 1 1
+  font-size: calc(4vh + 4vw)
+  font-weight: 400
+
+.logo.red
+  color: $color_3
+
+.text.red
+  color: $color_3
+  margin: 0.5em 0 .3em 0
+  font-size: calc(1.2vh + 1.2vw)
+
+.text
+  flex: 1 1
+  font-size: calc(1vh + 1vw)
+
+.squiggle
+  display: inline-block
+  height: 2vmin
+  width: 6vmin
+  background-size: 1180%
+  background-position: 92.8% 87.5%
+  margin: 0 0.3em
+  vertical-align: middle
+
+  &:nth-child(2n)
+    scale: -1 1
+
+.menubox.settingsList
+  width: 80vw
+  max-width: 1500px
+  gap: 1.5vh
+  text-align: left
+  height: 60vh
+  flex: auto
+  justify-content: center
+
+.menubox.across.TabBar
+  margin: 1.2em 0
+  align-items: end
+  justify-content: center
+  font-size: 2vmin
+  max-width: 1500px
+  width: 80vw
+  gap: .7em
+  height: 3vmin
+  flex: none
+
+.Tab
+  flex: 1
+  padding: .4em 0 .1em 0
+  transition: .3s
+  background: white
+  color: $color_4
+  border-bottom: 5px solid #0008
+  font-weight: bold
+  letter-spacing: .05em
+  border-radius: 3px 3px 0 0
+
+  &:hover
+    background: red
+    color: $color_1
+    padding: .4em 0
+
+.Tab.hovering
+  background: red
+  color: $color_1
+  padding: .4em 0
+
+.formGrid
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  gap: 1vmin
+  flex: 1
+
+  .pfp
+    width: 100%
+    border-radius: 3px
+    border: 5px solid transparent
+    background-repeat: no-repeat
+
+    &:hover
+      border-color: #01d5a2
+
+  .pfp.hovering
+    border-color: #01d5a2
+
+  .pfp.active
+    border-color: red
+
+.menubox.across.personal
+  margin: 0
+  align-items: stretch
+  width: 80vw
+  padding: 0 3vw
+  box-sizing: border-box
+  gap: 3em
+  flex-direction: column
+  max-height: 70vh
+  max-width: 1500px
+
+  .menubox.misc
+    .subtitle
+      font-style: normal
+      font-weight: normal
+      opacity: 1
+      letter-spacing: normal
+      padding: .5em
+      height: 100%
+      box-sizing: border-box
+      text-align: center
+      font-size: 1.5vmin
+
+      &:first-child
+        grid-column: 1 /span 2
+
+  .pfp
+    width: 25vmin
+    margin-top: 10%
+
+  .formGrid
+    .pfp
+      width: auto
+
+    grid-template-columns: repeat(4, 1fr)
+    margin: 0 4vmin
+
+  .menubox.settingsList
+    flex: 1 1
+    width: 100%
+
+  .menubox.settingsList.opponent
+    .settingsItem
+      width: 100%
+      display: flex
+
+  .settingsItem
+    display: block
+    flex: none
+
+    .subtitle
+      flex: none
+      padding: 1em
+
+  input
+    font-size: 4vmin
+    color: $color_1
+    outline: none
+    box-sizing: border-box
+    background-color: transparent
+    letter-spacing: 0.04em
+    text-align: center
+    -webkit-user-select: text
+    user-select: text
+    border: none
+    box-shadow: none
+    width: 75%
+    font-family: $font-family_2
+
+    &:focus
+      box-shadow: 0 2px white
+
+  .settingInput
+    justify-content: center
+
+    .menubox
+      max-width: 25%
+
+  .kbutton
+    width: 15vmin
+    padding: 1vmin
+    clip-path: none
+    border: none
+    border-radius: 3px
+    font-size: 2vmin
+    background-color: #222
+
+.menubox.stats
+  .settingsItem
+    > .subtitle
+      opacity: .5 !important
+      border-bottom: 2px solid #999
+      padding-bottom: .5em !important
+      margin-bottom: 1vmin
+
+.menubox.settingsList.opponent
+  .subtitle
+    font-style: normal
+    font-weight: normal
+    opacity: 1
+    letter-spacing: normal
+    padding: .5em
+    height: 100%
+    box-sizing: border-box
+    text-align: center
+    font-size: 1.5vmin
+
+  height: auto
+
+  .pfp
+    width: 15vmin
+    margin: 0
+
+.menubox.misc
+  display: grid
+  grid-template-columns: repeat(2, minmax(0, 1fr))
+  grid-auto-rows: 1fr
+
+.scrollContainer
+  flex: 1 1
+  height: 60vh
+  overflow-y: scroll
+
+  .menubox
+    width: 100%
+
+  .menubox.across
+    margin: 1em 0 0 0
+    width: 80%
+    border: 2px solid #555
+    padding: 1em 5vmin
+    box-sizing: border-box
+
+    .menubox
+      .subtitle
+        &:last-child
+          font-size: 1.8vmin
+
+  .menubox.score
+    width: 100%
+
+  .settingsItem
+    .subtitle
+      text-align: left
+
+    width: 80%
+
+\::-webkit-scrollbar
+  border-radius: 3px
+  width: 6px
+  background: transparent
+
+\::-webkit-scrollbar-track
+  border-radius: 3px
+  width: 6px
+  background: transparent
+
+  &:hover
+    background: white
+
+\::-webkit-scrollbar-thumb
+  border-radius: 3px
+  background: #888
+
+.personal
+  .menubox.settingsList.opponent
+    .settingsItem
+      .subtitle
+        padding: .7vmin
+
+.settingsItem
+  width: 100%
+  display: flex
+  flex: 1 1 4em
+  align-items: center
+  z-index: 0
+
+  &:hover
+    z-index: 1
+
+    .subtitle
+      opacity: 1
+
+  .subtitle
+    font-family: $font-family_3
+    font-size: 2vmin
+    font-style: italic
+    letter-spacing: .07em
+    opacity: .5
+    font-weight: bold
+    flex: 1
+
+  .text
+    font-size: 1.6vmin
+    font-weight: 100
+    letter-spacing: .05em
+    font-style: normal
+    color: $color_5
+    text-indent: 2em
+    margin: 0
+
+.settingsItem.hovering
+  z-index: 1
+
+  .subtitle
+    opacity: 1
+
+.settingInput
+  flex: 1
+  display: flex
+  align-items: center
+  justify-content: space-between
+  font-size: 2.5vmin
+
+  .menubox
+    width: auto
+    position: relative
+    font-size: 1.6vmin
+    flex-direction: row
+    gap: 1em
+    justify-content: center
+    z-index: 0
+
+    &:hover
+      z-index: 1
+
+      .pickWrapper
+        display: block
+
+  .menubox.hovering
+    z-index: 1
+
+    .pickWrapper
+      display: block
+
+.testColor
+  width: 2vw
+  aspect-ratio: 1
+  border-radius: 3px
+  position: relative
+  border: 2px solid white
+
+.pickWrapper
+  display: none
+  position: absolute
+  translate: -50% 0
+  left: 50%
+
+.react-switch-checkbox
+  height: 0
+  width: 0
+  visibility: hidden
+
+  &:checked
+    +
+      .react-switch-label
+        .react-switch-button
+          left: calc(100% - 4px)
+          translate: -100% 0
+
+.settingsInfo
+  color: $color_5
+  font-family: $font-family_4
+  font-size: calc(.6vh + .6vw)
+  position: absolute
+  bottom: 0
+  left: 50%
+  translate: -50% 0
+
+.react-switch-label
+  display: flex
+  align-items: center
+  justify-content: space-between
+  cursor: pointer
+  background: #888
+  border-radius: 2px
+  position: relative
+  transition: background-color .2s
+  aspect-ratio: 2/1
+  margin: auto
+  height: 5vmin
+
+  .react-switch-button
+    content: ''
+    position: absolute
+    top: 4px
+    left: 4px
+    height: calc(100% - 8px)
+    border-radius: 2px
+    transition: 0.2s
+    background: #000
+    box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29)
+    aspect-ratio: 1/1
+
+.turnCounter
+  align-items: center
+  background: #111
+  border: .5em solid #e80016
+  border-radius: 50%
+  color: $color_6
+  display: flex
+  flex-direction: column
+  font-weight: 700
+  justify-content: flex-end
+  left: 50%
+  padding: 1em
+  position: absolute
+  top: 0
+  translate: -50% -50%
+  width: 9vmin
+  height: 9vmin
+  z-index: 99
+
+  p
+    font-size: 3vmin
+    margin: 0
+
+    &:last-child
+      font-size: .8vmin
+
+.game
+  height: 100%
+  display: flex
+  flex-direction: column
+  text-align: center
+
+.kbutton
+  font-size: calc(1vh + 1vw)
+  color: $color_7
+  position: relative
+  background-color: transparent
+  padding: .9vh 5vw
+  clip-path: polygon(0% 0%, 100% 0%, calc(100% - 2.5vh) 50%, 100% 100%, 0% 100%, 2.5vh 50%)
+  border: .5vh solid transparent
+  transition: .1s
+
+  &:hover
+    background-color: red !important
+    border-color: maroon
+    color: $color_1
+
+.kbutton.space
+  margin-top: 5vh
+
+.kbutton.hovering
+  background-color: red !important
+  border-color: maroon
+  color: $color_1
+
+.ssBox
+  +
+    .kbutton
+      margin-top: 2em
+
+  display: flex
+  background-color: #232822
+  padding: 5vmin
+  width: 50vmin
+  margin: 1vmin
+  position: relative
+  flex-direction: column
+  align-items: center
+  gap: 2.5em
+
+  &::before
+    display: block
+    transition: .2s
+    width: 100%
+    height: 100%
+    content: ""
+    position: absolute
+    z-index: -1
+    background: transparent
+    left: 0
+    top: 0
+    translate: 0
+
+  &:focus-within
+    &::before
+      background: red
+      padding: 0 1em
+      left: -1em
+      top: 1em
+
+  &:first-of-type
+    &:focus-within
+      &::before
+        top: -1em
+
+  &:first-of-type.lock
+    &::before
+      top: -1em
+
+  .kbutton
+    width: 15vmin
+    padding: 1vmin
+    clip-path: none
+    border: none
+    border-radius: 3px
+    font-size: 2vmin
+    background-color: #222
+
+  input
+    background: #171916
+    border: none
+    box-shadow: 2px 2px #d52f2f
+    caret-color: #d52f2f
+    color: $color_1
+    outline: none
+    padding: 0.5em
+    box-sizing: border-box
+    font-size: calc(1vh + 1vw)
+    letter-spacing: 0.1em
+    transition: .3s
+    border-radius: 5px
+    text-align: center
+    user-select: text
+    text-transform: uppercase
+
+    &:last-child
+      &:not(:first-child)
+        text-transform: none
+        letter-spacing: 0
+        flex: 3
+        width: 0
+
+    &:focus
+      background: black
+
+  span
+    position: relative
+
+  .subtitle
+    font-size: calc(1.2vh + 1.2vw)
+
+  input.shake
+    animation: shake-h-anim .3s 1
+
+.side
+  flex: 1 1 0%
+  display: flex
+  align-items: center
+  justify-content: center
+  max-height: 50%
+
+.board
+  display: grid
+  grid-template-columns: 2fr 1fr
+  gap: 3rem
+  padding: 2em
+  height: 95%
+  grid-auto-rows: minmax(100px, auto)
+
+.roller
+  display: flex
+  justify-content: center
+  align-items: center
+  order: 2
+  grid-column: 1 /span 1
+  position: relative
+  animation: movDown .9s 1 ease-out forwards
+
+#player
+  .roller
+    order: 5
+    animation: movUp .9s 1 ease-out forwards
+
+  .tubs
+    animation: movUp .9s 1 ease-out forwards
+
+  .tubbox
+    padding-top: 3em
+    padding-bottom: 0
+
+  .scorer
+    top: auto
+    bottom: 100%
+
+  .info
+    order: 5
+    animation: movUp .9s 1 ease-out forwards
+
+.rollbox
+  width: 12rem
+  aspect-ratio: 5/3
+  display: flex
+  justify-content: center
+  align-items: center
+  position: relative
+  box-sizing: border-box
+  margin-bottom: 3vmin
+  background-repeat: no-repeat
+  background-size: 366% 256%
+  background-position: 94.76% 3.1%
+  padding: 3%
+
+  &::after
+    background: inherit
+    content: ""
+    background-position: 54.91% 3.1%
+    opacity: 0
+    transition: .3s
+    position: absolute
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+
+.rollbox.rollboxhover
+  &::after
+    opacity: 1
+
+.rollbox.rollboxBoss
+  &::before
+    background: inherit
+    content: ""
+    background-position: 2.2% 97.1%
+    transition: .3s
+    position: absolute
+    top: -15%
+    left: -10%
+    padding: 11% 8%
+    background-size: 316% 187%
+    width: 100%
+    height: 100%
+
+.name
+  margin: -1vmin 0 0 0
+  font-size: calc(1.4vh + 1vw)
+  white-space: nowrap
+
+.tubs
+  order: 4
+  grid-column: 1 /span 2
+  position: relative
+  animation: movDown .9s 1 ease-out forwards
+  height: 100%
+
+.tubbox
+  display: flex
+  flex-direction: row
+  height: 100%
+  align-items: center
+  width: 100%
+  margin: auto
+  top: 50%
+  position: relative
+  translate: 0 -50%
+  padding-bottom: 3em
+
+.tub
+  padding: 1.5%
+  width: 100%
+  height: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: column
+  position: relative
+
+  &::before
+    transition: .2s
+    width: 100%
+    height: 100%
+    content: ""
+    position: absolute
+    z-index: -1
+    left: 0
+    background: transparent
+
+.tubB
+  padding: 1.5%
+  width: 100%
+  height: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: column
+  position: relative
+
+  &::before
+    transition: .2s
+    width: 100%
+    height: 100%
+    content: ""
+    position: absolute
+    z-index: -1
+    left: 0
+    background: transparent
+
+.tubC
+  padding: 1.5%
+  width: 100%
+  height: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: column
+  position: relative
+
+  &::before
+    transition: .2s
+    width: 100%
+    height: 100%
+    content: ""
+    position: absolute
+    z-index: -1
+    left: 0
+    background: transparent
+
+.scorer
+  margin: 0
+  position: absolute
+  left: 0
+  width: 100%
+  font-size: calc(1.5vh + 1.5vw)
+  text-align: center
+  top: 100%
+
+.box
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 100%
+  background-color: #191711
+  box-sizing: border-box
+  margin: 5%
+
+.info
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-direction: column
+  text-align: center
+  color: $color_1
+  grid-column: 2 /span 1
+  order: 3
+  z-index: 2
+  position: relative
+  animation: movDown .9s 1 ease-out forwards
+  gap: 0.5em
+
+.scorebox
+  font-size: calc(1.5vh + 1.5vw)
+  display: flex
+  flex-direction: row
+  justify-content: center
+  align-items: center
+  text-align: center
+  gap: 1em
+
+.timer
+  background: #050f05
+  font-family: $font-family_4
+  padding: 0.2em
+  border-radius: 0.2em
+  font-size: calc(1.2vh + 1.2vw)
+
+.ssBox.lock
+  &::before
+    background: red
+    padding: 0 1em
+    left: -1em
+    top: 1em
+
+  span
+    &::after
+      content: "copied to clipboard"
+      position: absolute
+      bottom: -10%
+      translate: 0 100%
+      left: 0
+      width: 100%
+      font-size: calc(.5vh + .5vw)
+      opacity: 0.5
+
+.slidePane
+  display: flex
+  align-items: center
+  flex-direction: row
+  text-align: center
+  position: absolute
+  transition: .3s
+
+.slidePaneContainer
+  flex: 1 1
+  display: block
+  width: 25vmin
+  aspect-ratio: 1/1
+  position: relative
+  margin: 3vmin 0
+
+.containerMask
+  height: 100%
+  position: absolute
+  box-sizing: border-box
+  mask-image: linear-gradient(to right, transparent, black 33%, black 66%, transparent)
+  -webkit-mask-image: linear-gradient(to right, transparent, black 33%, black 66%, transparent)
+
+.pfp
+  width: 20vmin
+  aspect-ratio: 1/1
+  background-size: contain
+  box-sizing: border-box
+  border-radius: .3em
+  filter: grayscale(0) brightness(100%)
+  transition: .3s
+
+.pfphover
+  filter: grayscale(80%) brightness(60%)
+
+.pfp.simp
+  width: 25vmin
+  filter: none
+  margin-right: -4vmin
+
+.charInfo
+  display: grid
+  gap: 4vmin
+  background-color: #232822
+  border: solid red
+  border-width: 0
+  transition: .3s
+  padding: 4vmin
+  min-width: 30vmin
+  min-height: 13vmin
+  margin: 1em 0
+  position: relative
+
+  &::before
+    display: block
+    transition: .2s
+    width: 100%
+    height: 100%
+    content: ""
+    position: absolute
+    z-index: -1
+    background: transparent
+    left: 0
+    top: 0
+    translate: 0
+
+  &:hover
+    &::before
+      background: red
+      padding: 0 1em
+      left: -1em
+      top: 1em
+
+  .slidePaneContainer
+    aspect-ratio: auto
+    width: 3vmin
+    margin: 0 auto
+    grid-column: 1 /span 2
+
+  .slidePane
+    position: relative
+    top: 0
+    left: 0
+    gap: 0
+    padding: 0
+
+  .subtitle
+    font-size: calc(1.3vh + 1.3vw)
+    min-width: 25vmin
+    position: relative
+    margin-left: -22vmin
+
+    &:first-of-type
+      margin-left: -11vmin
+
+.charInfohover
+  &::before
+    background: red
+    padding: 0 1em
+    left: -1em
+    top: 1em
+
+.die
+  display: grid
+  grid-template-areas: "c . a" "f g e" "b . d"
+  aspect-ratio: 1/1
+  background-color: #f4ebce
+  border: .4em solid #d7cbb3
+  border-radius: 10%
+  box-sizing: border-box
+  grid-template-columns: repeat(3, minmax(0, 1fr))
+  grid-template-rows: repeat(3, minmax(0, 1fr))
+  padding: .7vmin
+  z-index: 1
+  position: relative
+
+  .tubB.shake
+    &::before
+      animation: shake-h-anim .3s 1
+
+.die2
+  display: grid
+  grid-template-areas: "c . a" "f g e" "b . d"
+  aspect-ratio: 1/1
+  background-color: #f4ebce
+  border: .4em solid #d7cbb3
+  border-radius: 10%
+  box-sizing: border-box
+  grid-template-columns: repeat(3, minmax(0, 1fr))
+  grid-template-rows: repeat(3, minmax(0, 1fr))
+  padding: .7vmin
+  z-index: 1
+  position: relative
+
+  .pip
+    &:nth-child(1)
+      grid-area: f
+
+    &:nth-child(2)
+      grid-area: e
+
+.die.caravan
+  background-image: url("./img/cardec.png")
+  background-size: cover
+
+.die2.caravan
+  background-image: url("./img/cardec.png")
+  background-size: cover
+
+.pip
+  display: block
+  align-self: center
+  justify-self: center
+  border-radius: 50%
+  background-color: #382020
+  box-shadow: inset 0 3px #111
+  aspect-ratio: 1/1
+  width: 85%
+
+  &:nth-child(1)
+    grid-area: a
+
+  &:nth-child(2)
+    grid-area: b
+
+  &:nth-child(3)
+    grid-area: c
+
+  &:nth-child(4)
+    grid-area: d
+
+  &:nth-child(5)
+    grid-area: e
+
+  &:nth-child(6)
+    grid-area: f
+
+  &:nth-child(odd)
+    &:last-child
+      grid-area: g
+
+.lds-ring
+  display: inline-block
+  position: absolute
+  right: 2vw
+  bottom: 2vw
+  width: 80px
+  aspect-ratio: 1
+  z-index: 3
+
+  div
+    box-sizing: border-box
+    display: block
+    position: absolute
+    width: 64px
+    height: 64px
+    margin: 8px
+    border: 8px solid red
+    border-radius: 50%
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
+    border-color: red transparent transparent transparent
+
+    &:nth-child(1)
+      animation-delay: -0.45s
+
+    &:nth-child(2)
+      animation-delay: -0.3s
+
+    &:nth-child(3)
+      animation-delay: -0.15s
+
+#flytext
+  display: flex
+  align-items: center
+  flex-direction: column
+  position: absolute
+  color: $color_1
+  top: 50%
+  translate: 0 -50%
+  width: 200%
+  font-size: calc(2.5vh + 2.5vw)
+  font-weight: bold
+  background-color: black
+  padding: 1.4vh 0
+  opacity: 0
+  transition: .4s
+  pointer-events: none
+  z-index: 3
+
+#flytext.show
+  translate: -25% -50%
+  opacity: 1
+  pointer-events: auto
+
+.shrink-out
+  animation: scale-away .4s 1
+
+.die.shrink-out
+  animation: scale-away .4s 1 forwards
+
+  &::after
+    content: ""
+    width: 102%
+    height: 102%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    top: -.401em
+    left: -.401em
+    opacity: .8
+    z-index: -1
+    background-color: red !important
+    border-color: red !important
+    animation: color .4s 1 backwards
+
+.die2.shrink-out
+  animation: scale-away .4s 1 forwards
+
+  &::after
+    content: ""
+    width: 102%
+    height: 102%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    top: -.401em
+    left: -.401em
+    opacity: .8
+    z-index: -1
+    background-color: red !important
+    border-color: red !important
+    animation: color .4s 1 backwards
+
+.die.shrink-pre
+  &::after
+    content: ""
+    width: 102%
+    height: 102%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    top: -.401em
+    left: -.401em
+    opacity: .8
+    z-index: -1
+    background-color: red !important
+    border-color: red !important
+
+.die2.shrink-pre
+  &::after
+    content: ""
+    width: 102%
+    height: 102%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    top: -.401em
+    left: -.401em
+    opacity: .8
+    z-index: -1
+    background-color: red !important
+    border-color: red !important
+
+.die.cheated
+  &::after
+    content: ""
+    width: 102%
+    height: 102%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    top: -.401em
+    left: -.401em
+    opacity: .8
+    z-index: -1
+    background-color: #01d5a2
+    border-color: #01d5a2
+
+.die2.cheated
+  &::after
+    content: ""
+    width: 102%
+    height: 102%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    top: -.401em
+    left: -.401em
+    opacity: .8
+    z-index: -1
+    background-color: #01d5a2
+    border-color: #01d5a2
+
+.scorebox.shake
+  animation: shake-h-anim .3s 1
+
+.scorer.shake
+  animation: shake-h-anim .3s 1
+
+.charInfo.shake
+  &::before
+    animation: shake-h-anim .3s 1
+
+#result
+  margin: 0
+
+@media screen and (max-width: 900px)
+  .fcontain
+    &:not(.mobile)
+      display: none !important
+
+  .symb.backSymb
+    display: none !important
+
+@media (min-width: 820px)
+  .menubox.across.personal
+    flex-direction: row
+
+  .menubox.settingsList.opponent
+    height: auto
+
+  .board
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 3fr)
+    max-width: 560px
+
+  .tubs
+    order: 2
+    grid-column: 2 /span 1
+
+  .roller
+    grid-column: 1 /span 2
+    order: 1
+
+  .info
+    grid-column: 1 /span 1
+    order: 1
+    animation: movLeft .9s 1 ease-out forwards
+
+  #player
+    .info
+      order: 1
+      animation: movLeft .9s 1 ease-out forwards
+
+    .roller
+      order: 4
+
+  .rollbox
+    width: 15rem
+    border-width: 1.5vmin
+
+  .tub.hover
+    &:hover
+      &::before
+        background: red
+        scale: 1
+
+  .tub.hover.hovering
+    &::before
+      background: red
+      scale: 1
+
+  .tubB.hover
+    &:hover
+      &::before
+        background: black
+        scale: 1
+
+  .tubB.hover.hovering
+    &::before
+      background: black
+      scale: 1
+
+  .tubC.hover
+    &:hover
+      &::before
+        background: #01d5a2
+        scale: 1
+
+  .tubC.hover.hovering
+    &::before
+      background: #01d5a2
+      scale: 1
+
+@media (min-width: 1280px)
+  .game
+    display: grid
+    grid-template-rows: repeat(2, minmax(0, 1fr))
+
+  .side
+    grid-row: 1 / span 1
+    grid-column: 1 / 1
+    max-height: none
+
+  #player
+    grid-row: 2 / span 1
+
+    .info
+      grid-column: 1 /span 1
+      grid-row: 1 /span 2
+      order: 1
+      animation: movLeft .9s 1 ease-out forwards
+      margin-bottom: 13em
+      margin-top: 0
+
+    .roller
+      grid-column: 1 /span 1
+      grid-row: 3 /span 2
+      left: -100vw
+      animation: movLeft .9s 1 ease-out forwards
+      margin-bottom: 8em
+      margin-top: 0
+
+  .board
+    max-width: none
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr)
+    grid-auto-rows: minmax(35px, auto)
+    height: 100%
+    box-sizing: border-box
+    align-items: center
+    justify-content: center
+
+  .tubs
+    grid-column: 2 /span 1
+    grid-row: 1 /span 4
+    order: 1
+
+  .roller
+    grid-column: 3 /span 1
+    grid-row: 1 /span 2
+    order: 2
+    animation: movRight .9s 1 ease-out forwards
+    margin-top: 8em
+
+  .info
+    grid-column: 3 /span 1
+    grid-row: 3 /span 2
+    order: 3
+    animation: movRight .9s 1 ease-out forwards
+    margin-top: 9em
+
+  .rollbox
+    width: 25rem
+    border-width: 3.5vmin
