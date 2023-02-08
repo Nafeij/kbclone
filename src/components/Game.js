@@ -719,11 +719,11 @@ class Game extends React.Component {
             const numMatch = numMatchingDice(diceMatrix[turn][i], dice.num);
             newScore += dice.num * numMatch;
             switch (numMatch) {
-                case this.props.settings.tubLen == 1:
+                case this.props.settings.tubLen:
                     dice.diceColor = "#ecd77a";
                     dice.diceBorder = "#cdbe61";
                     break;
-                case this.props.settings.tubLen > 2:
+                case this.props.settings.tubLen - 1:
                     dice.diceColor = "#72adcf";
                     dice.diceBorder = "#6297b6";
                     break;

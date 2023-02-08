@@ -52,8 +52,8 @@ class Tub extends React.Component {
         return (
         <div
             className={`${fillClass} ${hoverClass} ${keyHoverClass} ${shakeClass}`}
-            onPointer={()=>{if (clickable) scoreHover(true)}}
-            onPointerOut={()=>{if (clickable) scoreHover(false)}}
+            onPointerEnter={()=>{if (clickable) scoreHover(true)}}
+            onPointerLeave={()=>{if (clickable) scoreHover(false)}}
             onPointerUp={()=>{if (clickable) proccessClick()}}
             onAnimationEnd={onShakeAnimEnd}>
             {ordering.map((i)=>this.renderBox(i))}
