@@ -311,13 +311,16 @@ class Game extends React.Component {
         const offset = this.props.settings.numTubs
         tubProps = tubProps.map((side, si)=>{
             return side.map((tub, ti)=>{
-                if (this.props.settings.pickable && si === !turn + 0){
-                    const j = ti + offset
-                    this.keyManager.push(j, ()=>{this.proccessClick(ti, si)})
-                    return {...tub, cursorID : j, oldScore : tub.score}
+                if (si === 1 - turn) {
+                    if (this.props.settings.pickable){
+                        const j = ti + offset
+                        this.keyManager.push(j, ()=>{this.proccessClick(ti, si)})
+                        return {...tub, cursorID : j, scoreMemo : null}
+                    }
+                    return {...tub, scoreMemo : null}
                 }
                 this.keyManager.push(ti, ()=>{this.proccessClick(ti, si)})
-                return {...tub, cursorID : ti, oldScore : tub.score}
+                return {...tub, cursorID : ti, scoreMemo : null}
             })
         })
         this.setState({tubProps, cursor: this.keyManager.cursor})
@@ -333,15 +336,16 @@ class Game extends React.Component {
         this.setState({flytextProps})
     }
 
-    clearClickable(){
+    clearClickable(memo = null){
         this.keyManager.clear()
         // this.keyManager.cursor = 0
-        let {tubProps, flytextProps} = this.state
-        tubProps[this.state.turn] = tubProps[this.state.turn].map((tub)=>({...tub, cursorID : -1, scoreMemo : null, oldScore : null}))
-        if (this.props.settings.pickable){
-            const oppTurn = !this.state.turn + 0
-            tubProps[oppTurn] = tubProps[oppTurn].map((tub)=>({...tub, cursorID : -1, scoreMemo : null, oldScore : null}))
-        }
+        let {tubProps, flytextProps, turn} = this.state
+        tubProps = tubProps.map((side, si)=>{
+            return side.map((tub,ti)=>{
+                if (!this.props.settings.pickable && si === 1 - turn) return {...tub, oldScore : memo ? memo[0][si][ti] : null, scoreMemo : null}
+                return {...tub, cursorID : -1, oldScore : memo ? memo[0][si][ti] : null, scoreMemo : null}
+            })
+        })
         flytextProps.buttons = flytextProps.buttons.map((btn)=>({...btn, cursorID : -1}))
         this.setState({tubProps, flytextProps})
     }
@@ -393,35 +397,30 @@ class Game extends React.Component {
         if (this.props.settings.gameType === 'PVP' && this.state.turn){
             this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub : i, side : turn})
         }
-
-        const {sideProps, tubProps} = this.state
+        const memo = this.state.tubProps[turn][i].scoreMemo
+        this.clearClickable(memo)
+        const sideProps = this.state.sideProps
         sideProps[0].tubsClickable = false
         sideProps[1].tubsClickable = false
-        this.clearClickable()
         this.setState({sideProps})
         const num = await this.handleMoveAnim(i, null, null, turn)
-
         if (this.props.settings.caravan && num === 1){
             const scoreChanged = await this.destroyAll(i, turn)
             this.setState(prevState => ({
-                sideProps: prevState.sideProps.map((side,ind) => ({ ...side, score: this.calcTotal(ind) , scoreShake : (turn === ind || scoreChanged)})),
+                sideProps: prevState.sideProps.map((side,ind) => ({ ...side, score: this.calcTotal(ind, memo) , scoreShake : (turn === ind || scoreChanged)})),
                 turn: !prevState.turn + 0,
             }), this.checkEnd)
             return
         }
-        await this.updateScore(i, turn, tubProps[turn][i].scoreMemo);
+        await this.updateScore(i, turn, memo);
         // this.updateCurrSide({score : total}, {turn : !prevState.turn, rolled: false}, this.rollDice)
-        this.setState(prevState => ({
-            sideProps: prevState.sideProps.map(side => (
-                side.id === turn ?
-                    { ...side, score: this.calcTotal(turn) , scoreShown : true, scoreShake : true} : side))
-        }))
         const scoreChanged = await this.checkDice(i, num, turn);
         const oppTurn = !turn + 0
         this.setState(prevState => ({
             sideProps: prevState.sideProps.map(side => (
-                side.id === oppTurn ?
-                    { ...side, score: this.calcTotal(oppTurn) , scoreShake : scoreChanged} : side)),
+                side.id === turn ?
+                    { ...side, score: this.calcTotal(turn, memo) , scoreShown : true, scoreShake : true}:
+                    { ...side, score: this.calcTotal(oppTurn, memo) , scoreShake : scoreChanged})),
             turn: !prevState.turn + 0,
             // rolled: false
         }), this.checkEnd)
@@ -579,7 +578,10 @@ class Game extends React.Component {
         // return diceMatrix[turn].flat().filter(e=>e).length > 4
     }
 
-    calcTotal(turn=this.state.turn){
+    calcTotal(turn=this.state.turn, memo=null){
+        if (memo) {
+            return memo[0][turn].reduce((part, a) => part + a, 0)
+        }
         let total = 0;
         const caravan = this.props.settings.caravan
         for (const tub of this.state.diceMatrix[turn]) {
@@ -732,8 +734,9 @@ class Game extends React.Component {
             if (!scoreMemo) newScore += dice.num * numMatch;
         }
         if (scoreMemo) {
-            newScore = scoreMemo[turn][i]
-            tubProps[turn][i].scoreMemo = null
+            newScore = scoreMemo[0][turn][i]
+            tubProps[turn][i].oldScore = newScore
+            // console.log(`${turn},${i} oldScore: ${newScore}`)
         }
         this.setState({diceMatrix, tubProps})
         return this.handleScoreHover(newScore,turn,i,true)
@@ -744,7 +747,6 @@ class Game extends React.Component {
         if (!isHover) {
             newScore = tubProps[side][tub].oldScore
         }
-        // console.log(`handleScoreHover(${newScore}, ${side}, ${tub}, ${isHover})`)
         return new Promise((resolve)=>{
             if (!newScore) newScore = null
             const tubProp = tubProps[side][tub]
