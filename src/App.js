@@ -21,7 +21,7 @@ import logo from "./img/logo.png"
 function Menu (props) {
 
   const button = (i)=>(
-    <div key={i} className={`kbutton ${i === 0 ? 'space' : ''} ${props.buttons[i].cursorID === props.cursor ? 'hovering' : ''}`} onClick={() => props.buttons[i].onClick()}>{props.buttons[i].text}</div>
+    <div key={i} className={`kbutton ${i === 0 ? 'space' : ''} ${props.buttons[i].cursorID === props.cursor ? 'hovering' : ''}`} onPointerUp={() => props.buttons[i].onClick()}>{props.buttons[i].text}</div>
   )
 
   return (<div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}} onTransitionEnd={props.onFade}>

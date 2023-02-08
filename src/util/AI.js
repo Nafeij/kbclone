@@ -86,7 +86,7 @@ function executeMov(num, diceMatrix, choice, settings){
         s.map((t,ti)=>(
             t.filter((d,di)=>{
                 let keep = d !== removeNum
-                if (si !== choice.side && ti === choice.tub) keep = keep && d !== num
+                if (si !== choice.side && ti === choice.tub) keep = (keep && d !== num)
                 if (!keep) changes.push({s:si,t:ti,d:di})
                 return keep
             })

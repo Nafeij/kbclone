@@ -37,6 +37,8 @@ class Game extends React.Component {
                     animClass: '',
                     onScoreAnimEnd: ()=>{},
                     score: null,
+                    oldScore: null,
+                    scoreMemo: null,
                     boxRefs: Array(props.settings.tubLen).fill().map(React.createRef),
                     scoreScale: 'none',
                     cursorID: -1,
@@ -305,22 +307,19 @@ class Game extends React.Component {
     setTubClickable(){
         // this.clearClickable()
         // this.keyManager.cursor = 0
-        let tubProps = this.state.tubProps
-        tubProps[this.state.turn] = tubProps[this.state.turn].map((tub, i)=>{
-            // this.keyManager.options.push(i)
-            this.keyManager.push(i, ()=>{this.proccessClick(i, this.state.turn)})
-            return {...tub, cursorID : i}
-        })
-        if (this.props.settings.pickable){
-            const oppTurn = !this.state.turn + 0
-            const offset = this.props.settings.numTubs
-            tubProps[oppTurn] = tubProps[oppTurn].map((tub, i)=>{
-                // this.keyManager.options.push(i)
-                const j = i + offset
-                this.keyManager.push(j, ()=>{this.proccessClick(i, oppTurn)})
-                return {...tub, cursorID : j}
+        let {tubProps, turn} = this.state
+        const offset = this.props.settings.numTubs
+        tubProps = tubProps.map((side, si)=>{
+            return side.map((tub, ti)=>{
+                if (this.props.settings.pickable && si === !turn + 0){
+                    const j = ti + offset
+                    this.keyManager.push(j, ()=>{this.proccessClick(ti, si)})
+                    return {...tub, cursorID : j, oldScore : tub.score}
+                }
+                this.keyManager.push(ti, ()=>{this.proccessClick(ti, si)})
+                return {...tub, cursorID : ti, oldScore : tub.score}
             })
-        }
+        })
         this.setState({tubProps, cursor: this.keyManager.cursor})
     }
 
@@ -338,10 +337,10 @@ class Game extends React.Component {
         this.keyManager.clear()
         // this.keyManager.cursor = 0
         let {tubProps, flytextProps} = this.state
-        tubProps[this.state.turn] = tubProps[this.state.turn].map((tub)=>({...tub, cursorID : -1}))
+        tubProps[this.state.turn] = tubProps[this.state.turn].map((tub)=>({...tub, cursorID : -1, scoreMemo : null, oldScore : null}))
         if (this.props.settings.pickable){
             const oppTurn = !this.state.turn + 0
-            tubProps[oppTurn] = tubProps[oppTurn].map((tub)=>({...tub, cursorID : -1}))
+            tubProps[oppTurn] = tubProps[oppTurn].map((tub)=>({...tub, cursorID : -1, scoreMemo : null, oldScore : null}))
         }
         flytextProps.buttons = flytextProps.buttons.map((btn)=>({...btn, cursorID : -1}))
         this.setState({tubProps, flytextProps})
@@ -395,7 +394,7 @@ class Game extends React.Component {
             this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub : i, side : turn})
         }
 
-        const sideProps = this.state.sideProps
+        const {sideProps, tubProps} = this.state
         sideProps[0].tubsClickable = false
         sideProps[1].tubsClickable = false
         this.clearClickable()
@@ -410,7 +409,7 @@ class Game extends React.Component {
             }), this.checkEnd)
             return
         }
-        await this.updateScore(i, turn);
+        await this.updateScore(i, turn, tubProps[turn][i].scoreMemo);
         // this.updateCurrSide({score : total}, {turn : !prevState.turn, rolled: false}, this.rollDice)
         this.setState(prevState => ({
             sideProps: prevState.sideProps.map(side => (
@@ -597,7 +596,7 @@ class Game extends React.Component {
     }
 
     destroyAll(tub, turn = this.state.turn){
-        let {diceMatrix, sideProps} = this.state
+        let {diceMatrix, sideProps, tubProps} = this.state
         let onePos, removeNum, destAll = tub === null
         if (!destAll){
             onePos = defLength(diceMatrix[turn][tub])
@@ -627,7 +626,7 @@ class Game extends React.Component {
         }
         if (!destAll){
             if (!promises.length){
-                this.updateScore(tub, turn)
+                this.updateScore(tub, turn, tubProps[turn][tub].scoreMemo)
                 return false
             }
             sideProps = sideProps.map((s,i)=>{
@@ -639,10 +638,10 @@ class Game extends React.Component {
         this.setState({diceMatrix, sideProps})
         return new Promise(resolve=>{
             Promise.all(promises).then(()=>{
-                if (!destAll) promises = [this.updateScore(tub, turn)]
+                if (!destAll) promises = [this.updateScore(tub, turn, tubProps[turn][tub].scoreMemo)]
                 diceLost.forEach((s,si)=>{
                     s.forEach(i=>{
-                        if (tub !== i || turn !== si) promises.push(this.updateScore(i, si));
+                        if (tub !== i || turn !== si) promises.push(this.updateScore(i, si, tubProps[turn][tub].scoreMemo));
                     })
                 })
                 // console.log(promises)
@@ -670,7 +669,7 @@ class Game extends React.Component {
     }
 
     async checkDice(tub, num, turn = this.state.turn){
-        const diceMatrix = this.state.diceMatrix
+        const {diceMatrix, sideProps, tubProps} = this.state
         const oppTurn = !turn + 0
         let destroyed = 0;
         const fLen = defLength(diceMatrix[oppTurn][tub])
@@ -693,11 +692,10 @@ class Game extends React.Component {
             }
         }
         if (!destroyed) return false;
-        const sideProps = this.state.sideProps
         sideProps[turn].destroyed += destroyed
         sideProps[turn].destroyedTurn = Math.max(sideProps[turn].destroyedTurn, destroyed)
         this.setState({sideProps})
-        await this.updateScore(tub, oppTurn);
+        await this.updateScore(tub, oppTurn, tubProps[turn][tub].scoreMemo);
         let freePos = 0;
         for (let i = 0; i < this.props.settings.tubLen; i++) {
             const oppDice = diceMatrix[oppTurn][tub][i]
@@ -711,13 +709,12 @@ class Game extends React.Component {
         return true
     }
 
-    updateScore(i, turn = this.state.turn){
+    updateScore(i, turn = this.state.turn, scoreMemo = null){
         let newScore = 0;
-        const diceMatrix = this.state.diceMatrix
+        const {diceMatrix, tubProps} = this.state
         for (const dice of diceMatrix[turn][i]){
             if (!dice) continue
             const numMatch = numMatchingDice(diceMatrix[turn][i], dice.num);
-            newScore += dice.num * numMatch;
             switch (numMatch) {
                 case this.props.settings.tubLen:
                     dice.diceColor = "#ecd77a";
@@ -732,13 +729,22 @@ class Game extends React.Component {
                     dice.diceBorder = this.props.settings.diceBorder[turn];
                     break;
             }
+            if (!scoreMemo) newScore += dice.num * numMatch;
         }
-        this.setState({diceMatrix})
-        return this.handleScoreHover(newScore,turn,i)
+        if (scoreMemo) {
+            newScore = scoreMemo[turn][i]
+            tubProps[turn][i].scoreMemo = null
+        }
+        this.setState({diceMatrix, tubProps})
+        return this.handleScoreHover(newScore,turn,i,true)
     }
 
-    handleScoreHover(newScore,side,tub){
+    handleScoreHover(newScore,side,tub,isHover){
         const tubProps = this.state.tubProps
+        if (!isHover) {
+            newScore = tubProps[side][tub].oldScore
+        }
+        // console.log(`handleScoreHover(${newScore}, ${side}, ${tub}, ${isHover})`)
         return new Promise((resolve)=>{
             if (!newScore) newScore = null
             const tubProp = tubProps[side][tub]
@@ -784,28 +790,41 @@ class Game extends React.Component {
 
     scoreHover(isHover,i,j){
         const {sideProps, turn} = this.state
-        let {diceMatrix} = this.state
+        let {diceMatrix, tubProps} = this.state
         if (isFull(diceMatrix[i][j])) return
         const settings = this.props.settings, newDice = sideProps[turn].newDice.num
         const numMat = convertToNumMat(diceMatrix)
-        const [scores, changes ,] = scoreAll(isHover ? newDice : null, numMat, turn, {side : i, tub : j}, settings, true)
-        if (isHover) {
-            changes.forEach(t=>{
-                diceMatrix[t.s][t.t][t.d].shrinkPreview = true
-            })
-        } else {
-            diceMatrix = diceMatrix.map(s=>(
-                s.map(t=>(
-                    t.map(d=>{
-                        if(d) {d.shrinkPreview = false} return d
-                    })
-                ))
-            ))
+        if (!tubProps[i][j].scoreMemo) {
+            tubProps[i][j].scoreMemo = scoreAll(newDice, numMat, turn, {side : i, tub : j}, settings, true)
         }
-        this.setState({diceMatrix},()=>{
+        const [scores, changes ,] = tubProps[i][j].scoreMemo
+        // if (isHover) {
+        //     changes.forEach(t=>{
+        //         diceMatrix[t.s][t.t][t.d].shrinkPreview = isHover
+        //     })
+        // } else {
+        //     diceMatrix = diceMatrix.map(s=>(
+        //         s.map(t=>(
+        //             t.map(d=>{
+        //                 if(d) {d.shrinkPreview = false} return d
+        //             })
+        //         ))
+        //     ))
+        // }
+        changes.forEach(t=>{
+            diceMatrix[t.s][t.t][t.d].shrinkPreview = isHover
+        })
+        // this.setState({diceMatrix, tubProps},()=>{
+        //     scores.forEach((s,si)=>{
+        //         s.forEach((newScore,ti)=>{
+        //             this.handleScoreHover(newScore,si,ti,isHover)
+        //         })
+        //     })
+        // })
+        this.setState({diceMatrix, tubProps},()=>{
             scores.forEach((s,si)=>{
                 s.forEach((newScore,ti)=>{
-                    this.handleScoreHover(newScore,si,ti)
+                    this.handleScoreHover(newScore,si,ti,isHover)
                 })
             })
         })
