@@ -227,28 +227,27 @@ body
   justify-content: center
 
   .kbutton
-    width: 8em
+    width: 10rem
+    &.space
+      margin-top: 1rem
 
 .menubox.across
   flex-direction: row
   width: 75%
-  margin: 4rem 0
-
-.menubox.across.cselect
-  width: auto
-  flex: 1 1
-  margin: 0
-  align-items: center
-  gap: 2em
-
-.menubox.across.ssinner
-  margin: 0
-  align-items: center
-  width: 100%
-  justify-content: space-around
-
-.menubox.across.ssouter
-  width: auto
+  margin: 4rem 0 2rem 0
+  &.cselect
+    width: auto
+    flex: 1 1
+    margin: 0
+    align-items: center
+    gap: 2em
+  &.ssinner
+    margin: 0
+    align-items: center
+    width: 100%
+    justify-content: space-around
+  &.ssouter
+    width: auto
 
 .ssBox.profile
   .menubox
@@ -267,7 +266,7 @@ body
 .graphicbox
   flex: 1 1
   aspect-ratio: 1/1
-  width: 25vmin
+  width: 100%
   position: relative
 
   &::before
@@ -300,11 +299,11 @@ body
     &::after
       display: block
       color: $color_3
-      font-size: 25vmin
+      font-size: 700%
       position: absolute
       left: 50%
       translate: -50%
-      line-height: 10vmin
+      line-height: 40%
       content: '×'
 
 .graphicbox.match
@@ -321,7 +320,7 @@ body
     &::after
       color: $color_2
       content: "☇"
-      font-size: 13vmin
+      font-size: 350%
       left: 0
       position: absolute
       rotate: -45deg
@@ -363,10 +362,10 @@ body
   aspect-ratio: 2
 
 .title
-  width: 90vmin
+  width: 90%
   background-size: contain
   aspect-ratio: 1016/393
-  margin-bottom: 3em
+  margin-bottom: 1.4rem
 
 .subtitle
   flex: 1 1
@@ -447,7 +446,7 @@ body
 
 .text
   flex: 1 1
-  font-size: .9rem
+  font-size: 1rem
 
 .squiggle
   display: inline-block
@@ -839,7 +838,7 @@ body
   text-align: center
 
 .kbutton
-  font-size: 1rem
+  font-size: 1.2rem
   color: $color_7
   position: relative
   background-color: transparent
@@ -1116,6 +1115,24 @@ body
     z-index: -1
     left: 0
     background: transparent
+
+.tub.hover
+    &:active
+      &::before
+        background: red
+        scale: 1
+
+.tubB.hover
+  &:active
+    &::before
+      background: black
+      scale: 1
+
+.tubC.hover
+  &:active
+    &::before
+      background: #01d5a2
+      scale: 1
 
 .scorer
   margin: 0
@@ -1589,22 +1606,20 @@ body
       &::before
         background: black
         scale: 1
-
-  .tubB.hover.hovering
-    &::before
-      background: black
-      scale: 1
+    &.hovering
+      &::before
+        background: black
+        scale: 1
 
   .tubC.hover
     &:hover
       &::before
         background: #01d5a2
         scale: 1
-
-  .tubC.hover.hovering
-    &::before
-      background: #01d5a2
-      scale: 1
+    &.hovering
+      &::before
+        background: #01d5a2
+        scale: 1
 
 @media (min-aspect-ratio: 4/3)
   .game
