@@ -20,12 +20,11 @@ class Game extends React.Component {
         this.server = new Server()
         const isAI = props.settings.gameType === 'AI',
             oppProfile = isAI ? Profile.ai[props.settings.oppProfileInd] : Profile.cosm[props.settings.oppProfileInd]
-        let numLives
+        let numLives = null
         if (isAI){
             if (Profile.ai[props.settings.oppProfileInd].effects.includes('life2')) numLives = 1
             else if (Profile.ai[props.settings.oppProfileInd].effects.includes('life3')) numLives = 2
-            else numLives = null
-        } else numLives = null
+        }
         this.state = {
             diceMatrix: Array.from({length:2}, ()=>(
                 Array.from({length: props.settings.numTubs},()=>(Array(props.settings.tubLen).fill(null)))
@@ -59,7 +58,7 @@ class Game extends React.Component {
                     tubsRef : React.createRef(),
                     numTubs: props.settings.numTubs,
                     tubLen: props.settings.tubLen,
-                    tubsDim: eleDimensions(null),
+                    tubsDim: {height: 0, width: 0},
                     boxAspectRatio,
                     time : props.settings.time === null ? props.settings.time : -1,
                     maxLives : !i ? numLives : null,
@@ -151,7 +150,7 @@ class Game extends React.Component {
         }), callback)
     }
 
-    async hasSlid(){
+    async gameStart(){
         this.setState({slid : true})
         const name = this.state.sideProps[this.state.turn].name.toUpperCase()
         await this.showFlytext(name + " ROLLS FIRST", 2000, 500)
@@ -173,11 +172,12 @@ class Game extends React.Component {
         }
 
         let newDice = this.generateDice()
-        this.updateCurrSide({newDice}, {}, ()=>{
+        const {gameTime} = this.state
+        this.updateCurrSide({newDice}, {gameTime : !!gameTime ? gameTime : Date.now()}, ()=>{
             const {sideProps, turn} = this.state
             newDice = sideProps[turn].newDice
             const diceHeight = newDice.height
-            const {height, width} = eleDimensions(this.state.sideProps[this.state.turn].rollRef.current)
+            const {height, width} = eleDimensions(sideProps[turn].rollRef.current)
             if (diceHeight < height){
                 /* console.log(rollH - diceHeight) */
                 newDice.translate = Math.round(((width - diceHeight) / 2) * (Math.random()*2-1))+ "px " + Math.round(((height - diceHeight) / 2) * (Math.random()*2-1)) + "px"
@@ -190,11 +190,10 @@ class Game extends React.Component {
             },100);
             setTimeout(() => {
                 clearInterval(interval)
-                const {diceMatrix, sideProps, turn, gameTime} = this.state
+                const {diceMatrix, sideProps, turn} = this.state
                 const {profile , newDice} = sideProps[turn]
                 if (this.props.settings.gameType === 'PVP'){
                     newDice.num = rnum
-                    this.setState({sideProps, gameTime : !!gameTime ? gameTime : Date.now()})
                     if (!turn) {
                         this.setState({isLoading : true})
                         if (this.props.settings.time) {
@@ -212,7 +211,6 @@ class Game extends React.Component {
                         }
                         this.server.recv().then((mov)=>{
                             if (mov === 'timeout') {
-                                // console.log('recv timeout')
                                 this.timeoutDestroy()
                                 return
                             }
@@ -225,28 +223,7 @@ class Game extends React.Component {
                                 this.proccessTurn(mov.tub,!mov.side + 0)
                         })})
                     } else {
-                        this.setTubClickable()
-                        this.updateCurrSide({tubsClickable : true},{},()=>{
-                            const {sideProps, turn} = this.state
-                            if (this.props.settings.pickable) sideProps[0].tubsClickable = true
-                            if (this.props.settings.time) {
-                                let thisTime = this.props.settings.time
-                                sideProps[turn].time = thisTime
-                                this.timeInterval = setInterval(() => {
-                                    if (thisTime <= 0){
-                                        clearInterval(this.timeInterval)
-                                        this.server.send('timeout')
-                                        this.timeoutDestroy()
-                                        // this.proccessTurn(evaluate(diceMatrix, newDice.num, 0, turn))
-                                    } else {
-                                        thisTime--
-                                        sideProps[turn].time = thisTime
-                                        this.setState(sideProps)
-                                    }
-                                }, 1000);
-                            }
-                            this.setState(sideProps)
-                        })
+                        this.playerActivate()
                     }
                 } else if (this.props.settings.gameType === 'AI' && !turn){
                     const numMat = convertToNumMat(diceMatrix)
@@ -260,29 +237,35 @@ class Game extends React.Component {
                     const choice = evaluate(numMat, newDice.num, profile, turn, this.props.settings, this.state.turnCount)
                     this.proccessTurn(choice.tub, choice.side)
                 } else {
-                    this.setTubClickable()
-                    this.updateCurrSide({tubsClickable : true},{gameTime : !!gameTime ? gameTime : Date.now()},()=>{
-                        const {sideProps, turn} = this.state
-                        if (this.props.settings.pickable) sideProps[!turn + 0].tubsClickable = true
-                        if (this.props.settings.time) {
-                            let thisTime = this.props.settings.time
-                            sideProps[turn].time = thisTime
-                            this.timeInterval = setInterval(() => {
-                                if (thisTime <= 0){
-                                    clearInterval(this.timeInterval)
-                                    this.timeoutDestroy()
-                                    // this.proccessTurn(evaluate(diceMatrix, newDice.num, 0, turn))
-                                } else {
-                                    thisTime--
-                                    sideProps[turn].time = thisTime
-                                    this.setState(sideProps)
-                                }
-                            }, 1000);
-                        }
-                        this.setState(sideProps)
-                    })
+                    this.playerActivate()
                 }
             }, 800)
+        })
+    }
+
+    playerActivate() {
+        this.setTubClickable()
+        this.updateCurrSide({ tubsClickable: true }, {}, () => {
+            const { sideProps, turn } = this.state
+            const {pickable, time, gameType} = this.props.settings
+            if (pickable) sideProps[!turn + 0].tubsClickable = true
+            if (time) {
+                let thisTime = time
+                sideProps[turn].time = thisTime
+                this.timeInterval = setInterval(() => {
+                    if (thisTime <= 0) {
+                        clearInterval(this.timeInterval)
+                        if (gameType === 'PVP') this.server.send('timeout')
+                        this.timeoutDestroy()
+                        // this.proccessTurn(evaluate(diceMatrix, newDice.num, 0, turn))
+                    } else {
+                        thisTime--
+                        sideProps[turn].time = thisTime
+                        this.setState(sideProps)
+                    }
+                }, 1000)
+            }
+            this.setState(sideProps)
         })
     }
 
@@ -315,12 +298,12 @@ class Game extends React.Component {
                     if (this.props.settings.pickable){
                         const j = ti + offset
                         this.keyManager.push(j, ()=>{this.proccessClick(ti, si)})
-                        return {...tub, cursorID : j, scoreMemo : null}
+                        return {...tub, cursorID : j, scoreMemo : null, oldScore : tub.score}
                     }
                     return {...tub, scoreMemo : null}
                 }
                 this.keyManager.push(ti, ()=>{this.proccessClick(ti, si)})
-                return {...tub, cursorID : ti, scoreMemo : null}
+                return {...tub, cursorID : ti, scoreMemo : null, oldScore : tub.score}
             })
         })
         this.setState({tubProps, cursor: this.keyManager.cursor})
@@ -336,16 +319,23 @@ class Game extends React.Component {
         this.setState({flytextProps})
     }
 
-    clearClickable(memo = null){
+    clearClickable(){
         this.keyManager.clear()
         // this.keyManager.cursor = 0
         let {tubProps, flytextProps, turn} = this.state
-        tubProps = tubProps.map((side, si)=>{
-            return side.map((tub,ti)=>{
-                if (!this.props.settings.pickable && si === 1 - turn) return {...tub, oldScore : memo ? memo[0][si][ti] : null, scoreMemo : null}
-                return {...tub, cursorID : -1, oldScore : memo ? memo[0][si][ti] : null, scoreMemo : null}
+        // const oldScore = (si,ti) => (memo ? memo[0][si][ti] : null)
+        tubProps = tubProps.map((side)=>{
+            return side.map((tub)=>{
+                if (!this.props.settings.pickable && si === 1 - turn) {
+                    return {...tub, scoreMemo : null}
+                }
+                return {...tub, cursorID : -1, scoreMemo : null}
             })
         })
+
+        // const p = tubProps.map((side)=>(side.map((tub)=>(tub.oldScore))))
+        // console.log(p)
+
         flytextProps.buttons = flytextProps.buttons.map((btn)=>({...btn, cursorID : -1}))
         this.setState({tubProps, flytextProps})
     }
@@ -393,28 +383,28 @@ class Game extends React.Component {
 
     }
 
-    async proccessTurn(i, turn = this.state.turn){
+    async proccessTurn(tub, turn = this.state.turn){
         if (this.props.settings.gameType === 'PVP' && this.state.turn){
-            this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub : i, side : turn})
+            this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub, side : turn})
         }
-        const memo = this.state.tubProps[turn][i].scoreMemo
-        this.clearClickable(memo)
-        const sideProps = this.state.sideProps
+        const memo = this.fetchMemo(turn, tub)
+        this.clearClickable()
+        const {sideProps} = this.state
         sideProps[0].tubsClickable = false
         sideProps[1].tubsClickable = false
         this.setState({sideProps})
-        const num = await this.handleMoveAnim(i, null, null, turn)
+        const num = await this.handleMoveAnim(tub, null, null, turn)
         if (this.props.settings.caravan && num === 1){
-            const scoreChanged = await this.destroyAll(i, turn)
+            const scoreChanged = await this.destroyAll(tub, turn, memo)
             this.setState(prevState => ({
                 sideProps: prevState.sideProps.map((side,ind) => ({ ...side, score: this.calcTotal(ind, memo) , scoreShake : (turn === ind || scoreChanged)})),
                 turn: !prevState.turn + 0,
             }), this.checkEnd)
             return
         }
-        await this.updateScore(i, turn, memo);
+        await this.updateScore(tub, turn, memo);
         // this.updateCurrSide({score : total}, {turn : !prevState.turn, rolled: false}, this.rollDice)
-        const scoreChanged = await this.checkDice(i, num, turn);
+        const scoreChanged = await this.checkDice(tub, num, turn, memo);
         const oppTurn = !turn + 0
         this.setState(prevState => ({
             sideProps: prevState.sideProps.map(side => (
@@ -543,7 +533,7 @@ class Game extends React.Component {
         flytextProps.slideEnd = ()=>{
             flytextProps.slideEnd = ()=>{}
             flytextProps.onClick = ()=>{this.restart()}
-            this.setState({diceMatrix, tubProps, sideProps, flytextProps, turn, rolled : false},()=> this.hasSlid())
+            this.setState({diceMatrix, tubProps, sideProps, flytextProps, turn, rolled : false},()=> this.gameStart())
         }
         this.setState({flytextProps, gameTime : null, turnCount : this.props.settings.turnLimit, isLoading : false}, this.clearClickable)
     }
@@ -597,8 +587,8 @@ class Game extends React.Component {
         return total
     }
 
-    destroyAll(tub, turn = this.state.turn){
-        let {diceMatrix, sideProps, tubProps} = this.state
+    destroyAll(tub, turn = this.state.turn, memo = null){
+        let {diceMatrix, sideProps} = this.state
         let onePos, removeNum, destAll = tub === null
         if (!destAll){
             onePos = defLength(diceMatrix[turn][tub])
@@ -628,7 +618,7 @@ class Game extends React.Component {
         }
         if (!destAll){
             if (!promises.length){
-                this.updateScore(tub, turn, tubProps[turn][tub].scoreMemo)
+                this.updateScore(tub, turn, memo)
                 return false
             }
             sideProps = sideProps.map((s,i)=>{
@@ -640,10 +630,10 @@ class Game extends React.Component {
         this.setState({diceMatrix, sideProps})
         return new Promise(resolve=>{
             Promise.all(promises).then(()=>{
-                if (!destAll) promises = [this.updateScore(tub, turn, tubProps[turn][tub].scoreMemo)]
+                if (!destAll) promises = [this.updateScore(tub, turn, memo)]
                 diceLost.forEach((s,si)=>{
                     s.forEach(i=>{
-                        if (tub !== i || turn !== si) promises.push(this.updateScore(i, si, tubProps[turn][tub].scoreMemo));
+                        if (tub !== i || turn !== si) promises.push(this.updateScore(i, si, memo));
                     })
                 })
                 // console.log(promises)
@@ -670,7 +660,7 @@ class Game extends React.Component {
         })
     }
 
-    async checkDice(tub, num, turn = this.state.turn){
+    async checkDice(tub, num, turn = this.state.turn, memo = null){
         const {diceMatrix, sideProps, tubProps} = this.state
         const oppTurn = !turn + 0
         let destroyed = 0;
@@ -697,7 +687,7 @@ class Game extends React.Component {
         sideProps[turn].destroyed += destroyed
         sideProps[turn].destroyedTurn = Math.max(sideProps[turn].destroyedTurn, destroyed)
         this.setState({sideProps})
-        await this.updateScore(tub, oppTurn, tubProps[turn][tub].scoreMemo);
+        await this.updateScore(tub, oppTurn, memo);
         let freePos = 0;
         for (let i = 0; i < this.props.settings.tubLen; i++) {
             const oppDice = diceMatrix[oppTurn][tub][i]
@@ -731,21 +721,26 @@ class Game extends React.Component {
                     dice.diceBorder = this.props.settings.diceBorder[turn];
                     break;
             }
-            if (!scoreMemo) newScore += dice.num * numMatch;
+            if (!scoreMemo) {
+                newScore += dice.num * numMatch
+            }
         }
         if (scoreMemo) {
             newScore = scoreMemo[0][turn][i]
-            tubProps[turn][i].oldScore = newScore
-            // console.log(`${turn},${i} oldScore: ${newScore}`)
         }
+        // tubProps[turn][i].oldScore = newScore
+        // console.log(`${turn},${i} : memo fetch oldScore set ${newScore}`)
         this.setState({diceMatrix, tubProps})
         return this.handleScoreHover(newScore,turn,i,true)
     }
 
     handleScoreHover(newScore,side,tub,isHover){
         const tubProps = this.state.tubProps
+        //const p = tubProps.map((side)=>(side.map((tub)=>(tub.oldScore))))
+        //console.log(p)
         if (!isHover) {
             newScore = tubProps[side][tub].oldScore
+            // console.log(`${side},${tub} : oldScore ${newScore}`)
         }
         return new Promise((resolve)=>{
             if (!newScore) newScore = null
@@ -790,16 +785,23 @@ class Game extends React.Component {
         })
     }
 
+    fetchMemo(i, j) {
+        let {diceMatrix, tubProps, turn, sideProps} = this.state
+        if (!tubProps[i][j].scoreMemo) {
+            const settings = this.props.settings
+            const newDice = sideProps[turn].newDice.num
+            const numMat = convertToNumMat(diceMatrix);
+            tubProps[i][j].scoreMemo = scoreAll(newDice, numMat, turn, { side: i, tub: j }, settings, true);
+            this.setState({tubProps})
+        }
+        return tubProps[i][j].scoreMemo
+    }
+
     scoreHover(isHover,i,j){
-        const {sideProps, turn} = this.state
         let {diceMatrix, tubProps} = this.state
         if (isFull(diceMatrix[i][j])) return
-        const settings = this.props.settings, newDice = sideProps[turn].newDice.num
-        const numMat = convertToNumMat(diceMatrix)
-        if (!tubProps[i][j].scoreMemo) {
-            tubProps[i][j].scoreMemo = scoreAll(newDice, numMat, turn, {side : i, tub : j}, settings, true)
-        }
-        const [scores, changes ,] = tubProps[i][j].scoreMemo
+        const memo = this.fetchMemo(i, j);
+        const [scores, changes ,] = memo
         // if (isHover) {
         //     changes.forEach(t=>{
         //         diceMatrix[t.s][t.t][t.d].shrinkPreview = isHover
@@ -840,7 +842,7 @@ class Game extends React.Component {
             turn={this.state.turn}
             rollDice={() => this.rollDice()}
             rolled={this.state.rolled}
-            hasSlid={() => this.hasSlid()}
+            hasSlid={() => this.gameStart()}
             slid={this.state.slid}
             proccessClick={(i,t) => this.proccessClick(i,t)}
             onShakeAnimEnd={(i,t) => this.onShakeAnimEnd(i,t)}
@@ -884,15 +886,19 @@ class Game extends React.Component {
         try{
             const newDice = this.state.sideProps[this.state.turn]
             newDice.height = this.boxMin() * scale
-            this.updateCurrSide({newDice : newDice})
+            this.updateCurrSide({newDice})
         } catch (e) {}
     }
 
     tubSizeOnResize(){
         try{
-            let {sideProps} = this.state
-            sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
-            this.setState({sideProps})
+            this.setState(prevState => {
+                prevState.sideProps = prevState.sideProps.map(s=>{
+                    s.tubsDim = eleDimensions(s.tubsRef.current)
+                    return s
+                })
+                return prevState
+            })
         } catch (e) {}
     }
 
@@ -903,8 +909,7 @@ class Game extends React.Component {
         if (this.props.settings.gameType === 'PVP'){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
-            const turn = this.props.turn
-            this.setState({turn, flytextProps})
+            this.setState({turn : this.props.turn, flytextProps})
             return
         }
         this.setState({turn : randomInRange(2), sideProps})
