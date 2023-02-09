@@ -145,6 +145,7 @@ $font-family_4: "Courier New", Courier, monospace
 html
   overflow: hidden
   height: 100%
+  font-size: 3vmin
 
 #root
   overflow: hidden
@@ -223,13 +224,13 @@ body
   align-items: center
   flex-direction: column
   text-align: center
-  width: 100vw
+  width: 100%
   justify-content: center
 
   .kbutton
-    width: 10rem
+    width: 14rem
     &.space
-      margin-top: 1rem
+      margin-top: 2rem
 
 .menubox.across
   flex-direction: row
@@ -240,7 +241,7 @@ body
     flex: 1 1
     margin: 0
     align-items: center
-    gap: 2em
+    gap: 2rem
   &.ssinner
     margin: 0
     align-items: center
@@ -254,11 +255,6 @@ body
     flex: 2
 
   flex-direction: row
-
-  .kbutton
-    font-size: 1.8vmin
-    padding: .8vmin
-    width: 11vmin
 
   .pfp
     width: 100%
@@ -329,28 +325,28 @@ body
 
 .footer
   position: absolute
-  bottom: 2vmin
-  left: 2vmin
+  bottom: 1rem
+  left: 1rem
   display: flex
-  gap: 2.6em
+  gap: 1rem
   z-index: 3
   justify-content: center
   align-items: center
   color: $color_1
 
   .text
-    font-size: 2vh
+    font-size: 2rem
 
 .fcontain
   display: flex
   flex-direction: row
-  gap: 1.2vw
+  gap: 1rem
   align-items: center
   justify-content: center
 
 .symb
   background-size: contain
-  height: 3vh
+  height: 2rem
   background-repeat: no-repeat
   flex: 1 1 auto
   aspect-ratio: 2.8
@@ -426,14 +422,14 @@ body
     gap: .7vmin
 
   .text.red
-    margin: 0 0 .6em 0
-    font-size: calc(.9vh + .9vw)
+    margin: 0 0 .6rem 0
+    font-size: 1.4rem
     font-style: italic
     font-family: $font-family_1
 
 .logo
   flex: 1 1
-  font-size: 4rem
+  font-size: 5rem
   font-weight: 400
 
 .logo.red
@@ -451,11 +447,11 @@ body
 
 .squiggle
   display: inline-block
-  height: 2vmin
-  width: 6vmin
+  height: .7rem
+  width: 2.1rem
   background-size: 1180%
   background-position: 92.8% 87.5%
-  margin: 0 0.3em
+  margin: 0 0.3rem
   vertical-align: middle
 
   &:nth-child(2n)
@@ -502,7 +498,7 @@ body
 
 .formGrid
   display: grid
-  grid-template-columns: repeat(7, 1fr)
+  grid-template-columns: repeat(6, 1fr)
   gap: 1vmin
   flex: 1
 
@@ -775,7 +771,7 @@ body
 .settingsInfo
   color: $color_5
   font-family: $font-family_4
-  font-size: calc(.6vh + .6vw)
+  font-size: 1.4rem
   position: absolute
   bottom: 0
   left: 50%
@@ -809,7 +805,7 @@ body
 .turnCounter
   align-items: center
   background: #111
-  border: .5em solid #e80016
+  border: .5rem solid #e80016
   border-radius: 50%
   color: $color_6
   display: flex
@@ -817,20 +813,20 @@ body
   font-weight: 700
   justify-content: flex-end
   left: 50%
-  padding: 1em
+  padding: 1rem
   position: absolute
   top: 0
   translate: -50% -50%
-  width: 9vmin
-  height: 9vmin
+  width: 5.5rem
+  height: 5.5rem
   z-index: 99
 
   p
-    font-size: 3vmin
+    font-size: 2rem
     margin: 0
 
     &:last-child
-      font-size: .8vmin
+      font-size: .6rem
 
 .game
   height: 100%
@@ -839,7 +835,7 @@ body
   text-align: center
 
 .kbutton
-  font-size: 1.2rem
+  font-size: 1.6rem
   color: $color_7
   position: relative
   background-color: transparent
@@ -860,19 +856,15 @@ body
   color: $color_1
 
 .ssBox
-  +
-    .kbutton
-      margin-top: 2em
-
   display: flex
   background-color: #232822
-  padding: 5vmin
-  width: 50vmin
-  margin: 1vmin
+  padding: 5%
+  width: 85%
+  margin: 1%
   position: relative
   flex-direction: column
   align-items: center
-  gap: 2.5em
+  gap: 2rem
 
   &::before
     display: block
@@ -904,14 +896,15 @@ body
       top: -1em
 
   .kbutton
-    width: 15vmin
-    padding: 1vmin
+    // width: 8rem
+    padding: 1rem .5rem
     clip-path: none
     border: none
     border-radius: 3px
-    font-size: 2vmin
+    font-size: 1.2rem
     background-color: #222
-
+    width: 100%
+    margin: 5%
   input
     background: #171916
     border: none
@@ -919,10 +912,10 @@ body
     caret-color: #d52f2f
     color: $color_1
     outline: none
-    padding: 0.5em
+    padding: .7rem
     box-sizing: border-box
-    font-size: calc(1vh + 1vw)
-    letter-spacing: 0.1em
+    font-size: 1.4rem
+    letter-spacing: 0.1rem
     transition: .3s
     border-radius: 5px
     text-align: center
@@ -958,8 +951,8 @@ body
 .board
   display: grid
   grid-template-columns: 1fr 1fr
-  height: 100%
-  width: 100%
+  height: 95%
+  width: 95%
   grid-auto-rows: minmax(180px, auto)
 
 .roller
@@ -992,14 +985,13 @@ body
     animation: movUp .9s 1 ease-out forwards
 
 .rollbox
-  width: 12rem
+  width: 100%
   aspect-ratio: 5/3
   display: flex
   justify-content: center
   align-items: center
   position: relative
   box-sizing: border-box
-  margin-bottom: 3vmin
   background-repeat: no-repeat
   background-size: 366% 256%
   background-position: 94.76% 3.1%
@@ -1036,8 +1028,8 @@ body
     height: 100%
 
 .name
-  margin: -1vmin 0 0 0
-  font-size: calc(1.4vh + 1vw)
+  margin: -1rem 0 0 0
+  font-size: 1.8rem
   white-space: nowrap
 
 .tubs
@@ -1134,14 +1126,14 @@ body
   justify-content: center
   align-items: center
   text-align: center
-  gap: 1em
+  gap: 1rem
 
 .timer
   background: #050f05
   font-family: $font-family_4
-  padding: 0.2em
-  border-radius: 0.2em
-  font-size: calc(1.2vh + 1.2vw)
+  padding: 0.2rem
+  border-radius: 0.2rem
+  font-size: 1.4rem
 
 .ssBox.lock
   &::before
@@ -1172,10 +1164,10 @@ body
 .slidePaneContainer
   flex: 1 1
   display: block
-  width: 25vmin
+  width: 15rem
   aspect-ratio: 1/1
   position: relative
-  margin: 3vmin 0
+  margin: 1rem 0
 
 .containerMask
   height: 100%
@@ -1185,11 +1177,11 @@ body
   -webkit-mask-image: linear-gradient(to right, transparent, black 33%, black 66%, transparent)
 
 .pfp
-  width: 20vmin
+  width: 8rem
   aspect-ratio: 1/1
   background-size: contain
   box-sizing: border-box
-  border-radius: .3em
+  border-radius: .3rem
   filter: grayscale(0) brightness(100%)
   transition: .3s
 
@@ -1197,20 +1189,20 @@ body
   filter: grayscale(80%) brightness(60%)
 
 .pfp.simp
-  width: 25vmin
+  width: 15rem
   filter: none
-  margin-right: -4vmin
+  margin-right: -4rem
 
 .charInfo
   display: grid
-  gap: 4vmin
+  gap: 2rem
   background-color: #232822
   border: solid red
   border-width: 0
   transition: .3s
-  padding: 4vmin
-  min-width: 30vmin
-  min-height: 13vmin
+  padding: 2rem
+  min-width: 20rem
+  min-height: 10rem
   margin: 1em 0
   position: relative
 
@@ -1236,7 +1228,7 @@ body
 
   .slidePaneContainer
     aspect-ratio: auto
-    width: 3vmin
+    width: 3rem
     margin: 0 auto
     grid-column: 1 /span 2
 
@@ -1248,13 +1240,13 @@ body
     padding: 0
 
   .subtitle
-    font-size: calc(1.3vh + 1.3vw)
-    min-width: 25vmin
+    font-size: 2.4rem
+    min-width: 25rem
     position: relative
-    margin-left: -22vmin
+    margin-left: -22rem
 
     &:first-of-type
-      margin-left: -11vmin
+      margin-left: -11rem
 
 .charInfohover
   &::before
@@ -1345,8 +1337,8 @@ body
 .lds-ring
   display: inline-block
   position: absolute
-  right: 2vw
-  bottom: 2vw
+  right: 2rem
+  bottom: 2rem
   width: 80px
   aspect-ratio: 1
   z-index: 3

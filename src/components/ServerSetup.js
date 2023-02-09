@@ -6,8 +6,8 @@ import Profile from "../util/Profile";
 function ServerSetup (props) {
     const {buttons, cursor, shake, onShakeDone, fadeAway,
         onFade, onFocus, onBlur, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles, pcursor} = props
-    const button = (i)=>(
-        <div key={i} className={`kbutton ${i === cursor && !(lock && i !== 0) ? 'hovering' : ''}`} style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()}>{buttons[i].text}</div>
+    const button = (i, space=false)=>(
+        <div key={i} className={`kbutton ${space ? 'space' : ''} ${i === cursor && !(lock && i !== 0) ? 'hovering' : ''}`} style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()}>{buttons[i].text}</div>
     )
     return (
     <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
@@ -35,7 +35,7 @@ function ServerSetup (props) {
                     {Array(buttons.length - 2).fill().map((_,i)=>button(i+2))}
                 </div>
             </div> : null}
-            {button(0)}
+            {button(0,true)}
         </div>
     </div>
     )

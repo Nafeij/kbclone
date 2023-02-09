@@ -13,7 +13,7 @@ import SlidePane from "./SlidePane";
 
 function CharSelect (props) {
 
-    const {selectedAIInd, buttons, cursor, modAIInd, 
+    const {selectedAIInd, buttons, cursor, modAIInd,
             fadeAway, onFade, modSetAIInd, hasWrapped} = props,
         translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100
@@ -57,16 +57,16 @@ function CharSelect (props) {
                     </div>
                     <div className="difficulty" style={{gridColumn : effect ? '1 /span 1' : '1 /span 2'}}>
                         <div className='text red' style={{color : cheat ? '#01d5a2' : 'red'}}>Difficulty</div>
-                        <Bar progress={Profile.ai[selectedAIInd].skill} 
-                            baseImg={skullImg} 
+                        <Bar progress={Profile.ai[selectedAIInd].skill}
+                            baseImg={skullImg}
                             fillImg={cheat ? skullBImg : skullRImg}
-                            dim={{width: '12vmin', height : '2.56vmin'}}
+                            dim={{width: '8rem', height : '1.7081rem'}}
                         />
                     </div>
-                    {effect ? 
+                    {effect ?
                     <div className="difficulty">
                         <div className='text red'>{effect.text}</div>
-                        <Bar progress={effect.val} fillImg={heartsImg} dim={{width: '6.94vmin', height : '2.56vmin'}}/>
+                        <Bar progress={effect.val} fillImg={heartsImg} dim={{width: '5rem', height : '1.843rem'}}/>
                     </div>
                     : null}
                     </div>
