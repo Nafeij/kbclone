@@ -262,7 +262,7 @@ body
 .graphicbox
   flex: 1 1
   aspect-ratio: 1/1
-  width: 100%
+  width: 10rem
   position: relative
 
   &::before
@@ -299,20 +299,11 @@ body
       position: absolute
       left: 50%
       translate: -50%
-      line-height: 40%
+      line-height: 55%
       content: '×'
 
 .graphicbox.match
   .die
-    &:last-child
-      &::after
-        bottom: 170%
-        left: auto
-        right: 0
-        rotate: 135deg
-        top: auto
-        translate: -50% 0
-
     &::after
       color: $color_2
       content: "☇"
@@ -322,6 +313,14 @@ body
       rotate: -45deg
       top: 170%
       translate: 50% 0
+    &:last-child
+      &::after
+        bottom: 170%
+        left: auto
+        right: 0
+        rotate: 135deg
+        top: auto
+        translate: -50% 0
 
 .footer
   position: absolute
@@ -335,7 +334,7 @@ body
   color: $color_1
 
   .text
-    font-size: 2rem
+    font-size: 1.4rem
 
 .fcontain
   display: flex
@@ -433,7 +432,7 @@ body
   font-weight: 400
 
 .logo.red
-  color: $color_3
+  color: transparent
 
 .text.red
   color: $color_3
@@ -534,7 +533,8 @@ body
       letter-spacing: normal
       box-sizing: border-box
       text-align: center
-      font-size: .7rem
+      font-size: 1rem
+      max-height: none
 
       &:first-child
         grid-column: 1 /span 2
@@ -551,19 +551,27 @@ body
   .menubox.settingsList
     flex: 1 1
     width: 100%
+    padding: 10% 0
 
   .menubox.settingsList.opponent
+    gap: 0
     .settingsItem
-      width: 100%
-      display: flex
+      flex-direction: row
+      width: 90%
+      .subtitle
+        text-align: center
+        max-height: none
 
   .settingsItem
-    display: block
-    flex: none
+    display: flex
+    flex-direction: column
 
     .subtitle
-      flex: none
+      // flex: none
+      text-align: left
+      width: 100%
       padding: .5rem
+      max-height: 1rem
 
   input
     font-size: 2rem
@@ -578,15 +586,15 @@ body
     border: none
     box-shadow: none
     font-family: $font-family_2
+    margin: 0
 
     &:focus
       box-shadow: 0 2px white
 
   .settingInput
     justify-content: center
-
-    .menubox
-      max-width: 25%
+    width: 80%
+    align-self: center
 
   .kbutton
     width: max-content
@@ -594,7 +602,7 @@ body
     clip-path: none
     border: none
     border-radius: 3px
-    font-size: 1rem
+    font-size: 1.4rem
     background-color: #222
 
 .menubox.stats
@@ -613,7 +621,7 @@ body
     letter-spacing: normal
     box-sizing: border-box
     text-align: center
-    font-size: .7rem
+    font-size: .8rem
 
   height: auto
 
@@ -644,7 +652,7 @@ body
     .menubox
       .subtitle
         &:last-child
-          font-size: .8rem
+          font-size: 1rem
 
   .menubox.score
     width: 100%
@@ -676,7 +684,7 @@ body
   .menubox.settingsList.opponent
     .settingsItem
       .subtitle
-        padding: .7vmin
+        padding: .2rem
 
 .settingsItem
   width: 100%
@@ -684,6 +692,8 @@ body
   flex: 1 1 4em
   align-items: center
   z-index: 0
+  flex-direction: column
+  align-items: stretch
 
   &:hover
     z-index: 1
@@ -721,6 +731,8 @@ body
   align-items: center
   justify-content: space-between
   font-size: 1.2rem
+  width: 50%
+  align-self: flex-end
 
   .menubox
     width: auto
@@ -744,7 +756,7 @@ body
       display: block
 
 .testColor
-  width: 1rem
+  width: 1.4rem
   aspect-ratio: 1
   border-radius: 3px
   position: relative
@@ -788,7 +800,7 @@ body
   transition: background-color .2s
   aspect-ratio: 2/1
   margin: auto
-  height: 5vmin
+  height: 2.4rem
 
   .react-switch-button
     content: ''
@@ -1260,12 +1272,12 @@ body
   grid-template-areas: "c . a" "f g e" "b . d"
   aspect-ratio: 1/1
   background-color: #f4ebce
-  border: .4em solid #d7cbb3
+  border: .5em solid #d7cbb3
   border-radius: 10%
   box-sizing: border-box
   grid-template-columns: repeat(3, minmax(0, 1fr))
   grid-template-rows: repeat(3, minmax(0, 1fr))
-  padding: .7vmin
+  padding: 3%
   z-index: 1
   position: relative
 
@@ -1499,7 +1511,7 @@ body
 #result
   margin: 0
 
-@media screen and (max-aspect-ratio: 8/9)
+@media screen and (max-aspect-ratio: 2/3)
   .fcontain
     &:not(.mobile)
       display: none !important
@@ -1507,12 +1519,38 @@ body
   .symb.backSymb
     display: none !important
 
-@media (min-aspect-ratio: 8/9)
+@media (min-aspect-ratio: 2/3)
+  html
+    font-size: 2vmin
+
+  .title
+    width: 70%
+  .ssBox
+    width: 20rem
+    padding: 3rem
+
+  .logo.red
+      color: $color_3
+
+  .graphicbox
+    width: 16rem
+    &.match
+      .die
+        &::after
+          font-size: 600%
+    &.dest
+      .die
+        &::after
+          font-size: 1250%
+          line-height: 50%
+  .settingsItem
+    flex-direction: row
+    align-items: center
   .menubox.across.personal
     flex-direction: row
-
-  .menubox.settingsList.opponent
-    height: auto
+    input
+      width: 100%
+      margin: 0
 
   .board
     grid-template-columns: minmax(0, 1fr) minmax(300px, 3fr)
@@ -1574,7 +1612,17 @@ body
         background: #01d5a2
         scale: 1
 
-@media (min-aspect-ratio: 4/3)
+@media (min-aspect-ratio: 3/2)
+  html
+    font-size: 1.87vmin
+  .title
+    width: 50%
+  .menubox.across.TabBar
+    width: 60%
+  .menubox.settingsList
+    width: 60%
+  .menubox.across.personal
+    width: 60%
   .game
     display: grid
     grid-template-rows: repeat(2, minmax(0, 1fr))
