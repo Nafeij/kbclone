@@ -103,8 +103,8 @@ export function timeFormatLong(sec){
     const hours = Math.floor((sec / 3600) % 24)
     const days = Math.floor((sec / 86400))
     return (days ? days + 'd ' : '') +
-        (hours ? hours + 'h ' : '') + 
-        (minutes ? minutes + 'm ' : '') + 
+        (hours ? hours + 'h ' : '') +
+        (minutes ? minutes + 'm ' : '') +
         seconds + 's'
 }
 
@@ -115,6 +115,10 @@ export function eleDimensions(element){
         width: element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)};
 }
 
+export function tubBoxWidth(tubsAspect, tubboxAspect){
+    return (Math.min(1, tubsAspect/tubboxAspect) * 100) + "%"
+}
+
 export function timeFormat(seconds){
     if (seconds < 0) return '--'
     // const hours = Math.floor((total / 1000 / 60 / 60) % 24);
@@ -123,5 +127,5 @@ export function timeFormat(seconds){
 
 export function caravanBounds(tubLen){
     const mid = (tubLen/2)**2
-    return [Math.floor(mid*3.5*.91),Math.ceil(mid*6*1.1)]
+    return [Math.max(1,Math.floor(mid*3.5*.91)),Math.ceil(mid*6*1.1)]
 }

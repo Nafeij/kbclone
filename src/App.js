@@ -101,9 +101,9 @@ class App extends React.Component{
       gameSettingsProps : this.cookies.get('gameSettingsProps') || {
         tubLen : 3,
         numTubs : 3,
-        diceColor : ['#f4ebceff','#f4ebceff'],
-        diceBorder : ['#d7cbb3ff', '#d7cbb3ff'],
-        pipColor : ['#382020ff','#382020ff'],
+        diceColor : ['#f4ebce','#f4ebce'],
+        diceBorder : ['#d7cbb3', '#d7cbb3'],
+        pipColor : ['#382020','#382020'],
         // time : 120
         time : null,
         pickable : false,
@@ -295,7 +295,9 @@ class App extends React.Component{
       modSpec : (setting)=>{
         if (setting === 'caravan') {
           const {gameSettingsProps} = this.state
-          if (gameSettingsProps.caravan) gameSettingsProps.caravan = null
+          if (gameSettingsProps.caravan) {
+            gameSettingsProps.caravan = null
+          }
           else {
             gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
           }
@@ -379,11 +381,11 @@ class App extends React.Component{
           }])
         if (destTab === 0){
           this.keyManager.push([-1,0,1],
-            [()=>{},()=>{if (this.state.gameSettingsProps.tubLen > 2) settingsProps.mod('tubLen',-1)},
-            ()=>{if (this.state.gameSettingsProps.tubLen < 4) settingsProps.mod('tubLen',1)}])
+            [()=>{},()=>{if (this.state.gameSettingsProps.tubLen > 1) settingsProps.mod('tubLen',-1)},
+            ()=>{if (this.state.gameSettingsProps.tubLen < 9) settingsProps.mod('tubLen',1)}])
           this.keyManager.push([-1,0,1], [
-            ()=>{},()=>{if (this.state.gameSettingsProps.numTubs > 3) settingsProps.mod('numTubs',-1)},
-            ()=>{if (this.state.gameSettingsProps.numTubs < 5) settingsProps.mod('numTubs',1)}])
+            ()=>{},()=>{if (this.state.gameSettingsProps.numTubs > 1) settingsProps.mod('numTubs',-1)},
+            ()=>{if (this.state.gameSettingsProps.numTubs < 9) settingsProps.mod('numTubs',1)}])
           this.keyManager.push([-1,0,1], [
             ()=>{},()=>{if (this.state.gameSettingsProps.time !== null) settingsProps.modDscrt('time',-1)},
             ()=>{if (this.state.gameSettingsProps.time !== 60) settingsProps.modDscrt('time',1)}])

@@ -36,8 +36,8 @@ function Settings (props) {
     const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name} = props.gameSettingsProps,
     {mod, modDscrt, modBool, modSpec, modVal, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props,
     combiBreakdown = statsProps.aiBreakdown.slice(),
-    tubLenInLimit = {l: tubLen > 2 && tubLen > numTubs - 2, r: tubLen < numTubs + 2},
-    numTubsInLimit = {l: numTubs > 2 && numTubs > tubLen - 2, r: numTubs < tubLen + 2}
+    tubLenInLimit = {l: tubLen > 1 && tubLen > numTubs - 2, r: tubLen < numTubs + 2},
+    numTubsInLimit = {l: numTubs > 1 && numTubs > tubLen - 2, r: numTubs < tubLen + 2}
     combiBreakdown.push(statsProps.pvpBreakdown)
     const aggregate = statsProps.aggregate,
         newAggregate = combiBreakdown.reduce((pObj, cObj)=>{

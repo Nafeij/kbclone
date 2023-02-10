@@ -850,7 +850,7 @@ body
   position: relative
   background-color: transparent
   padding: 0.5rem 1rem
-  clip-path: polygon(0% 0%, 100% 0%, calc(100% - 1rem) 50%, 100% 100%, 0% 100%, 1rem 50%)
+  clip-path: polygon(0% 0%, 100% 0%, 90% 50%, 100% 100%, 0% 100%, 10% 50%)
   border: 0.4rem solid transparent
   transition: .1s
 
@@ -961,9 +961,10 @@ body
 .board
   display: grid
   grid-template-columns: 1fr 1fr
+  grid-template-rows: repeat(3, 1fr)
   height: 95%
   width: 95%
-  grid-auto-rows: minmax(180px, auto)
+  gap: 5%
 
 .roller
   display: flex
@@ -983,7 +984,7 @@ body
     animation: movUp .9s 1 ease-out forwards
 
   .tubbox
-    padding-top: 2rem
+    // padding-top: 2rem
     padding-bottom: 0
 
   .scorer
@@ -1005,7 +1006,7 @@ body
   background-repeat: no-repeat
   background-size: 366% 256%
   background-position: 94.76% 3.1%
-  padding: 3%
+  padding: 5px
 
   &::after
     background: inherit
@@ -1044,10 +1045,13 @@ body
 
 .tubs
   order: 4
-  grid-column: 1 /span 2
+  grid-column: span 2
+  grid-row: span 2
   position: relative
   animation: movDown .9s 1 ease-out forwards
   height: 100%
+  width: 100%
+  overflow: clip
 
 .tubbox
   display: flex
@@ -1059,7 +1063,7 @@ body
   top: 50%
   position: relative
   translate: 0 -50%
-  padding-bottom: 2rem
+  // padding-bottom: 2rem
 
 .tub, .tubB, .tubC
   width: 100%
@@ -1265,17 +1269,17 @@ body
     left: -1em
     top: 1em
 
-.die
+.die, .die2
   display: grid
   grid-template-areas: "c . a" "f g e" "b . d"
   aspect-ratio: 1/1
   background-color: #f4ebce
-  border: .5em solid #d7cbb3
+  border: .5rem solid #d7cbb3
   border-radius: 10%
   box-sizing: border-box
   grid-template-columns: repeat(3, minmax(0, 1fr))
   grid-template-rows: repeat(3, minmax(0, 1fr))
-  padding: 3%
+  padding: .1rem
   z-index: 1
   position: relative
 
@@ -1284,19 +1288,6 @@ body
       animation: shake-h-anim .3s 1
 
 .die2
-  display: grid
-  grid-template-areas: "c . a" "f g e" "b . d"
-  aspect-ratio: 1/1
-  background-color: #f4ebce
-  border: .4em solid #d7cbb3
-  border-radius: 10%
-  box-sizing: border-box
-  grid-template-columns: repeat(3, minmax(0, 1fr))
-  grid-template-rows: repeat(3, minmax(0, 1fr))
-  padding: .7vmin
-  z-index: 1
-  position: relative
-
   .pip
     &:nth-child(1)
       grid-area: f
@@ -1383,7 +1374,7 @@ body
   top: 50%
   translate: 0 -50%
   width: 200%
-  font-size: 3rem
+  font-size: 2rem
   font-weight: bold
   background-color: black
   padding: 1rem 0
@@ -1391,6 +1382,12 @@ body
   transition: .4s
   pointer-events: none
   z-index: 3
+  gap: 1rem
+  .menubox.across
+    margin: 0
+    gap: 1rem
+    .kbutton
+      width: 10rem
 
 #flytext.show
   translate: -25% -50%
@@ -1554,10 +1551,12 @@ body
     input
       // width: 100%
       margin: 0
+  #flytext
+    font-size: 3rem
 
   .board
     grid-template-columns: minmax(0, 1fr) minmax(300px, 3fr)
-    max-width: 560px
+    //max-width: 560px
 
   .tubs
     order: 2
@@ -1582,7 +1581,6 @@ body
 
   .rollbox
     width: 15rem
-    border-width: 1.5vmin
 
   .tub.hover
     &:hover
@@ -1684,4 +1682,3 @@ body
 
   .rollbox
     width: 25rem
-    border-width: 3.5vmin

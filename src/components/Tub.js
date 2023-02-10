@@ -56,7 +56,7 @@ class Tub extends React.Component {
             onPointerLeave={()=>{if (clickable) scoreHover(false)}}
             onPointerUp={()=>{if (clickable) proccessClick()}}
             onAnimationEnd={onShakeAnimEnd}>
-            {ordering.map((i)=>this.renderBox(i))}
+                {ordering.map((i)=>this.renderBox(i))}
             <h1 className={`scorer ${animClass}`}
                 onAnimationEnd={onScoreAnimEnd} style={{scale : scoreScale}}>
                     {score}

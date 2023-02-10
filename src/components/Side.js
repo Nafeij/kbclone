@@ -32,7 +32,7 @@ class Side extends React.Component {
 
     render(){
         const {id, newDice, score, turn, rolled, slid, hasSlid, scoreShown, scoreShake, onSideScoreAnimEnd,
-            profile, numTubs, name, rollRef, tubsRef, time, lives, maxLives, boxAspectRatio, tubLen, tubsDim} = this.props,
+            profile, numTubs, name, rollRef, tubsRef, time, lives, maxLives, maxWidth} = this.props,
             dname = name ? name : profile.name,
             isTurn = turn === id,
             shakeClass = scoreShake && scoreShown ? 'shake' : '',
@@ -56,10 +56,7 @@ class Side extends React.Component {
                     </div>
                 </div>
                 <div className="tubs" ref={tubsRef}>
-                    <div className="tubbox" style={{
-                        maxWidth: tubsDim.height * boxAspectRatio * (numTubs/tubLen),
-                        maxHeight: tubsDim.width * (1/boxAspectRatio) * (tubLen/numTubs)
-                    }}>
+                    <div className="tubbox" style={{maxWidth : maxWidth}}>
                         {Array(numTubs).fill().map((_,i)=>this.renderTub(i))}
                     </div>
                 </div>
