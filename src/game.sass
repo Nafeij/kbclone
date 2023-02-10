@@ -359,7 +359,7 @@ body
 .title
   width: 90%
   background-size: contain
-  aspect-ratio: 1010/393
+  aspect-ratio: 1016/393
   margin-bottom: 1.4rem
 
 .subtitle
@@ -437,7 +437,7 @@ body
 .text.red
   color: $color_3
   margin: 0.5em 0 .3em 0
-  font-size: calc(1.2vh + 1.2vw)
+  font-size: 1.4rem
 
 .text
   flex: 1 1
@@ -459,7 +459,6 @@ body
 .menubox.settingsList
   width: 90%
   max-width: 1500px
-  gap: 4%
   text-align: left
   flex: auto
   justify-content: center
@@ -690,7 +689,6 @@ body
   width: 100%
   display: flex
   flex: 1 1 4em
-  align-items: center
   z-index: 0
   flex-direction: column
   align-items: stretch
@@ -790,9 +788,9 @@ body
   translate: -50% 0
 
 .react-switch-label
-  display: flex
-  align-items: center
-  justify-content: space-between
+  // display: flex
+  // align-items: center
+  // justify-content: space-between
   cursor: pointer
   background: #888
   border-radius: 2px
@@ -871,8 +869,8 @@ body
   display: flex
   background-color: #232822
   padding: 5%
-  width: 85%
-  margin: 1%
+  width: 75%
+  margin: 1rem
   position: relative
   flex-direction: column
   align-items: center
@@ -947,8 +945,8 @@ body
   span
     position: relative
 
-  .subtitle
-    font-size: calc(1.2vh + 1.2vw)
+  // .subtitle
+  //   font-size: calc(1.2vh + 1.2vw)
 
   input.shake
     animation: shake-h-anim .3s 1
@@ -1162,7 +1160,7 @@ body
       translate: 0 100%
       left: 0
       width: 100%
-      font-size: calc(.5vh + .5vw)
+      font-size: .8rem
       opacity: 0.5
 
 .slidePane
@@ -1351,7 +1349,7 @@ body
   position: absolute
   right: 2rem
   bottom: 2rem
-  width: 80px
+  width: 6rem
   aspect-ratio: 1
   z-index: 3
 
@@ -1359,10 +1357,10 @@ body
     box-sizing: border-box
     display: block
     position: absolute
-    width: 64px
-    height: 64px
-    margin: 8px
-    border: 8px solid red
+    width: 80%
+    height: 80%
+    margin: 10%
+    border: .8rem solid red
     border-radius: 50%
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
     border-color: red transparent transparent transparent
@@ -1385,10 +1383,10 @@ body
   top: 50%
   translate: 0 -50%
   width: 200%
-  font-size: calc(2.5vh + 2.5vw)
+  font-size: 3rem
   font-weight: bold
   background-color: black
-  padding: 1.4vh 0
+  padding: 1rem 0
   opacity: 0
   transition: .4s
   pointer-events: none
@@ -1527,7 +1525,7 @@ body
     width: 70%
   .ssBox
     width: 20rem
-    padding: 3rem
+    padding: 2rem 3rem
 
   .logo.red
       color: $color_3
@@ -1546,10 +1544,15 @@ body
   .settingsItem
     flex-direction: row
     align-items: center
-  .menubox.across.personal
-    flex-direction: row
+  .settingInput
+    align-self: center
+  .menubox
+    .settingsList
+      gap: 4%
+    .across.personal
+      flex-direction: row
     input
-      width: 100%
+      // width: 100%
       margin: 0
 
   .board
