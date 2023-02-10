@@ -3,7 +3,7 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
-import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions} from '../util/Utils.js';
+import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions, tubBoxWidth} from '../util/Utils.js';
 import KeyManager from "../util/KeyManager.js";
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";
@@ -18,6 +18,8 @@ class Game extends React.Component {
         super(props)
         this.keyManager = new KeyManager()
         this.server = new Server()
+        this.tubBoxAspect = (props.settings.tubLen + 1) / (boxAspectRatio * props.settings.numTubs)
+        // console.log(this.tubBoxAspect)
         const isAI = props.settings.gameType === 'AI',
             oppProfile = isAI ? Profile.ai[props.settings.oppProfileInd] : Profile.cosm[props.settings.oppProfileInd]
         let numLives = null
@@ -58,7 +60,7 @@ class Game extends React.Component {
                     tubsRef : React.createRef(),
                     numTubs: props.settings.numTubs,
                     tubLen: props.settings.tubLen,
-                    tubsDim: {height: 0, width: 0},
+                    maxWidth: 0,
                     boxAspectRatio,
                     time : props.settings.time === null ? props.settings.time : -1,
                     maxLives : !i ? numLives : null,
@@ -326,9 +328,6 @@ class Game extends React.Component {
         // const oldScore = (si,ti) => (memo ? memo[0][si][ti] : null)
         tubProps = tubProps.map((side)=>{
             return side.map((tub)=>{
-                if (!this.props.settings.pickable && si === 1 - turn) {
-                    return {...tub, scoreMemo : null}
-                }
                 return {...tub, cursorID : -1, scoreMemo : null}
             })
         })
@@ -569,22 +568,18 @@ class Game extends React.Component {
     }
 
     calcTotal(turn=this.state.turn, memo=null){
-        if (memo) {
-            return memo[0][turn].reduce((part, a) => part + a, 0)
-        }
-        let total = 0;
         const caravan = this.props.settings.caravan
-        for (const tub of this.state.diceMatrix[turn]) {
-            let tubScore = scoreTub(tub)
-            if (caravan){
-                if (tubScore >= caravan[0] && tubScore <= caravan[1]) total++
-                continue
-            } else {
-                total += tubScore
-            }
+        if (memo) {
+            return memo[0][turn].reduce((part, a) => this.scoreReduce(part, a, caravan), 0)
         }
-        //console.log(`side ${turn} score ${total} `)
-        return total
+        return this.state.diceMatrix[turn].map(t=>(scoreTub(t))).reduce((part, a) => this.scoreReduce(part, a, caravan), 0)
+    }
+
+    scoreReduce(part, a, caravan) {
+        if (caravan) {
+            a = a >= caravan[0] && a <= caravan[1] ? 1 : 0
+        }
+        return part + a
     }
 
     destroyAll(tub, turn = this.state.turn, memo = null){
@@ -882,19 +877,16 @@ class Game extends React.Component {
         this.setState({sideProps})
     }
 
-    heightOnResize(){
-        try{
-            const newDice = this.state.sideProps[this.state.turn]
-            newDice.height = this.boxMin() * scale
-            this.updateCurrSide({newDice})
-        } catch (e) {}
-    }
-
-    tubSizeOnResize(){
+    onResize(){
         try{
             this.setState(prevState => {
                 prevState.sideProps = prevState.sideProps.map(s=>{
-                    s.tubsDim = eleDimensions(s.tubsRef.current)
+                    const {height, width} = eleDimensions(s.tubsRef.current)
+                    s.maxWidth = tubBoxWidth(height / width, this.tubBoxAspect)
+                    // console.log(s.maxWidth)
+                    if (s.newDice) {
+                        s.newDice.height = this.boxMin() * scale
+                    }
                     return s
                 })
                 return prevState
@@ -902,24 +894,35 @@ class Game extends React.Component {
         } catch (e) {}
     }
 
+    // tubSizeOnResize(){
+    //     try{
+    //         this.setState(prevState => {
+    //             prevState.sideProps = prevState.sideProps.map(s=>{
+    //                 s.tubsDim = eleDimensions(s.tubsRef.current)
+    //                 return s
+    //             })
+    //             return prevState
+    //         })
+    //     } catch (e) {}
+    // }
+
 
     componentDidMount(){
-        let {sideProps} = this.state
-        sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
+        // let {sideProps} = this.state
+        // sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
         if (this.props.settings.gameType === 'PVP'){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
             this.setState({turn : this.props.turn, flytextProps})
-            return
+        } else {
+            this.setState({turn : randomInRange(2)})
         }
-        this.setState({turn : randomInRange(2), sideProps})
-        window.addEventListener("resize", this.heightOnResize)
-        window.addEventListener("resize", this.tubSizeOnResize)
+        this.onResize()
+        window.addEventListener("resize", this.onResize)
     }
 
     componentWillUnmount(){
-        window.removeEventListener("resize", this.tubSizeOnResize)
-        window.removeEventListener("resize", this.heightOnResize)
+        window.removeEventListener("resize", this.onResize)
     }
 
     render(){
