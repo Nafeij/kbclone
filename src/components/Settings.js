@@ -66,7 +66,7 @@ function Settings (props) {
         time: 0
     })
     let offset = 0
-    if (showProfiles) offset = Math.floor(Profile.cosm.length / 4)
+    if (showProfiles) offset = Math.floor(Profile.cosm.length / 3)
     return (<div className='menu settings'>
       <div className='menubox'>
         <div className='subtitle'><Squiggle/>Settings<Squiggle/></div>
@@ -80,7 +80,7 @@ function Settings (props) {
             {showProfiles ? <div className="scrollContainer">
                 <div className="formGrid">
                     {Profile.cosm.map((p,i)=>(
-                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/4) && pcursor === i % 4? 'hovering':''}`} loading='lazy' style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/3) && pcursor === i % 3? 'hovering':''}`} loading='lazy' style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
                     ))}
                 </div>
             </div> : null}

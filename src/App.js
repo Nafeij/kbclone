@@ -342,11 +342,11 @@ class App extends React.Component{
                 this.state.settingsProps.switchTab(newTab)
               }])
             if (settingsProps.showProfiles){
-              for (let index = 0; index < Math.ceil(Profile.cosm.length / 4); index++) {
+              for (let index = 0; index < Math.ceil(Profile.cosm.length / 3); index++) {
                 this.keyManager.push([-1,0,1], [()=>{
-                  this.setProfileInd((this.keyManager.cursor - 2) * 4 + this.state.settingsProps.pcursor)
+                  this.setProfileInd((this.keyManager.cursor - 2) * 3 + this.state.settingsProps.pcursor)
                   this.state.settingsProps.buttons[1].onClick()
-                }, ()=>{this.cycleSetting('settingsProps','pcursor',-1,4)}, ()=>{this.cycleSetting('settingsProps','pcursor',1,4)}])
+                }, ()=>{this.cycleSetting('settingsProps','pcursor',-1,3)}, ()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
               }
             } else {
               this.keyManager.push(0, settingsProps.buttons[1].onClick)

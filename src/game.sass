@@ -1397,99 +1397,28 @@ body
 .shrink-out
   animation: scale-away .4s 1
 
-.die.shrink-out
-  animation: scale-away .4s 1 forwards
-
+.die.shrink-pre, .die2.shrink-pre, .die.shrink-out, .die2.shrink-out, .die.cheated, .die2.cheated
   &::after
     content: ""
-    width: 102%
-    height: 102%
+    width: 100%
+    height: 100%
     position: absolute
     border: inherit
     border-radius: inherit
-    top: -.401em
-    left: -.401em
+    top: -.5rem
+    left: -.5rem
     opacity: .8
     z-index: -1
     background-color: red !important
     border-color: red !important
+
+.die.shrink-out, .die2.shrink-out
+  animation: scale-away .4s 1 forwards
+  &::after
     animation: color .4s 1 backwards
 
-.die2.shrink-out
-  animation: scale-away .4s 1 forwards
-
+.die.cheated, .die2.cheated
   &::after
-    content: ""
-    width: 102%
-    height: 102%
-    position: absolute
-    border: inherit
-    border-radius: inherit
-    top: -.401em
-    left: -.401em
-    opacity: .8
-    z-index: -1
-    background-color: red !important
-    border-color: red !important
-    animation: color .4s 1 backwards
-
-.die.shrink-pre
-  &::after
-    content: ""
-    width: 102%
-    height: 102%
-    position: absolute
-    border: inherit
-    border-radius: inherit
-    top: -.401em
-    left: -.401em
-    opacity: .8
-    z-index: -1
-    background-color: red !important
-    border-color: red !important
-
-.die2.shrink-pre
-  &::after
-    content: ""
-    width: 102%
-    height: 102%
-    position: absolute
-    border: inherit
-    border-radius: inherit
-    top: -.401em
-    left: -.401em
-    opacity: .8
-    z-index: -1
-    background-color: red !important
-    border-color: red !important
-
-.die.cheated
-  &::after
-    content: ""
-    width: 102%
-    height: 102%
-    position: absolute
-    border: inherit
-    border-radius: inherit
-    top: -.401em
-    left: -.401em
-    opacity: .8
-    z-index: -1
-    background-color: #01d5a2
-    border-color: #01d5a2
-
-.die2.cheated
-  &::after
-    content: ""
-    width: 102%
-    height: 102%
-    position: absolute
-    border: inherit
-    border-radius: inherit
-    top: -.401em
-    left: -.401em
-    opacity: .8
-    z-index: -1
     background-color: #01d5a2
     border-color: #01d5a2
 

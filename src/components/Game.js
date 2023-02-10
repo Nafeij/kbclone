@@ -302,7 +302,7 @@ class Game extends React.Component {
                         this.keyManager.push(j, ()=>{this.proccessClick(ti, si)})
                         return {...tub, cursorID : j, scoreMemo : null, oldScore : tub.score}
                     }
-                    return {...tub, scoreMemo : null}
+                    return {...tub, scoreMemo : null, oldScore : tub.score}
                 }
                 this.keyManager.push(ti, ()=>{this.proccessClick(ti, si)})
                 return {...tub, cursorID : ti, scoreMemo : null, oldScore : tub.score}
@@ -403,7 +403,7 @@ class Game extends React.Component {
         }
         await this.updateScore(tub, turn, memo);
         // this.updateCurrSide({score : total}, {turn : !prevState.turn, rolled: false}, this.rollDice)
-        const scoreChanged = await this.checkDice(tub, num, turn, memo);
+        const scoreChanged = await this.destroyTub(tub, num, turn, memo);
         const oppTurn = !turn + 0
         this.setState(prevState => ({
             sideProps: prevState.sideProps.map(side => (
@@ -655,7 +655,7 @@ class Game extends React.Component {
         })
     }
 
-    async checkDice(tub, num, turn = this.state.turn, memo = null){
+    async destroyTub(tub, num, turn = this.state.turn, memo = null){
         const {diceMatrix, sideProps, tubProps} = this.state
         const oppTurn = !turn + 0
         let destroyed = 0;
