@@ -299,12 +299,12 @@ class Game extends React.Component {
                 if (si === 1 - turn) {
                     if (this.props.settings.pickable){
                         const j = ti + offset
-                        this.keyManager.push(j, ()=>{this.proccessClick(ti, si)})
+                        this.keyManager.push(j, ()=>{this.proccessClick(ti, 1)})
                         return {...tub, cursorID : j, scoreMemo : null, oldScore : tub.score}
                     }
                     return {...tub, scoreMemo : null, oldScore : tub.score}
                 }
-                this.keyManager.push(ti, ()=>{this.proccessClick(ti, si)})
+                this.keyManager.push(ti, ()=>{this.proccessClick(ti, 0)})
                 return {...tub, cursorID : ti, scoreMemo : null, oldScore : tub.score}
             })
         })
@@ -847,10 +847,10 @@ class Game extends React.Component {
         />)
     }
 
-    proccessClick(i, tub = this.state.turn){
-        if (isFull(this.state.diceMatrix[tub][i])) {
+    proccessClick(tub, turn = this.state.turn){
+        if (isFull(this.state.diceMatrix[turn][tub])) {
             let tubProps = this.state.tubProps.slice()
-            tubProps[tub][i].startShake = true
+            tubProps[turn][tub].startShake = true
             this.setState({tubProps})
         } else {
             // this.setState({tubsClickable : false})
@@ -860,7 +860,7 @@ class Game extends React.Component {
                 sideProps[turn].time = -1
                 this.setState(sideProps)
             }
-            this.proccessTurn(i, tub)
+            this.proccessTurn(tub, turn)
         }
     }
 

@@ -12,10 +12,10 @@ function Flytext(props){
     props.slideEnd()
     }}>
           <p id="result">{props.message}</p>
-          {props.buttons.length ? <div className="menubox across">
-            {props.timeOut < 0 ? props.buttons.map((b,i)=>(
+          {props.timeOut < 0 ? <div className="menubox across">
+            {props.buttons.map((b,i)=>(
               <div key={i} className={`kbutton ${b.cursorID === props.cursor || (props.hover && i === 0)? 'hovering' : ''}`} onClick={() => b.onClick()}>{b.text}</div>
-            )) : null}
+            ))}
           </div> : null}
       </div>
 	)
