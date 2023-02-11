@@ -24,3 +24,5 @@ yarn-error.log*
 
 /.vscode
 .eslintrc.js
+package-lock.json
+TODO.md
