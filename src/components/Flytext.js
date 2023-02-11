@@ -12,11 +12,11 @@ function Flytext(props){
     props.slideEnd()
     }}>
           <p id="result">{props.message}</p>
-          <div className="menubox across">
-          {props.timeOut < 0 ? props.buttons.map((b,i)=>(
-            <div key={i} className={`kbutton ${b.cursorID === props.cursor || (props.hover && i === 0)? 'hovering' : ''}`} onClick={() => b.onClick()}>{b.text}</div>
-          )) : null}
-          </div>
+          {props.buttons.length ? <div className="menubox across">
+            {props.timeOut < 0 ? props.buttons.map((b,i)=>(
+              <div key={i} className={`kbutton ${b.cursorID === props.cursor || (props.hover && i === 0)? 'hovering' : ''}`} onClick={() => b.onClick()}>{b.text}</div>
+            )) : null}
+          </div> : null}
       </div>
 	)
 }

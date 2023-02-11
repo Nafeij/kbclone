@@ -28,6 +28,16 @@ class Tub extends React.Component {
         </RefBox>
     }
 
+    componentDidUpdate(prevProps){
+        const {cursor, clickable} = this.props
+        if (prevProps.cursor !== prevProps.cursorID && cursor === prevProps.cursorID && clickable) {
+            this.props.scoreHover(true)
+        }
+        if (prevProps.cursor === prevProps.cursorID && cursor !== prevProps.cursorID && clickable) {
+            this.props.scoreHover(false)
+        }
+    }
+
     render(){
         const {
             tubLen, diceList, clickable, startShake,
@@ -50,16 +60,18 @@ class Tub extends React.Component {
         // if (clicked) console.log('pressed' + cursorID + cursor)
         // if (clicked() && active) {proccessClick()}
         return (
-        <div
+        <div className='tubOuter'>
+            <div
             className={`${fillClass} ${hoverClass} ${keyHoverClass} ${shakeClass}`}
             onPointerEnter={()=>{if (clickable) scoreHover(true)}}
             onPointerLeave={()=>{if (clickable) scoreHover(false)}}
             onPointerUp={()=>{if (clickable) proccessClick()}}
             onAnimationEnd={onShakeAnimEnd}>
                 {ordering.map((i)=>this.renderBox(i))}
+            </div>
             <h1 className={`scorer ${animClass}`}
                 onAnimationEnd={onScoreAnimEnd} style={{scale : scoreScale}}>
-                    {score}
+                    {score ? score : '\u00A0'}
             </h1>
         </div>
     )}

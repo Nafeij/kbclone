@@ -7,7 +7,7 @@ $color_6: #fff
 $color_7: gray
 $font-family_1: roboto thin, roboto, calibri
 $font-family_2: "Times New Roman", Times, serif
-$font-family_3: Open Sans, "Gill Sans", sans-serif
+$font-family_3: Open Sans, sans-serif
 $font-family_4: "Courier New", Courier, monospace
 
 /* .title.rot {
@@ -157,7 +157,7 @@ html
         border-color: white transparent transparent transparent
 
     > #flytext
-      box-shadow: 0 0 0 calc(48.1vh - 1.3vw) rgba(0, 0, 0, 0.7)
+      box-shadow: 0 0 0 50vh rgba(0, 0, 0, 0.7)
 
       ~
         *
@@ -406,19 +406,19 @@ body
 
   &:last-child
     grid-column: 2 /span 1
-    min-width: 7vmin
+    // min-width: 7vmin
 
-  .pip
-    height: 1.7vmin
-    width: auto
-    box-shadow: none
+  // .pip
+  //   height: 1.7vmin
+  //   width: auto
+  //   box-shadow: none
 
-  .menubox.across
-    width: 100%
-    height: auto
-    margin: 0
-    flex: none
-    gap: .7vmin
+  // .menubox.across
+  //   width: 100%
+  //   height: auto
+  //   margin: 0
+  //   flex: none
+  //   gap: .7vmin
 
   .text.red
     margin: 0 0 .6rem 0
@@ -458,7 +458,7 @@ body
 
 .menubox.settingsList
   width: 90%
-  max-width: 1500px
+  //max-width: 1500px
   text-align: left
   flex: auto
   justify-content: center
@@ -497,7 +497,7 @@ body
 .formGrid
   display: grid
   grid-template-columns: repeat(6, 1fr)
-  gap: 1vmin
+  gap: .3rem
   flex: 1
 
   .pfp
@@ -516,13 +516,13 @@ body
     border-color: red
 
 .menubox.across.personal
-  margin: 0 0 5% 0
+  margin: 0
   align-items: stretch
   width: 90%
   box-sizing: border-box
   gap: 1rem
   flex-direction: column
-  max-height: 60vh
+  max-height: 65vh
 
   .menubox.misc
     .subtitle
@@ -554,6 +554,7 @@ body
 
   .menubox.settingsList.opponent
     gap: 0
+    padding: 0 10% 0 0
     .settingsItem
       flex-direction: row
       width: 90%
@@ -610,7 +611,7 @@ body
       opacity: .5 !important
       border-bottom: 2px solid #999
       padding-bottom: .5em !important
-      margin-bottom: 1vmin
+      margin-bottom: 1rem
 
 .menubox.settingsList.opponent
   .subtitle
@@ -635,7 +636,6 @@ body
 
 .scrollContainer
   flex: 1 1
-  height: 60vh
   overflow-y: scroll
 
   .menubox
@@ -988,8 +988,8 @@ body
     padding-bottom: 0
 
   .scorer
-    top: auto
-    bottom: 100%
+    order: 0
+    padding: 1rem 0 0 0
 
   .info
     order: 5
@@ -1051,12 +1051,12 @@ body
   animation: movDown .9s 1 ease-out forwards
   height: 100%
   width: 100%
-  overflow: clip
+  overflow: visible
 
 .tubbox
   display: flex
   flex-direction: row
-  height: 100%
+  // height: 100%
   align-items: center
   width: 100%
   margin: auto
@@ -1065,6 +1065,11 @@ body
   translate: 0 -50%
   // padding-bottom: 2rem
 
+.tubOuter
+  flex: 1
+  display: flex
+  flex-direction: column
+
 .tub, .tubB, .tubC
   width: 100%
   display: flex
@@ -1072,6 +1077,7 @@ body
   align-items: center
   flex-direction: column
   position: relative
+  order: 1
 
   &::before
     transition: .2s
@@ -1103,12 +1109,11 @@ body
 
 .scorer
   margin: 0
-  position: absolute
-  left: 0
   width: 100%
   font-size: 2rem
   text-align: center
-  top: 100%
+  order: 2
+  padding: 0 0 1rem 0
 
 .box
   display: flex
@@ -1450,7 +1455,7 @@ body
   .title
     width: 70%
   .ssBox
-    width: 20rem
+    width: 25rem
     padding: 2rem 3rem
 
   .logo.red
@@ -1497,11 +1502,13 @@ body
 
   .info
     grid-column: 1 /span 1
+    grid-row: 2 /span 2
     order: 1
     animation: movLeft .9s 1 ease-out forwards
 
   #player
     .info
+      grid-row: 1 /span 2
       order: 1
       animation: movLeft .9s 1 ease-out forwards
 
@@ -1576,9 +1583,9 @@ body
     .roller
       grid-column: 1 /span 1
       grid-row: 3 /span 2
-      left: -100vw
+      // left: -100vw
       animation: movLeft .9s 1 ease-out forwards
-      margin-bottom: 8em
+      margin-bottom: 12em
       margin-top: 0
 
   .board
@@ -1600,7 +1607,7 @@ body
     grid-row: 1 /span 2
     order: 2
     animation: movRight .9s 1 ease-out forwards
-    margin-top: 8em
+    margin-top: 12em
 
   .info
     grid-column: 3 /span 1

@@ -18,7 +18,7 @@ class Game extends React.Component {
         super(props)
         this.keyManager = new KeyManager()
         this.server = new Server()
-        this.tubBoxAspect = (props.settings.tubLen + 1) / (boxAspectRatio * props.settings.numTubs)
+        this.tubBoxAspect = (props.settings.tubLen + .8) / (boxAspectRatio * props.settings.numTubs)
         // console.log(this.tubBoxAspect)
         const isAI = props.settings.gameType === 'AI',
             oppProfile = isAI ? Profile.ai[props.settings.oppProfileInd] : Profile.cosm[props.settings.oppProfileInd]

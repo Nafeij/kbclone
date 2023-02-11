@@ -22,7 +22,7 @@ function ServerSetup (props) {
             {showProfiles ? <div className="ssBox profile">
                 <div className="formGrid">
                     {Profile.cosm.map((p,i)=>(
-                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/7) && pcursor === i % 7? 'hovering':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{buttons[1].onClick();setProfileInd(i)}}/>
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/6) && pcursor === i % 6? 'hovering':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{buttons[1].onClick();setProfileInd(i)}}/>
                     ))}
                 </div>
             </div> : null}

@@ -367,6 +367,9 @@ class App extends React.Component{
       activeTab : 0,
       switchTab : (destTab)=>{
         const settingsProps = this.state.settingsProps
+        if (settingsProps.showProfiles){
+          settingsProps.buttons[1].onClick()
+        }
         settingsProps.activeTab = destTab
         this.keyManager.clear()
         this.keyManager.cursor = 1
@@ -525,23 +528,29 @@ class App extends React.Component{
           text : 'Choose Form',
           onClick: () => {
             const {serverSetupProps} = this.state
-            serverSetupProps.showProfiles = !serverSetupProps.showProfiles
-            serverSetupProps.buttons[2].enabled = !serverSetupProps.showProfiles
-            serverSetupProps.buttons[3].enabled = !serverSetupProps.showProfiles
+            const toggle = serverSetupProps.showProfiles
+            serverSetupProps.showProfiles = !toggle
+            serverSetupProps.buttons[2].enabled = toggle
+            serverSetupProps.buttons[3].enabled = toggle
             this.keyManager.clear()
-            serverSetupProps.buttons.forEach((e,i) => {
-              if (e.enabled) this.keyManager.push(i, e.onClick)
-            });
             if (serverSetupProps.showProfiles) {
               serverSetupProps.buttons[1].text = 'Done'
-              for (let index = 0; index < Math.ceil(Profile.cosm.length / 7); index++) {
+              this.keyManager.push(0, serverSetupProps.buttons[0].onClick)
+              this.keyManager.push(1, serverSetupProps.buttons[1].onClick)
+              for (let index = 0; index < Math.ceil(Profile.cosm.length / 6); index++) {
                 this.keyManager.push([-1,0,1], [()=>{
-                  this.setProfileInd((this.keyManager.cursor - 2) * 7 + this.state.serverSetupProps.pcursor)
+                  this.setProfileInd((this.keyManager.cursor - 2) * 6 + this.state.serverSetupProps.pcursor)
                   this.state.serverSetupProps.buttons[1].onClick()
-                }, ()=>{this.cycleSetting('serverSetupProps','pcursor',-1,7)}, ()=>{this.cycleSetting('serverSetupProps','pcursor',1,7)}])
+                }, ()=>{this.cycleSetting('serverSetupProps','pcursor',-1,6)}, ()=>{this.cycleSetting('serverSetupProps','pcursor',1,6)}])
               }
+            } else {
+              serverSetupProps.buttons[1].text = 'Choose Form'
+              serverSetupProps.buttons.forEach((e,i) => {
+                if (e.enabled) {
+                  this.keyManager.push(i, e.onClick)
+                }
+              });
             }
-            else serverSetupProps.buttons[1].text = 'Choose Form'
             this.setState({serverSetupProps})
           },
           enabled : true
