@@ -37,7 +37,7 @@ function CharSelect (props) {
                 <div className="slidePaneContainer">
                     <SlidePane translateX={translation} hasWrapped={hasWrapped} releaseCallback={modSetAIInd} numSep={Profile.ai.length}>
                         {Profile.ai.map((p, i)=>(
-                            <div key={i} className="pfp simp" style={{
+                            <div key={i} className="pfp simp" loading='lazy' style={{
                                 backgroundImage: `url(${p.img})`,
                                 opacity: i === selectedAIInd ? 1 : .6,
 	                            scale: i === selectedAIInd ? '1' : '.8'
