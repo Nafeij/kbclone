@@ -19,7 +19,7 @@ class SlidePane extends React.Component{
     document.addEventListener('pointerdown', this.onPointerDown)
   }
 
-  componentDidUpdate(props,state){
+  componentDidUpdate(state){
   	if (this.state.dragging && !state.dragging) {
       document.addEventListener('pointermove', this.onPointerMove)
       document.addEventListener('pointerup', this.onPointerUp)
