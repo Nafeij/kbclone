@@ -6,7 +6,6 @@ import ServerSetup from './components/ServerSetup.js'
 import Server from './util/Server.js'
 import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
-import KeyManager from './util/KeyManager.js'
 import Profile from './util/Profile.js'
 import { caravanBounds, randomInRange, strictMod } from './util/Utils.js'
 import Flytext from './components/Flytext.js'
@@ -37,7 +36,6 @@ class App extends React.Component{
 
   constructor(props){
     super(props)
-    this.keyManager = new KeyManager()
     this.server = new Server()
     this.cookies = new Cookies()
     this.maxAge = 60 * 60 * 24 * 365 * 100
@@ -92,8 +90,6 @@ class App extends React.Component{
       settingsProps : null,
       flytextProps: null,
       selectedAIInd : 0,
-      cursor: this.keyManager.cursor,
-      // disable: () => {this.disable()},
       next: null,
       roomID : '',
       isLoading : false,
@@ -146,9 +142,6 @@ class App extends React.Component{
         , time : 0}
       }
     }
-    this.keyManager.initCursorUpdate(()=>{
-      this.setState({cursor: this.keyManager.cursor})
-    })
   }
 
   statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
@@ -194,32 +187,10 @@ class App extends React.Component{
     this.setState({statsProps})
   }
 
-  setButtonsClickable(callback = ()=>{}){
-    this.keyManager.clear()
-    let menuProps = this.state.menuProps
-    menuProps.buttons = menuProps.buttons.map((btn, i)=>{
-      this.keyManager.push(i, btn.onClick)
-      return {...btn, cursorID : i}
-    })
-    this.setState({menuProps}, callback)
-  }
-
-  clearClickable(){
-    this.keyManager.clear()
-    this.keyManager.cursor = 0
-    let {menuProps, htprops, charSelectProps} = this.state
-    charSelectProps.buttons.map((btn)=>({...btn, cursorID : -1}))
-    menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
-    htprops.cursorID = -1
-    this.setState({menuProps, htprops})
-  }
-
   startGame(){
     // this.cookies.set('statsProps', {a:1}, { path: '/', maxAge: this.maxAge, sameSite : 'strict'});
     // this.clearClickable()
     //console.log('test')
-    this.keyManager.clear()
-    this.keyManager.returnAction = ()=> this.return()
     let {menuProps, gameProps, gameSettingsProps} = this.state
     gameSettingsProps.oppName = gameSettingsProps.name
     gameSettingsProps.oppProfileInd = gameSettingsProps.playProfileInd
@@ -238,8 +209,6 @@ class App extends React.Component{
   }
 
   startHt(){
-    // this.clearClickable()
-    this.keyManager.clear()
     let {menuProps, htProps} = this.state
     menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
     htProps = {
@@ -248,7 +217,6 @@ class App extends React.Component{
         this.return()
       }
     }
-    this.keyManager.push(0, htProps.onClick)
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
       menuProps.onFade = ()=>{}
@@ -330,38 +298,12 @@ class App extends React.Component{
           onClick: () => {
             const {settingsProps} = this.state
             settingsProps.showProfiles = !settingsProps.showProfiles
-            this.keyManager.clear()
-            this.keyManager.cursor = 1
-            this.keyManager.push(0, settingsProps.buttons[0].onClick)
-            this.keyManager.push([-1,0,1], [
-              ()=>{},()=>{
-                const newTab = this.cycleSetting('settingsProps','activeTab',-1,2)
-                this.state.settingsProps.switchTab(newTab)
-              },()=>{
-                const newTab = this.cycleSetting('settingsProps','activeTab',1,2)
-                this.state.settingsProps.switchTab(newTab)
-              }])
-            if (settingsProps.showProfiles){
-              for (let index = 0; index < Math.ceil(Profile.cosm.length / 3); index++) {
-                this.keyManager.push([-1,0,1], [()=>{
-                  this.setProfileInd((this.keyManager.cursor - 2) * 3 + this.state.settingsProps.pcursor)
-                  this.state.settingsProps.buttons[1].onClick()
-                }, ()=>{this.cycleSetting('settingsProps','pcursor',-1,3)}, ()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
-              }
-            } else {
-              this.keyManager.push(0, settingsProps.buttons[1].onClick)
-            }
-            this.keyManager.push(0, ()=>{})
-            this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
-            this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
             this.setState({settingsProps})
           },
           enabled : true
         }
       ],
       showProfiles : false,
-      onFocus : ()=>{this.keyManager.enabled = false},
-      onBlur : ()=>{this.keyManager.enabled = true},
       pcursor : 0,
       tabs : ['gameplay', 'personal'],
       activeTab : 0,
@@ -371,40 +313,6 @@ class App extends React.Component{
           settingsProps.buttons[1].onClick()
         }
         settingsProps.activeTab = destTab
-        this.keyManager.clear()
-        this.keyManager.cursor = 1
-        this.keyManager.push(0, settingsProps.buttons[0].onClick)
-        this.keyManager.push([-1,0,1], [
-          ()=>{},()=>{
-            const newTab = this.cycleSetting('settingsProps','activeTab',-1,2)
-            this.state.settingsProps.switchTab(newTab)
-          },()=>{
-            const newTab = this.cycleSetting('settingsProps','activeTab',1,2)
-            this.state.settingsProps.switchTab(newTab)
-          }])
-        if (destTab === 0){
-          this.keyManager.push([-1,0,1],
-            [()=>{},()=>{if (this.state.gameSettingsProps.tubLen > 1) settingsProps.mod('tubLen',-1)},
-            ()=>{if (this.state.gameSettingsProps.tubLen < 9) settingsProps.mod('tubLen',1)}])
-          this.keyManager.push([-1,0,1], [
-            ()=>{},()=>{if (this.state.gameSettingsProps.numTubs > 1) settingsProps.mod('numTubs',-1)},
-            ()=>{if (this.state.gameSettingsProps.numTubs < 9) settingsProps.mod('numTubs',1)}])
-          this.keyManager.push([-1,0,1], [
-            ()=>{},()=>{if (this.state.gameSettingsProps.time !== null) settingsProps.modDscrt('time',-1)},
-            ()=>{if (this.state.gameSettingsProps.time !== 60) settingsProps.modDscrt('time',1)}])
-          this.keyManager.push([-1,0,1], [
-            ()=>{},()=>{if (this.state.gameSettingsProps.turnLimit !== null) settingsProps.modDscrt('turnLimit',-1)},
-            ()=>{if (this.state.gameSettingsProps.turnLimit !== 500) settingsProps.modDscrt('turnLimit',1)}])
-          this.keyManager.push(0, ()=>{settingsProps.modBool('preview')})
-          this.keyManager.push(0, ()=>{settingsProps.modBool('ignoreFull')})
-          this.keyManager.push(0, ()=>{settingsProps.modBool('pickable')})
-          this.keyManager.push(0, ()=>{settingsProps.modSpec('caravan')})
-        } else if (destTab === 1) {
-          this.keyManager.push(0, ()=>{settingsProps.buttons[1].onClick()})
-          this.keyManager.push(0, ()=>{})
-          this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
-          this.keyManager.push([-1,0,1], [()=>{},()=>{this.cycleSetting('settingsProps','pcursor',-1,3)},()=>{this.cycleSetting('settingsProps','pcursor',1,3)}])
-        }
         this.setState({settingsProps})
       }
     }
@@ -426,8 +334,6 @@ class App extends React.Component{
   }
 
   startCharacterSelect(){
-    // this.clearClickable()
-    this.keyManager.clear()
     let {menuProps, charSelectProps} = this.state
     menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
 
@@ -453,12 +359,6 @@ class App extends React.Component{
       hasWrapped: false,
       onFade : ()=>{}
     }
-    this.keyManager.push([-1, 0, 1], [
-      ()=>{this.startAIGame()},
-      ()=>{this.modAIInd(-1)},
-      ()=>{this.modAIInd(1)}
-    ])
-    this.keyManager.push(1, charSelectProps.buttons[1].onClick)
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
       menuProps.onFade = ()=>{}
@@ -510,7 +410,6 @@ class App extends React.Component{
 
   startServerSetup(){
     // this.clearClickable()
-    this.keyManager.clear()
     let {menuProps, serverSetupProps} = this.state
     menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
 
@@ -532,24 +431,10 @@ class App extends React.Component{
             serverSetupProps.showProfiles = !toggle
             serverSetupProps.buttons[2].enabled = toggle
             serverSetupProps.buttons[3].enabled = toggle
-            this.keyManager.clear()
             if (serverSetupProps.showProfiles) {
               serverSetupProps.buttons[1].text = 'Done'
-              this.keyManager.push(0, serverSetupProps.buttons[0].onClick)
-              this.keyManager.push(1, serverSetupProps.buttons[1].onClick)
-              for (let index = 0; index < Math.ceil(Profile.cosm.length / 6); index++) {
-                this.keyManager.push([-1,0,1], [()=>{
-                  this.setProfileInd((this.keyManager.cursor - 2) * 6 + this.state.serverSetupProps.pcursor)
-                  this.state.serverSetupProps.buttons[1].onClick()
-                }, ()=>{this.cycleSetting('serverSetupProps','pcursor',-1,6)}, ()=>{this.cycleSetting('serverSetupProps','pcursor',1,6)}])
-              }
             } else {
               serverSetupProps.buttons[1].text = 'Choose Form'
-              serverSetupProps.buttons.forEach((e,i) => {
-                if (e.enabled) {
-                  this.keyManager.push(i, e.onClick)
-                }
-              });
             }
             this.setState({serverSetupProps})
           },
@@ -577,8 +462,6 @@ class App extends React.Component{
       showProfiles : false,
       pcursor : 0,
       onFade : ()=>{},
-      onFocus : ()=>{this.keyManager.enabled = false},
-      onBlur : ()=>{this.keyManager.enabled = true},
       setUsername : (evt)=>{
         const gameSettingsProps = this.state.gameSettingsProps
         gameSettingsProps.name = evt.target.value
@@ -590,9 +473,6 @@ class App extends React.Component{
       },
       setProfileInd : (i)=>this.setProfileInd(i)
     }
-    serverSetupProps.buttons.forEach((e,i) => {
-      if (e.enabled) this.keyManager.push(i, e.onClick)
-    });
     menuProps.fadeAway = true
     menuProps.onFade = ()=>{
       menuProps.onFade = ()=>{}
@@ -623,8 +503,6 @@ class App extends React.Component{
       this.server.close()
       this.return()
     }
-    this.keyManager.clear()
-    this.keyManager.push(0, serverSetupProps.buttons[0].onClick)
 
     if (this.server.peer) this.server.close()
     const roomID = this.server.createRoom(()=>{
@@ -684,11 +562,6 @@ class App extends React.Component{
   async startPVPGame(name){
     // this.clearClickable()
     // console.log(' Player: ' + name + ' Opponent: ' + oppName)
-    this.keyManager.clear()
-    this.keyManager.returnAction = ()=> {
-      this.server.close()
-      this.return()
-    }
     let turn, gameSettingsProps = this.state.gameSettingsProps
     const playProfileInd =  gameSettingsProps.playProfileInd
     if(this.server.isHost){
@@ -758,8 +631,6 @@ class App extends React.Component{
 
   startAIGame(){
     // this.clearClickable()
-    this.keyManager.clear()
-    this.keyManager.returnAction = ()=>this.return()
     let {gameProps, charSelectProps, gameSettingsProps} = this.state
     gameSettingsProps.oppProfileInd = this.state.selectedAIInd
     gameSettingsProps.oppName = Profile.ai[this.state.selectedAIInd].name
@@ -778,11 +649,6 @@ class App extends React.Component{
   }
 
   return(callback = ()=>{}){
-    // this.clearClickable()
-    // this.keyManager.clicked = false
-    this.keyManager.initCursorUpdate(()=>{
-      this.setState({cursor: this.keyManager.cursor})
-    })
     let {menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps} = this.state
     htProps = null
     gameProps = null

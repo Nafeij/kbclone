@@ -4,7 +4,6 @@ import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
 import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions, tubBoxWidth} from '../util/Utils.js';
-import KeyManager from "../util/KeyManager.js";
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";
 import Loading from "./Loading.js";
@@ -16,7 +15,6 @@ const scale = .95, numFaces = 6, boxAspectRatio = 7/5
 class Game extends React.Component {
     constructor(props){
         super(props)
-        this.keyManager = new KeyManager()
         this.server = new Server()
         this.tubBoxAspect = (props.settings.tubLen + .8) / (boxAspectRatio * props.settings.numTubs)
         // console.log(this.tubBoxAspect)
@@ -99,7 +97,6 @@ class Game extends React.Component {
                     }
                 ]
             },
-            cursor: this.keyManager.cursor,
             turn: 0,
             rolled: false,
             slid: false,
@@ -108,9 +105,6 @@ class Game extends React.Component {
             turnCount: props.settings.turnLimit,
             gameTime: null
         }
-        this.keyManager.initCursorUpdate(()=>{
-            this.setState({cursor: this.keyManager.cursor})
-        })
     }
 
     generateDice(){
@@ -290,8 +284,6 @@ class Game extends React.Component {
     }
 
     setTubClickable(){
-        // this.clearClickable()
-        // this.keyManager.cursor = 0
         let {tubProps, turn} = this.state
         const offset = this.props.settings.numTubs
         tubProps = tubProps.map((side, si)=>{
@@ -299,31 +291,26 @@ class Game extends React.Component {
                 if (si === 1 - turn) {
                     if (this.props.settings.pickable){
                         const j = ti + offset
-                        this.keyManager.push(j, ()=>{this.proccessClick(ti, 1)})
                         return {...tub, cursorID : j, scoreMemo : null, oldScore : tub.score}
                     }
                     return {...tub, scoreMemo : null, oldScore : tub.score}
                 }
-                this.keyManager.push(ti, ()=>{this.proccessClick(ti, 0)})
                 return {...tub, cursorID : ti, scoreMemo : null, oldScore : tub.score}
             })
         })
-        this.setState({tubProps, cursor: this.keyManager.cursor})
+        this.setState({tubProps})
     }
 
     setFlytextClickable(){
         // this.clearClickable()
         let flytextProps = this.state.flytextProps
         flytextProps.buttons = flytextProps.buttons.map((btn, i)=>{
-            this.keyManager.push(i, btn.onClick)
             return {...btn, cursorID : i}
         })
         this.setState({flytextProps})
     }
 
     clearClickable(){
-        this.keyManager.clear()
-        // this.keyManager.cursor = 0
         let {tubProps, flytextProps, turn} = this.state
         // const oldScore = (si,ti) => (memo ? memo[0][si][ti] : null)
         tubProps = tubProps.map((side)=>{
