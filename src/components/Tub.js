@@ -39,7 +39,7 @@ class Tub extends React.Component {
                 score <= caravan[1]) ?
             'tubC' : (
                 isFull(diceList) ?
-            'tubB' : 'tub'
+            'tubB' : ''
         );
         const hoverClass = clickable ? 'hover' : ''
         const shakeClass = startShake ? 'shake' : ''
@@ -48,11 +48,12 @@ class Tub extends React.Component {
         return (
         <div className='tubOuter'>
             <div
-            className={`${fillClass} ${hoverClass} ${shakeClass}`}
+            className={`tub ${fillClass} ${hoverClass} ${shakeClass}`}
             onPointerEnter={()=>{if (clickable) scoreHover(true)}}
             onPointerLeave={()=>{if (clickable) scoreHover(false)}}
             onPointerUp={()=>{if (clickable) proccessClick()}}
-            onAnimationEnd={onShakeAnimEnd}>
+            onAnimationEnd={onShakeAnimEnd}
+            tabIndex={clickable ? "0" : "-1"}>
                 {ordering.map((i)=>this.renderBox(i))}
             </div>
             <h1 className={`scorer ${animClass}`}

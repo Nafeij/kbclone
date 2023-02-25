@@ -31,22 +31,6 @@ $font-family_4: "Courier New", Courier, monospace
   100%
     rotate: 360deg
 
-/*  	.tub#left, .tubB#left {grid-column-start: 1;}
- *	.tub#mid, .tubB#mid {grid-column-start: 2;}
- *	.tub#right, .tubB#right {grid-column-start: 3;}
- *
- *	.tub:first-child, .tubB:first-child {grid-column-start: 1;}
- *    .tub:nth-child(2), .tubB:nth-child(2) {grid-column-start: 2;}
- *    .tub:last-child, .tubB:last-child {grid-column-start: 3;}
-/* .scale-pop {
- *	animation: scale-pop .3s 1;
- *}
-/* .recover {
- *	animation: releaseTranslate .6s ease-out both;
- *}
-/* .dice .release-translate {
- *    animation: releaseTranslate .6s ease-out both;
- *}
 @keyframes shake-h-anim
   0%
     translate: 6px
@@ -1042,7 +1026,7 @@ body
   display: flex
   flex-direction: column
 
-.tub, .tubB, .tubC
+.tub
   width: 100%
   display: flex
   justify-content: center
@@ -1050,6 +1034,7 @@ body
   flex-direction: column
   position: relative
   order: 1
+  outline: 0
 
   &::before
     transition: .2s
@@ -1061,9 +1046,9 @@ body
     left: 0
     background: transparent
 
-.tubB.shake
-  &::before
-    animation: shake-h-anim .3s 1
+  &.tubB.shake
+    &::before
+      animation: shake-h-anim .3s 1
 
 .scorer
   margin: 0
@@ -1488,22 +1473,20 @@ body
     width: 15rem
 
   .tub.hover
-    &:hover
+    &:hover, &:focus
       &::before
+        scale: 1
         background: red
-        scale: 1
 
-  .tubB.hover
-    &:hover
-      &::before
-        background: black
-        scale: 1
+    &.tubB
+      &:hover, &:focus
+        &::before
+          background: black
 
-  .tubC.hover
-    &:hover
-      &::before
-        background: #01d5a2
-        scale: 1
+    &.tubC
+      &:hover, &:focus
+        &::before
+          background: #01d5a2
 
 @media (min-aspect-ratio: 3/2)
   html
