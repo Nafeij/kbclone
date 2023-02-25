@@ -20,7 +20,7 @@ import logo from "./img/logo.png"
 function Menu (props) {
 
   const button = (i)=>(
-    <div key={i} className={`kbutton ${i === 0 ? 'space' : ''} ${props.buttons[i].cursorID === props.cursor ? 'hovering' : ''}`} onPointerUp={() => props.buttons[i].onClick()}>{props.buttons[i].text}</div>
+    <div key={i} className={`kbutton ${i === 0 ? 'space' : ''}`} onPointerUp={() => props.buttons[i].onClick()}>{props.buttons[i].text}</div>
   )
 
   return (<div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}} onTransitionEnd={props.onFade}>
@@ -48,35 +48,30 @@ class App extends React.Component{
         buttons: [
           {
             text : 'Play',
-            cursorID: -1,
             onClick: () => {
               this.startGame()
             },
           },
           {
             text : 'Play with the Shack',
-            cursorID: -1,
             onClick: () => {
               this.startCharacterSelect()
             },
           },
           {
             text : 'Play with a Friend',
-            cursorID: -1,
             onClick: () => {
               this.startServerSetup()
             },
           },
           {
             text : 'Settings',
-            cursorID: -1,
             onClick: () => {
               this.startSettings()
             },
           },
           {
             text : 'How to Play',
-            cursorID: -1,
             onClick: () => {
               this.startHt()
             },
@@ -189,7 +184,6 @@ class App extends React.Component{
 
   startGame(){
     // this.cookies.set('statsProps', {a:1}, { path: '/', maxAge: this.maxAge, sameSite : 'strict'});
-    // this.clearClickable()
     //console.log('test')
     let {menuProps, gameProps, gameSettingsProps} = this.state
     gameSettingsProps.oppName = gameSettingsProps.name
@@ -210,9 +204,7 @@ class App extends React.Component{
 
   startHt(){
     let {menuProps, htProps} = this.state
-    menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
     htProps = {
-      cursorID: 0,
       onClick: () => {
         this.return()
       }
@@ -235,7 +227,7 @@ class App extends React.Component{
 
   startSettings(){
     let {menuProps, settingsProps} = this.state
-    menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
+
     settingsProps = {
       modVal : (setting,val)=>{
         const gameSettingsProps = this.state.gameSettingsProps
@@ -275,8 +267,7 @@ class App extends React.Component{
       },
       modColor : (setting,side,color)=>{
         const gameSettingsProps = this.state.gameSettingsProps
-        const a = (((color.rgb.a * 255) | 1) << 8).toString(16).slice(1)
-        gameSettingsProps[setting][side] = color.hex + a
+        gameSettingsProps[setting][side] = color
         this.setState({gameSettingsProps, settingChanged : true})
       },
       setProfileInd : (i)=>this.setProfileInd(i),
@@ -304,7 +295,6 @@ class App extends React.Component{
         }
       ],
       showProfiles : false,
-      pcursor : 0,
       tabs : ['gameplay', 'personal'],
       activeTab : 0,
       switchTab : (destTab)=>{
@@ -335,19 +325,15 @@ class App extends React.Component{
 
   startCharacterSelect(){
     let {menuProps, charSelectProps} = this.state
-    menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
-
     charSelectProps = {
       buttons: [
         {
-          cursorID: 0,
           onClick: () => {
             this.startAIGame()
           },
         },
         {
           text : 'Go Back',
-          cursorID: 1,
           onClick: () => {
             this.return()
           }
@@ -409,10 +395,7 @@ class App extends React.Component{
   }
 
   startServerSetup(){
-    // this.clearClickable()
     let {menuProps, serverSetupProps} = this.state
-    menuProps.buttons = menuProps.buttons.map((btn)=>({...btn, cursorID : -1}))
-
     serverSetupProps = {
       buttons: [
         {
@@ -460,7 +443,6 @@ class App extends React.Component{
       onShakeDone : ()=>{},
       fadeAway : false,
       showProfiles : false,
-      pcursor : 0,
       onFade : ()=>{},
       setUsername : (evt)=>{
         const gameSettingsProps = this.state.gameSettingsProps
@@ -560,7 +542,6 @@ class App extends React.Component{
 
 
   async startPVPGame(name){
-    // this.clearClickable()
     // console.log(' Player: ' + name + ' Opponent: ' + oppName)
     let turn, gameSettingsProps = this.state.gameSettingsProps
     const playProfileInd =  gameSettingsProps.playProfileInd
@@ -630,7 +611,6 @@ class App extends React.Component{
   }
 
   startAIGame(){
-    // this.clearClickable()
     let {gameProps, charSelectProps, gameSettingsProps} = this.state
     gameSettingsProps.oppProfileInd = this.state.selectedAIInd
     gameSettingsProps.oppName = Profile.ai[this.state.selectedAIInd].name
@@ -659,15 +639,9 @@ class App extends React.Component{
     menuProps.onFade = ()=>{
       menuProps.onFade = ()=>{}
       menuProps.pointerEvents = 'auto'
-      this.setState({menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps, settingChanged : false}, ()=>{
-        this.setButtonsClickable(callback)
-      })
+      this.setState({menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps, settingChanged : false}, callback)
     }
     this.setState({menuProps})
-  }
-
-  componentDidMount(){
-    this.setButtonsClickable()
   }
 
   componentWillUnmount(){
@@ -676,7 +650,7 @@ class App extends React.Component{
 
   render(){
     const {flytextProps,isLoading,gameProps,settingsProps,gameSettingsProps,statsProps,
-      settingsRanges, cursor, settingChanged, serverSetupProps, roomID, charSelectProps,
+      settingsRanges, settingChanged, serverSetupProps, roomID, charSelectProps,
       selectedAIInd, htProps, menuProps} = this.state
     return (
       <div id='app'>
@@ -684,7 +658,6 @@ class App extends React.Component{
         <Loading show={isLoading}/>
         <div className='footer'>
           <div className="fcontain mobile" style={{display : gameProps ? 'flex' : 'none'}} onClick={()=>{
-                          /* this.clearClickable() */
                           this.return()}}>
             <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
           </div>
@@ -695,12 +668,12 @@ class App extends React.Component{
             <div className="symb dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
           </div>
         </div>
-        {settingsProps ? <Settings {...settingsProps} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} cursor={cursor} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/> : null}
+        {settingsProps ? <Settings {...settingsProps} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/> : null}
         {gameProps ? <Game {...gameProps}/> : null}
-        {serverSetupProps ? <ServerSetup {...serverSetupProps} cursor={cursor} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/> : null}
-        {charSelectProps ? <CharSelect {...charSelectProps} cursor={cursor} selectedAIInd={selectedAIInd}/> : null}
-        {htProps ? <HowTo {...htProps} cursor={cursor}/> : null}
-        <Menu {...menuProps} cursor={cursor}/>
+        {serverSetupProps ? <ServerSetup {...serverSetupProps} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/> : null}
+        {charSelectProps ? <CharSelect {...charSelectProps} selectedAIInd={selectedAIInd}/> : null}
+        {htProps ? <HowTo {...htProps}/> : null}
+        <Menu {...menuProps}/>
       </div>
     )
   }

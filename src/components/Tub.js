@@ -28,22 +28,11 @@ class Tub extends React.Component {
         </RefBox>
     }
 
-    componentDidUpdate(prevProps){
-        const {cursor, clickable} = this.props
-        if (prevProps.cursor !== prevProps.cursorID && cursor === prevProps.cursorID && clickable) {
-            this.props.scoreHover(true)
-        }
-        if (prevProps.cursor === prevProps.cursorID && cursor !== prevProps.cursorID && clickable) {
-            this.props.scoreHover(false)
-        }
-    }
-
     render(){
         const {
             tubLen, diceList, clickable, startShake,
             animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, cursor, cursorID, caravan, scoreHover} = this.props
-        const active = cursor === cursorID
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, caravan, scoreHover} = this.props
         const fillClass = (
                 caravan &&
                 score >= caravan[0] &&
@@ -53,16 +42,13 @@ class Tub extends React.Component {
             'tubB' : 'tub'
         );
         const hoverClass = clickable ? 'hover' : ''
-        const keyHoverClass = active ? 'hovering' : ''
         const shakeClass = startShake ? 'shake' : ''
         const ordering = Array(tubLen).fill().map((_,i)=>i)
         if (!flip) ordering.reverse()
-        // if (clicked) console.log('pressed' + cursorID + cursor)
-        // if (clicked() && active) {proccessClick()}
         return (
         <div className='tubOuter'>
             <div
-            className={`${fillClass} ${hoverClass} ${keyHoverClass} ${shakeClass}`}
+            className={`${fillClass} ${hoverClass} ${shakeClass}`}
             onPointerEnter={()=>{if (clickable) scoreHover(true)}}
             onPointerLeave={()=>{if (clickable) scoreHover(false)}}
             onPointerUp={()=>{if (clickable) proccessClick()}}

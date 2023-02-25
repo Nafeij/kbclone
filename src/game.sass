@@ -484,15 +484,10 @@ body
   letter-spacing: .05em
   border-radius: 3px 3px 0 0
 
-  &:hover
+  &:hover, &.hovering
     background: red
     color: $color_1
     padding: .4em 0
-
-.Tab.hovering
-  background: red
-  color: $color_1
-  padding: .4em 0
 
 .formGrid
   display: grid
@@ -508,9 +503,6 @@ body
 
     &:hover
       border-color: #01d5a2
-
-  .pfp.hovering
-    border-color: #01d5a2
 
   .pfp.active
     border-color: red
@@ -573,7 +565,7 @@ body
       padding: .5rem
       max-height: 1rem
 
-  input
+  input[type=text]
     font-size: 2rem
     color: $color_1
     outline: none
@@ -717,9 +709,6 @@ body
     text-indent: 1.5rem
     margin: 0
 
-.settingsItem.hovering
-  z-index: 1
-
   .subtitle
     opacity: 1
 
@@ -744,27 +733,13 @@ body
     &:hover
       z-index: 1
 
-      .pickWrapper
-        display: block
-
-  .menubox.hovering
-    z-index: 1
-
-    .pickWrapper
-      display: block
-
 .testColor
   width: 1.4rem
   aspect-ratio: 1
   border-radius: 3px
   position: relative
   border: 2px solid white
-
-.pickWrapper
-  display: none
-  position: absolute
-  translate: -50% 0
-  left: 50%
+  padding: 0
 
 .react-switch-checkbox
   height: 0
@@ -858,12 +833,6 @@ body
     background-color: red !important
     border-color: maroon
     color: $color_1
-
-
-.kbutton.hovering
-  background-color: red !important
-  border-color: maroon
-  color: $color_1
 
 .ssBox
   display: flex
@@ -1092,23 +1061,9 @@ body
     left: 0
     background: transparent
 
-.tub.hover
-    &:active
-      &::before
-        background: red
-        scale: 1
-
-.tubB.hover
-  &:active
-    &::before
-      background: black
-      scale: 1
-
-.tubC.hover
-  &:active
-    &::before
-      background: #01d5a2
-      scale: 1
+.tubB.shake
+  &::before
+    animation: shake-h-anim .3s 1
 
 .scorer
   margin: 0
@@ -1277,7 +1232,7 @@ body
     left: -1em
     top: 1em
 
-.die, .die2
+.die
   display: grid
   grid-template-areas: "c . a" "f g e" "b . d"
   aspect-ratio: 1/1
@@ -1291,25 +1246,55 @@ body
   z-index: 1
   position: relative
 
-  .tubB.shake
-    &::before
-      animation: shake-h-anim .3s 1
+  &::after
+    content: ""
+    width: 100%
+    height: 100%
+    position: absolute
+    border: inherit
+    border-radius: inherit
+    padding: 0.05rem
+    top: -.5rem
+    left: -.5rem
+    opacity: .8
+    z-index: -1
 
-.die2
-  .pip
-    &:nth-child(1)
-      grid-area: f
+  &.num2
+    .pip
+      &:nth-child(1)
+        grid-area: f
 
-    &:nth-child(2)
-      grid-area: e
+      &:nth-child(2)
+        grid-area: e
 
-.die.caravan
-  background-image: url("./img/cardec.png")
-  background-size: cover
+  &.caravan
+    background-image: url("./img/cardec.png")
+    background-size: cover
 
-.die2.caravan
-  background-image: url("./img/cardec.png")
-  background-size: cover
+  &.match
+    &::after
+      background-color: #72adcf
+      border-color: #6297b6
+
+  &.match-all
+    &::after
+      background-color: #ecd77a
+      border-color: #cdbe61
+
+  &.cheated
+    &::after
+      background-color: #01d5a2
+      border-color: #01d5a2
+
+  &.shrink-pre, &.shrink-out
+    &::after
+      background-color: red
+      border-color: red
+
+  &.shrink-out
+    animation: scale-away .4s 1 forwards
+    &::after
+      animation: color .4s 1 backwards
 
 .pip
   display: block
@@ -1404,32 +1389,6 @@ body
 
 .shrink-out
   animation: scale-away .4s 1
-
-.die.shrink-pre, .die2.shrink-pre, .die.shrink-out, .die2.shrink-out, .die.cheated, .die2.cheated
-  &::after
-    content: ""
-    width: 100%
-    height: 100%
-    position: absolute
-    border: inherit
-    border-radius: inherit
-    padding: 0.05rem
-    top: -.5rem
-    left: -.5rem
-    opacity: .8
-    z-index: -1
-    background-color: red !important
-    border-color: red !important
-
-.die.shrink-out, .die2.shrink-out
-  animation: scale-away .4s 1 forwards
-  &::after
-    animation: color .4s 1 backwards
-
-.die.cheated, .die2.cheated
-  &::after
-    background-color: #01d5a2
-    border-color: #01d5a2
 
 .scorebox.shake
   animation: shake-h-anim .3s 1
@@ -1534,27 +1493,14 @@ body
         background: red
         scale: 1
 
-  .tub.hover.hovering
-    &::before
-      background: red
-      scale: 1
-
   .tubB.hover
     &:hover
-      &::before
-        background: black
-        scale: 1
-    &.hovering
       &::before
         background: black
         scale: 1
 
   .tubC.hover
     &:hover
-      &::before
-        background: #01d5a2
-        scale: 1
-    &.hovering
       &::before
         background: #01d5a2
         scale: 1

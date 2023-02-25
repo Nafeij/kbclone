@@ -13,7 +13,7 @@ import SlidePane from "./SlidePane";
 
 function CharSelect (props) {
 
-    const {selectedAIInd, buttons, cursor, modAIInd,
+    const {selectedAIInd, buttons, modAIInd,
             fadeAway, onFade, modSetAIInd, hasWrapped} = props,
         translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100
@@ -47,7 +47,7 @@ function CharSelect (props) {
                 </div>
                 <div className="menubox across cselect">
                     <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
-                    <div className={`charInfo ${buttons[0].cursorID === cursor ? 'charInfohover' : ''}`} onClick={() => buttons[0].onClick()}>
+                    <div className={`charInfo`} onClick={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{translate: translationName + '%'}}>
                             {Profile.ai.map((p, i)=>(
@@ -72,7 +72,7 @@ function CharSelect (props) {
                     </div>
                     <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(1)} />
                 </div>
-                <div className={`kbutton space ${buttons[1].cursorID === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+                <div className={`kbutton space`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
             </div>
         </div>
     )

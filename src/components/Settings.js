@@ -1,14 +1,12 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react"
-import { SketchPicker } from "react-color"
 import Profile from "../util/Profile"
 import { caravanBounds, timeFormatLong } from "../util/Utils"
 import sprites from "../img/sprites.png"
 import Squiggle from "./Squiggle"
 
-const Switch = ({ isOn, handleToggle, sid}) => {
-    return (
+const Switch = ({ isOn, handleToggle, sid}) => (
       <>
         <input
           checked={isOn}
@@ -25,16 +23,14 @@ const Switch = ({ isOn, handleToggle, sid}) => {
           <span className={`react-switch-button`} />
         </label>
       </>
-    );
-};
+)
+
+const Picker = ({color, onChange}) => (<input type="color" className="testColor" value={color} onChange={e => onChange(e.target.value)}/>)
 
 function Settings (props) {
 
-    // console.log(props.cursorID + ' : ' + props.cursor)
-    // console.log(props.graphicwidth)
-
     const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name} = props.gameSettingsProps,
-    {mod, modDscrt, modBool, modSpec, modVal, modColor, cursor, pcursor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props,
+    {mod, modDscrt, modBool, modSpec, modVal, modColor, settingChanged, tabs, activeTab, switchTab, playProfileInd, onFocus, onBlur, showProfiles, setProfileInd,buttons,statsProps} = props,
     combiBreakdown = statsProps.aiBreakdown.slice(),
     tubLenInLimit = {l: tubLen > 1 && tubLen > numTubs - 2, r: tubLen < numTubs + 2},
     numTubsInLimit = {l: numTubs > 1 && numTubs > tubLen - 2, r: numTubs < tubLen + 2}
@@ -82,14 +78,14 @@ function Settings (props) {
             {showProfiles ? <div className="scrollContainer">
                 <div className="formGrid">
                     {Profile.cosm.map((p,i)=>(
-                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${(cursor === 2 + Math.floor(i/3)) && (pcursor === i % 3)? 'hovering':''}`} loading='lazy' style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''}`} loading='lazy' style={{backgroundImage: `url(${p.img})`}} onClick={()=>{setProfileInd(i);buttons[1].onClick()}}/>
                     ))}
                 </div>
             </div> : null}
             {!showProfiles ? <div className="scrollContainer">
                 <div className='menubox stats'>
                     <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
-                    <div className={`kbutton ${2 === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+                    <div className="kbutton" onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
                     <div className="menubox across">
                         <div className='menubox'>
                             <div className="subtitle">{newAggregate.nGames}</div>
@@ -157,78 +153,50 @@ function Settings (props) {
                 </div>
             </div> : null}
             <div className="menubox settingsList">
-                <div className={`settingsItem ${3 + offset === cursor ? 'hovering' : ''}`}>
+                <div className="settingsItem">
                     <div className='subtitle'>Name</div>
                     <div className="settingInput">
                         <input type='text' value={name} placeholder="Enter Username" onFocus={onFocus} onBlur={onBlur} onChange={evt => modVal('name',evt.target.value)}/>
                     </div>
                 </div>
-                <div className={`settingsItem ${4 + offset === cursor ? 'hovering' : ''}`}>
+                <div className="settingsItem">
                     <div className='subtitle'>Colors</div>
                     <div className="settingInput">
-                        <div className={`menubox ${4 + offset === cursor && 0 === pcursor? 'hovering' : ''}`}>
+                        <div className="menubox">
                             Dice:
-                            <div className="testColor" style={{background: diceColor[1]}}>
-                                <div className="pickWrapper" >
-                                    <SketchPicker color={diceColor[1]} onChange={(color)=>{
-                                        modColor('diceColor',1,color)
-                                    }}/>
-                                </div>
-                            </div>
+                            <Picker color={diceColor[1]} onChange={(color)=>{modColor('diceColor',1,color)}}/>
                         </div>
-                        <div className={`menubox ${4 + offset === cursor && 1 === pcursor? 'hovering' : ''}`}>
+                        <div className="menubox">
                             Border:
-                            <div className="testColor" style={{background: diceBorder[1]}}>
-                                <div className="pickWrapper" >
-                                    <SketchPicker color={diceBorder[1]} onChange={(color)=>{modColor('diceBorder',1,color)}}/>
-                                </div>
-                            </div>
+                            <Picker color={diceBorder[1]} onChange={(color)=>{modColor('diceBorder',1,color)}}/>
                         </div>
-                        <div className={`menubox ${4 + offset === cursor && 2 === pcursor? 'hovering' : ''}`}>
+                        <div className="menubox">
                             Pip:
-                            <div className="testColor" style={{background: pipColor[1]}}>
-                                <div className="pickWrapper" >
-                                    <SketchPicker color={pipColor[1]} onChange={(color)=>{modColor('pipColor',1,color)}}/>
-                                </div>
-                            </div>
+                            <Picker color={pipColor[1]} onChange={(color)=>{modColor('pipColor',1,color)}}/>
                         </div>
                     </div>
                 </div>
-                <div className={`settingsItem ${5 + offset === cursor ? 'hovering' : ''}`}>
+                <div className="settingsItem">
                     <div className='subtitle'>Opponent Colors</div>
                     <div className="settingInput">
-                        <div className={`menubox ${5 + offset === cursor && 0 === pcursor? 'hovering' : ''}`}>
+                        <div className="menubox">
                             Dice:
-                            <div className="testColor" style={{background: diceColor[0]}}>
-                                <div className="pickWrapper" >
-                                    <SketchPicker color={diceColor[0]} onChange={(color)=>{
-                                        modColor('diceColor',0,color)
-                                    }}/>
-                                </div>
-                            </div>
+                            <Picker color={diceColor[0]} onChange={(color)=>{modColor('diceColor',0,color)}}/>
                         </div>
-                        <div className={`menubox ${5 + offset === cursor && 1 === pcursor? 'hovering' : ''}`}>
+                        <div className="menubox">
                             Border:
-                            <div className="testColor" style={{background: diceBorder[0]}}>
-                                <div className="pickWrapper" >
-                                    <SketchPicker color={diceBorder[0]} onChange={(color)=>{modColor('diceBorder',0,color)}}/>
-                                </div>
-                            </div>
+                            <Picker color={diceBorder[0]} onChange={(color)=>{modColor('diceBorder',0,color)}}/>
                         </div>
-                        <div className={`menubox ${5 + offset === cursor && 2 === pcursor? 'hovering' : ''}`}>
+                        <div className="menubox">
                             Pip:
-                            <div className="testColor" style={{background: pipColor[0]}}>
-                                <div className="pickWrapper" >
-                                    <SketchPicker color={pipColor[0]} onChange={(color)=>{modColor('pipColor',0,color)}}/>
-                                </div>
-                            </div>
+                            <Picker color={pipColor[0]} onChange={(color)=>{modColor('pipColor',0,color)}}/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div className="menubox settingsList" style={{display : tabs[activeTab] === 'gameplay' ? 'flex' : 'none'}}>
-            <div className={`settingsItem ${2 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>Number of Rows</div>
                 <div className="settingInput">
                     <div className={`arrowL ${!tubLenInLimit.l ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLenInLimit.l) mod('tubLen',-1)}}/>
@@ -236,7 +204,7 @@ function Settings (props) {
                     <div className={`arrowR ${!tubLenInLimit.r ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (tubLenInLimit.r) mod('tubLen',1)}}/>
                 </div>
             </div>
-            <div className={`settingsItem ${3 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>Number of Columns</div>
                 <div className="settingInput">
                     <div className={`arrowL ${!numTubsInLimit.l ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubsInLimit.l) mod('numTubs',-1)}}/>
@@ -244,7 +212,7 @@ function Settings (props) {
                     <div className={`arrowR ${!numTubsInLimit.r ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{if (numTubsInLimit.r) mod('numTubs',1)}}/>
                 </div>
             </div>
-            <div className={`settingsItem ${4 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>Turn Timer</div>
                 <div className="settingInput">
                     <div className={`arrowL ${time === null ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('time',-1)}}/>
@@ -252,7 +220,7 @@ function Settings (props) {
                     <div className={`arrowR ${time >= 60 ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('time',1)}}/>
                 </div>
             </div>
-            <div className={`settingsItem ${5 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>Turn Limit</div>
                 <div className="settingInput">
                     <div className={`arrowL ${turnLimit === null ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}} onClick={()=>{modDscrt('turnLimit',-1)}}/>
@@ -261,7 +229,7 @@ function Settings (props) {
                 </div>
             </div>
 
-            <div className={`settingsItem ${6 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>
                     Move Hinting
                     <div className='text'>preview scores and dice before a move is made</div>
@@ -271,7 +239,7 @@ function Settings (props) {
                 </div>
             </div>
 
-            <div className={`settingsItem ${7 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>
                     Longplay
                     <div className='text'>game continues until there are no legal moves</div>
@@ -280,7 +248,7 @@ function Settings (props) {
                     <Switch sid={1} isOn={ignoreFull} handleToggle={()=>{modBool('ignoreFull')}}/>
                 </div>
             </div>
-            <div className={`settingsItem ${8 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>
                     Sabotage
                     <div className='text'>you can place dice onto your opponent&rsquo;s board</div>
@@ -289,7 +257,7 @@ function Settings (props) {
                     <Switch sid={2} isOn={pickable} handleToggle={()=>{modBool('pickable')}}/>
                 </div>
             </div>
-            <div className={`settingsItem ${9 === cursor ? 'hovering' : ''}`}>
+            <div className="settingsItem">
                 <div className='subtitle'>
                     Caravan Rules
                     <div className='text'>{`over ${caravanBounds(tubLen)[0] - 1}, under ${caravanBounds(tubLen)[1] + 1}, ones are Jokers`}</div>
@@ -299,7 +267,7 @@ function Settings (props) {
                 </div>
             </div>
         </div>
-        <div className={`kbutton space ${0 === cursor ? 'hovering' : ''}`} onClick={() => buttons[0].onClick()}>{settingChanged ? 'Save' : 'Back'}
+        <div className="kbutton space" onClick={() => buttons[0].onClick()}>{settingChanged ? 'Save' : 'Back'}
         </div>
       </div>
     </div>)

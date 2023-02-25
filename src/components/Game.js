@@ -40,7 +40,6 @@ class Game extends React.Component {
                     scoreMemo: null,
                     boxRefs: Array(props.settings.tubLen).fill().map(React.createRef),
                     scoreScale: 'none',
-                    cursorID: -1,
                     caravan : props.settings.caravan,
                     scoreHover : this.props.settings.preview ? (h)=>{this.scoreHover(h,i,j)} : ()=>{}
                 })))
@@ -78,14 +77,12 @@ class Game extends React.Component {
                 buttons: [
                     {
                       text : 'Rematch',
-                      cursorID: -1,
                       onClick: () => {
                         this.restart()
                       },
                     },
                     {
                       text : 'Back',
-                      cursorID: -1,
                       onClick: () => {
                         const flytextProps = this.state.flytextProps
                         flytextProps.show = false
@@ -120,6 +117,7 @@ class Game extends React.Component {
             shrink: false,
             shrinkPreview: false,
             cheat: false,
+            match: null,
             num: randomInRange(numFaces) + 1,
             diceColor : this.props.settings.diceColor[turn],
             diceBorder : this.props.settings.diceBorder[turn],
@@ -286,44 +284,23 @@ class Game extends React.Component {
     setTubClickable(){
         let {tubProps, turn} = this.state
         const offset = this.props.settings.numTubs
-        tubProps = tubProps.map((side, si)=>{
-            return side.map((tub, ti)=>{
-                if (si === 1 - turn) {
-                    if (this.props.settings.pickable){
-                        const j = ti + offset
-                        return {...tub, cursorID : j, scoreMemo : null, oldScore : tub.score}
-                    }
-                    return {...tub, scoreMemo : null, oldScore : tub.score}
-                }
-                return {...tub, cursorID : ti, scoreMemo : null, oldScore : tub.score}
+        tubProps = tubProps.map((side)=>{
+            return side.map((tub)=>{
+                return {...tub, scoreMemo : null, oldScore : tub.score}
             })
         })
         this.setState({tubProps})
     }
 
-    setFlytextClickable(){
-        // this.clearClickable()
-        let flytextProps = this.state.flytextProps
-        flytextProps.buttons = flytextProps.buttons.map((btn, i)=>{
-            return {...btn, cursorID : i}
-        })
-        this.setState({flytextProps})
-    }
-
     clearClickable(){
-        let {tubProps, flytextProps, turn} = this.state
+        let {tubProps} = this.state
         // const oldScore = (si,ti) => (memo ? memo[0][si][ti] : null)
         tubProps = tubProps.map((side)=>{
             return side.map((tub)=>{
-                return {...tub, cursorID : -1, scoreMemo : null}
+                return {...tub, scoreMemo : null}
             })
         })
-
-        // const p = tubProps.map((side)=>(side.map((tub)=>(tub.oldScore))))
-        // console.log(p)
-
-        flytextProps.buttons = flytextProps.buttons.map((btn)=>({...btn, cursorID : -1}))
-        this.setState({tubProps, flytextProps})
+        this.setState({tubProps})
     }
 
     handleMoveAnim(tubId, destPos = null, srcPos = null, turn = this.state.turn){
@@ -477,7 +454,7 @@ class Game extends React.Component {
         flytextProps.timeOut = timeOut
         flytextProps.show = true
         if (timeOut <= 0) {
-            this.setState({flytextProps}, this.setFlytextClickable)
+            this.setState({flytextProps})
         } else {
             if (delay <= 0) delay = timeOut
             this.setState({flytextProps})
@@ -691,16 +668,13 @@ class Game extends React.Component {
             const numMatch = numMatchingDice(diceMatrix[turn][i], dice.num);
             switch (numMatch) {
                 case this.props.settings.tubLen:
-                    dice.diceColor = "#ecd77a";
-                    dice.diceBorder = "#cdbe61";
+                    dice.match = 'match-all';
                     break;
                 case this.props.settings.tubLen - 1:
-                    dice.diceColor = "#72adcf";
-                    dice.diceBorder = "#6297b6";
+                    dice.match = 'match';
                     break;
                 default:
-                    dice.diceColor = this.props.settings.diceColor[turn];
-                    dice.diceBorder = this.props.settings.diceBorder[turn];
+                    dice.match = '';
                     break;
             }
             if (!scoreMemo) {
@@ -830,7 +804,6 @@ class Game extends React.Component {
             onShakeAnimEnd={(i,t) => this.onShakeAnimEnd(i,t)}
             onSideScoreAnimEnd={() => this.onSideScoreAnimEnd(side)}
             id={side}
-            cursor={this.state.cursor}
         />)
     }
 
@@ -919,7 +892,7 @@ class Game extends React.Component {
             <div className="game">
                 {this.renderSide(0)}
                 {this.renderSide(1)}
-                <Flytext {...this.state.flytextProps} cursor={this.state.cursor}/>
+                <Flytext {...this.state.flytextProps}/>
                 <Loading show={this.state.isLoading}/>
                 {this.props.settings.turnLimit ? <div className="turnCounter">
                     <p>{Math.ceil(this.state.turnCount)}</p>

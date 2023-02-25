@@ -26,7 +26,6 @@ class Side extends React.Component {
             flip={this.props.id}
             proccessClick={() => {if (this.props.tubsClickable) this.props.proccessClick(i, id)}}
             onShakeAnimEnd={() => this.props.onShakeAnimEnd(i, id)}
-            cursor={this.props.cursor}
         />)
     }
 

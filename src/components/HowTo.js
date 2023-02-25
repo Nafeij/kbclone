@@ -36,11 +36,8 @@ const DestroyGraphic = () => (
 function HowTo (props) {
 
     const button = (msg)=>(
-      <div className={`kbutton space ${props.cursorID === props.cursor ? 'hovering' : ''}`} onClick={() => props.onClick()}>{msg}</div>
+      <div className={`kbutton space`} onClick={() => props.onClick()}>{msg}</div>
     )
-
-    // console.log(props.cursorID + ' : ' + props.cursor)
-    // console.log(props.graphicwidth)
 
     return (<div className='menu'>
       <div className='menubox'>

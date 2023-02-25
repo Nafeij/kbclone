@@ -4,10 +4,10 @@ import React from "react";
 import Profile from "../util/Profile";
 
 function ServerSetup (props) {
-    const {buttons, cursor, shake, onShakeDone, fadeAway,
-        onFade, onFocus, onBlur, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles, pcursor} = props
+    const {buttons, shake, onShakeDone, fadeAway,
+        onFade, onFocus, onBlur, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles} = props
     const button = (i, space=false)=>(
-        <div key={i} className={`kbutton ${space ? 'space' : ''} ${i === cursor && !(lock && i !== 0) ? 'hovering' : ''}`} style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()}>{buttons[i].text}</div>
+        <div key={i} className={`kbutton ${space ? 'space' : ''}`} style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()}>{buttons[i].text}</div>
     )
     return (
     <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
@@ -22,7 +22,7 @@ function ServerSetup (props) {
             {showProfiles ? <div className="ssBox profile">
                 <div className="formGrid">
                     {Profile.cosm.map((p,i)=>(
-                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''} ${cursor === 2 + Math.floor(i/6) && pcursor === i % 6? 'hovering':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{buttons[1].onClick();setProfileInd(i)}}/>
+                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{buttons[1].onClick();setProfileInd(i)}}/>
                     ))}
                 </div>
             </div> : null}
