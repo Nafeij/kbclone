@@ -150,6 +150,7 @@ html
 #app
   overflow: hidden
   height: 100%
+  outline: none
 
 body
   margin: 0
@@ -193,13 +194,12 @@ body
   > .menubox
     z-index: 1
 
-.menu.fadeable
-  opacity: 1
-  transition: opacity .5s
-
-.menu.fadeable.hide
-  transition: opacity .5s
-  opacity: 0
+  &.fadeable
+    opacity: 1
+    transition: opacity .5s
+    &.hide
+      opacity: 0
+      transition: opacity .5s
 
 .menubox
   z-index: 0
@@ -212,7 +212,7 @@ body
   justify-content: center
 
   .kbutton
-    width: 14rem
+    width: 15rem
     &.space
       margin-top: 2rem
 
@@ -277,6 +277,13 @@ body
       position: absolute
 
     &::after
+      width: unset
+      height: unset
+      border: none
+      padding: 0
+      opacity: 1
+      z-index: 0
+      top: 0
       display: block
       color: $color_3
       font-size: 700%
@@ -289,6 +296,12 @@ body
 .graphicbox.match
   .die
     &::after
+      width: unset
+      height: unset
+      border: none
+      padding: 0
+      opacity: 1
+      z-index: 0
       color: $color_2
       content: "☇"
       font-size: 350%
@@ -366,10 +379,17 @@ body
   &:not(.greyed)
     &:hover
       background-position: 99% 54.05%
+
+  &.greyed
+    opacity: .2
+
+.navigable
+  .arrowR, .arrowL
+    &.nav-focused:not(.greyed)
+      background-position: 99% 54.05%
+
 .arrowL
   transform: scaleX(-1)
-.arrowL.greyed, .arrowR.greyed
-  opacity: .2
 
 .barContainer
   display: block
@@ -469,6 +489,12 @@ body
   border-radius: 3px 3px 0 0
 
   &:hover, &.hovering
+    background: red
+    color: $color_1
+    padding: .4em 0
+
+.navigable .nav-focused
+  .Tab
     background: red
     color: $color_1
     padding: .4em 0
@@ -804,7 +830,8 @@ body
   text-align: center
 
 .kbutton
-  font-size: 1.6rem
+  outline: 0
+  font-size: 1.4rem
   color: $color_7
   position: relative
   background-color: transparent
@@ -812,8 +839,15 @@ body
   clip-path: polygon(0% 0%, 100% 0%, 90% 50%, 100% 100%, 0% 100%, 10% 50%)
   border: 0.4rem solid transparent
   transition: .1s
+  font-family: inherit
 
-  &:hover
+  &:hover, &:focus
+    background-color: red !important
+    border-color: maroon
+    color: $color_1
+
+.navigable .nav-focused
+  &>.kbutton
     background-color: red !important
     border-color: maroon
     color: $color_1

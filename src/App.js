@@ -1,6 +1,9 @@
 /* eslint react/prop-types: 0 */
 
 import React from 'react'
+import Nav, {navVertical} from 'react-navtree'
+import Cookies from 'universal-cookie'
+
 import CharSelect from './components/CharSelect.js'
 import ServerSetup from './components/ServerSetup.js'
 import Server from './util/Server.js'
@@ -9,28 +12,29 @@ import HowTo from './components/HowTo.js'
 import Profile from './util/Profile.js'
 import { caravanBounds, randomInRange, strictMod } from './util/Utils.js'
 import Flytext from './components/Flytext.js'
+import Loading from './components/Loading.js'
+import Settings from './components/Settings.js'
+import KButton from './components/KButton.js'
+
 import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
 import dkey from "./img/dkey.png"
-import Loading from './components/Loading.js'
-import Settings from './components/Settings.js'
-import Cookies from 'universal-cookie'
 import logo from "./img/logo.png"
 
-function Menu (props) {
-
-  const button = (i)=>(
-    <div key={i} className={`kbutton ${i === 0 ? 'space' : ''}`} onPointerUp={() => props.buttons[i].onClick()}>{props.buttons[i].text}</div>
-  )
-
-  return (<div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}} onTransitionEnd={props.onFade}>
+const MainMenu = (props) => (
+  <div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}} onTransitionEnd={
+    () => ( props.fadeAway ?  props.onFadeOut() : props.onFadeIn() ) }>
     <div className='menubox'>
       <div className='title' style={{backgroundImage: `url(${logo})`}}/>
       <div className='text'>Based on the dice game of risk and reward from Cult of the Lamb</div>
-      {Array(props.buttons.length).fill().map((_,i)=>button(i))}
+      {props.buttons.map((btn,i)=>(
+        <div key={i}>
+          <KButton defaultFocused={i === 0} text={btn.text} navId={`mainButton ${i}`} onClick={btn.onClick} hasSpacer={i === 0} />
+        </div>
+      ))}
     </div>
-  </div>)
-}
+  </div>
+)
 
 class App extends React.Component{
 
@@ -41,16 +45,29 @@ class App extends React.Component{
     this.maxAge = 60 * 60 * 24 * 365 * 100
     this.state = {
       menuProps:{
-        pointerEvents: 'auto',
         fadeAway: false ,
-        onFade: ()=>{},
-        // disable: () => {this.disable()},
+        show: true,
+        onFadeOut: ()=>{
+          let {menuProps} = this.state
+          menuProps.show = false
+          this.setState({menuProps})
+        },
+        onFadeIn: ()=>{
+          this.setState({
+            htProps : null,
+            gameProps : null,
+            charSelectProps : null,
+            serverSetupProps : null,
+            settingsProps : null,
+            settingChanged : false
+          })
+        },
         buttons: [
           {
             text : 'Play',
             onClick: () => {
               this.startGame()
-            },
+            }
           },
           {
             text : 'Play with the Shack',
@@ -136,7 +153,12 @@ class App extends React.Component{
           }))
         , time : 0}
       }
+      , navEnabled : true
     }
+    this.return = this.return.bind(this)
+    this.setNavigable = this.setNavigable.bind(this)
+    this.setUnNavigable = this.setUnNavigable.bind(this)
+    this.navigate = this.navigate.bind(this)
   }
 
   statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
@@ -190,31 +212,19 @@ class App extends React.Component{
     gameSettingsProps.oppProfileInd = gameSettingsProps.playProfileInd
     gameSettingsProps.gameType ='DEFAULT'
     gameProps = {settings : gameSettingsProps,
-      return : ()=>this.return(),
+      return : this.return,
       statUpdate : ()=>{}
     }
     menuProps.fadeAway = true
-    menuProps.onFade = ()=>{
-      menuProps.onFade = ()=>{}
-      menuProps.pointerEvents = 'none'
-      this.setState({menuProps})
-    }
     this.setState({gameProps, menuProps})
   }
 
   startHt(){
     let {menuProps, htProps} = this.state
     htProps = {
-      onClick: () => {
-        this.return()
-      }
+      onClick: this.return
     }
     menuProps.fadeAway = true
-    menuProps.onFade = ()=>{
-      menuProps.onFade = ()=>{}
-      menuProps.pointerEvents = 'none'
-      this.setState({menuProps})
-    }
     this.setState({menuProps, htProps})
   }
 
@@ -307,12 +317,7 @@ class App extends React.Component{
       }
     }
     menuProps.fadeAway = true
-    menuProps.onFade = ()=>{
-      menuProps.onFade = ()=>{}
-      menuProps.pointerEvents = 'none'
-      this.setState({menuProps})
-    }
-    this.setState({menuProps, settingsProps},()=>this.state.settingsProps.switchTab(0))
+    this.setState({menuProps, settingsProps})
   }
 
   setProfileInd(i){
@@ -334,9 +339,7 @@ class App extends React.Component{
         },
         {
           text : 'Go Back',
-          onClick: () => {
-            this.return()
-          }
+          onClick: this.return
         },
       ],
       modAIInd : (i)=>this.modAIInd(i),
@@ -346,11 +349,6 @@ class App extends React.Component{
       onFade : ()=>{}
     }
     menuProps.fadeAway = true
-    menuProps.onFade = ()=>{
-      menuProps.onFade = ()=>{}
-      menuProps.pointerEvents = 'none'
-      this.setState({menuProps})
-    }
     this.setState({menuProps, charSelectProps})
   }
 
@@ -456,11 +454,6 @@ class App extends React.Component{
       setProfileInd : (i)=>this.setProfileInd(i)
     }
     menuProps.fadeAway = true
-    menuProps.onFade = ()=>{
-      menuProps.onFade = ()=>{}
-      menuProps.pointerEvents = 'none'
-      this.setState({menuProps})
-    }
     this.setState({menuProps, serverSetupProps})
   }
 
@@ -582,7 +575,7 @@ class App extends React.Component{
     }
     serverSetupProps.fadeAway = true
     serverSetupProps.onFade = ()=>{
-      serverSetupProps=null
+      serverSetupProps = null
       this.setState({serverSetupProps})
     }
     this.setState({gameProps, serverSetupProps, gameSettingsProps, isLoading : false})
@@ -618,47 +611,87 @@ class App extends React.Component{
     gameProps = {
       settings : gameSettingsProps,
       statUpdate : (...args)=>{this.statUpdate(...args)},
-      return : ()=>this.return(),
+      return : this.return,
     }
     charSelectProps.fadeAway = true
     charSelectProps.onFade = ()=>{
-      charSelectProps=null
+      charSelectProps = null
       this.setState({charSelectProps})
     }
     this.setState({gameProps, charSelectProps})
   }
 
-  return(callback = ()=>{}){
-    let {menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps} = this.state
-    htProps = null
-    gameProps = null
-    charSelectProps = null
-    serverSetupProps = null
-    settingsProps = null
-    menuProps.fadeAway = false
-    menuProps.onFade = ()=>{
-      menuProps.onFade = ()=>{}
-      menuProps.pointerEvents = 'auto'
-      this.setState({menuProps, htProps, gameProps, charSelectProps, serverSetupProps, settingsProps, settingChanged : false}, callback)
+  return(){
+    let {menuProps} = this.state
+    menuProps.show = true
+    menuProps.fadeAway = true
+    this.setState({menuProps},() => {
+      setTimeout(()=>{
+        menuProps.fadeAway = false
+        this.setState({menuProps})
+      }, 10)
+    })
+  }
+
+  setNavigable(e){
+    const {navEnabled} = this.state
+    if (!navEnabled) {
+      // We consume the event on nav context switch to prevent unintended selection
+      this.setState({navEnabled : true})
+      return
     }
-    this.setState({menuProps})
+    this.navigate(e)
+  }
+
+  setUnNavigable(){
+    this.setState({navEnabled : false})
+  }
+
+  navigate(e){
+    let key
+    switch (e.key) {
+      case "ArrowDown":
+        key = 'down'; break
+      case "ArrowUp":
+        key = 'up'; break
+      case "ArrowLeft":
+        key = 'left'; break
+      case "ArrowRight":
+        key = 'right'; break
+      case "Enter":
+      case "e":
+      case " ":
+        key = 'enter'; break
+      default:
+    }
+    if (key) {
+      // console.log(this.props.tree.focusedNode)
+      e.preventDefault()
+      this.props.tree.resolve(key)
+    }
+  }
+
+  componentDidMount(){
+    window.addEventListener('pointermove', this.setUnNavigable)
+    window.addEventListener('keydown', this.setNavigable)
   }
 
   componentWillUnmount(){
     this.server.close()
+    window.removeEventListener('pointermove', this.setUnNavigable)
+    window.removeEventListener('keydown', this.setNavigable)
   }
 
   render(){
     const {flytextProps,isLoading,gameProps,settingsProps,gameSettingsProps,statsProps,
       settingsRanges, settingChanged, serverSetupProps, roomID, charSelectProps,
-      selectedAIInd, htProps, menuProps} = this.state
+      selectedAIInd, htProps, menuProps, navEnabled} = this.state
     return (
-      <div id='app'>
+      <Nav id='app' tree={this.props.tree} className={navEnabled ? 'navigable' : null} func={navVertical}>
         {(flytextProps) ? <Flytext {...flytextProps} /> : null}
         <Loading show={isLoading}/>
         <div className='footer'>
-          <div className="fcontain mobile" style={{display : gameProps ? 'flex' : 'none'}} onClick={()=>{
-                          this.return()}}>
+          <div className="fcontain mobile" style={{display : gameProps ? 'flex' : 'none'}} onClick={this.return}>
             <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
           </div>
           <div className="fcontain">
@@ -673,8 +706,8 @@ class App extends React.Component{
         {serverSetupProps ? <ServerSetup {...serverSetupProps} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/> : null}
         {charSelectProps ? <CharSelect {...charSelectProps} selectedAIInd={selectedAIInd}/> : null}
         {htProps ? <HowTo {...htProps}/> : null}
-        <Menu {...menuProps}/>
-      </div>
+        {menuProps.show ? <MainMenu {...menuProps}/> : null}
+      </Nav>
     )
   }
 }

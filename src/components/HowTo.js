@@ -1,7 +1,10 @@
 /* eslint react/prop-types: 0 */
 
+import Nav from 'react-navtree'
+
 import React from "react"
 import Die from "./Die"
+import KButton from './KButton'
 
 const mDieProps = {
   diceColor: "#ecd77a",
@@ -33,32 +36,27 @@ const DestroyGraphic = () => (
   </div>
 )
 
-function HowTo (props) {
-
-    const button = (msg)=>(
-      <div className={`kbutton space`} onClick={() => props.onClick()}>{msg}</div>
-    )
-
-    return (<div className='menu'>
-      <div className='menubox'>
-        <div className='subtitle'>~ HOW TO PLAY ∽</div>
-        <div className='text'>Your score is calculated by adding all your dice together.</div>
-        <div className="menubox across">
-            <div className="menubox">
-                <MatchGraphic />
-                <div className='text red'>MATCH DICE</div>
-                <div className='text'>When dice of the same number are placed in the same column, multiply their value.</div>
-            </div>
-            <div className='logo red'>✵</div>
-            <div className="menubox">
-                <DestroyGraphic />
-                <div className='text red'>DESTROY OPPONENT</div>
-                <div className='text'>Destory your opponent&rsquo;s dice by matching yours to theirs.</div>
-            </div>
-        </div>
-        {button("Got it")}
+const HowTo = (props) => (
+  <div className='menu'>
+    <div className='menubox'>
+      <div className='subtitle'>~ HOW TO PLAY ∽</div>
+      <div className='text'>Your score is calculated by adding all your dice together.</div>
+      <div className="menubox across">
+          <div className="menubox">
+              <MatchGraphic />
+              <div className='text red'>MATCH DICE</div>
+              <div className='text'>When dice of the same number are placed in the same column, multiply their value.</div>
+          </div>
+          <div className='logo red'>✵</div>
+          <div className="menubox">
+              <DestroyGraphic />
+              <div className='text red'>DESTROY OPPONENT</div>
+              <div className='text'>Destory your opponent&rsquo;s dice by matching yours to theirs.</div>
+          </div>
       </div>
-    </div>)
-}
+      <KButton text="Got it" navId="howToReturn" onClick={props.onClick} hasSpacer defaultFocused/>
+    </div>
+  </div>
+)
 
 export default HowTo
