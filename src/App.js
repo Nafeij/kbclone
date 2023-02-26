@@ -668,6 +668,7 @@ class App extends React.Component{
       // console.log(this.props.tree.focusedNode)
       e.preventDefault()
       this.props.tree.resolve(key)
+      console.log(this.props.tree.getFocusedPath())
     }
   }
 

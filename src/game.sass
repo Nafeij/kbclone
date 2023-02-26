@@ -385,7 +385,7 @@ body
 
 .navigable
   .arrowR, .arrowL
-    &.nav-focused:not(.greyed)
+    &.nav-focused
       background-position: 99% 54.05%
 
 .arrowL
@@ -494,7 +494,7 @@ body
     padding: .4em 0
 
 .navigable .nav-focused
-  .Tab
+  >.Tab
     background: red
     color: $color_1
     padding: .4em 0
@@ -516,6 +516,10 @@ body
 
   .pfp.active
     border-color: red
+
+.navigable .formGrid .nav-focused
+  &.pfp
+    border-color: #01d5a2
 
 .menubox.across.personal
   margin: 0
@@ -600,11 +604,10 @@ body
 
   .kbutton
     width: max-content
-    padding: 3%
     clip-path: none
     border: none
     border-radius: 3px
-    font-size: 1.4rem
+    font-size: 1.2rem
     background-color: #222
 
 .menubox.stats
@@ -785,6 +788,9 @@ body
   margin: auto
   height: 2.4rem
 
+  &:hover
+    border: .1em solid white
+
   .react-switch-button
     content: ''
     position: absolute
@@ -796,6 +802,10 @@ body
     background: #000
     box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29)
     aspect-ratio: 1/1
+
+.navigable .nav-focused
+  &>.react-switch-label
+    border: .1em solid white
 
 .turnCounter
   align-items: center

@@ -10,11 +10,10 @@ const KButton = (props) => {
             className='nav-block'
             defaultFocused={defaultFocused}
             navId={navId}
-            func={ key => {key === 'enter' && onClick()} }>
+            func={ (key, navTree, focusedNode) => {key === 'enter' && onClick(key, navTree, focusedNode)} }>
             <button
                 className={ `kbutton ${hasSpacer ? 'space' : ''}` }
                 onPointerUp={onClick}
-                onClick={onClick}
                 onTransitionEnd={e => e.stopPropagation()}
             >
                 {text}
