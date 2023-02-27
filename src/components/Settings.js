@@ -1,6 +1,6 @@
 /* eslint react/prop-types: 0 */
 
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import Nav, {navDynamic, navHorizontal, navVertical} from 'react-navtree'
 
 import KButton from './KButton.js'
@@ -32,43 +32,67 @@ const Switch = ({ isOn, handleToggle, sid}) => (
 const Picker = ({color, onChange}) => (<input type="color" className="testColor" value={color} onChange={e => onChange(e.target.value)}/>)
 
 const NavCounter = (props) => (
-    <Nav sid={`counter ${props.id}`} className="settingInput" func={navHorizontal}>
-        <Nav
+    <Nav sid={`counter ${props.id}`} className="settingInput" func={ key => {
+        key === 'left' && props.within.l && props.click.l() ||
+        key === 'right' && props.within.r && props.click.r()
+    }
+    }>
+        <div
             className={`arrowL ${!props.within.l ? 'greyed':''}`}
             style={{backgroundImage:`url(${sprites})`}}
             onClick={()=>{ props.within.l && props.click.l() }}
-            func={ key => { (key === 'enter' || key === 'left') && props.within.l && props.click.l() }}
         />
         {props.value}
-        <Nav
+        <div
             className={`arrowR ${!props.within.r ? 'greyed':''}`}
             style={{backgroundImage:`url(${sprites})`}}
             onClick={()=>{ props.within.r && props.click.r() }}
-            func={ key => { (key === 'enter' || key === 'right') && props.within.r && props.click.r() }}
         />
     </Nav>
 )
 
-const PicSelect = (props) => (
-    <div className="scrollContainer" style={{display : props.show ? 'block' : 'none'}}>
-        <Nav navId="formGrid" className="formGrid" func={navDynamic}>
-            {Profile.cosm.map((p,i)=>(
-                <Nav
-                    key={i}
-                    defaultFocused={i === props.playProfileInd}
-                    className={`nav-block pfp ${i === props.playProfileInd ? 'active':''}`}
-                    loading='lazy' style={{backgroundImage: `url(${p.img})`}}
-                    onClick={() => props.onClick(i)}
-                    func={key =>{
-                        if (key === 'enter') {
-                            props.onClick(i);
-                        }
-                    }}
-                />
-            ))}
-        </Nav>
-    </div>
-)
+const PicSelect = (props) => {
+
+    const scrollRefs = useRef(Array(Profile.cosm.length))
+
+    const scrollTo = (index) => {
+        // console.log(scrollRefs.current[index])
+        scrollRefs.current[index].scrollIntoView({ behavior: "smooth", block: "center", inline: "center" })
+    }
+
+    const setRef = (nav, i) => {
+        scrollRefs.current[i] = nav && nav.tree.el
+    }
+
+    useEffect(() => {
+        scrollTo(props.playProfileInd)
+    }, [])
+
+    return (
+        <div className="scrollContainer">
+            <Nav navId="formGrid" className="formGrid" func={navDynamic}>
+                {Profile.cosm.map((p,i)=>(
+                    <Nav
+                        key={i}
+                        defaultFocused={i === props.playProfileInd}
+                        className={`nav-block pfp ${i === props.playProfileInd ? 'active':''}`}
+                        loading='lazy' style={{backgroundImage: `url(${p.img})`}}
+                        onClick={() => props.onClick(i)}
+                        ref={ (nav) => setRef(nav, i) }
+                        func={key =>{
+                            if (key === 'enter') {
+                                props.onClick(i); return
+                            }
+                            if (key === 'up' || key === 'down') {
+                                scrollTo(i)
+                            }
+                        }}
+                    />
+                ))}
+            </Nav>
+        </div>
+    )
+}
 
 const Settings = (props) => (
     <div className='menu settings'>
@@ -133,82 +157,86 @@ const Body = (props) => {
             </Nav>
             {tabs[activeTab] === 'personal' &&
                 <Nav className="menubox across personal" func={navVertical}>
-                    <PicSelect show={showProfiles} playProfileInd={playProfileInd} onClick={i => {
-                        setProfileInd(i)
-                        buttons[1].onClick()
-                    }}/>
-                    <div className="scrollContainer" style={{display : !showProfiles ? 'block' : 'none'}}>
-                        <div className='menubox stats'>
-                            <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
-                            <KButton text={buttons[1].text} onClick={ focusedNode => {
-                                buttons[1].onClick()
-                            }}/>
-                            <div className="menubox across">
-                                <div className='menubox'>
-                                    <div className="subtitle">{newAggregate.nGames}</div>
-                                    <div className="subtitle">{' game' + (newAggregate.nGames > 1 || !newAggregate.nGames ? 's' :'')}</div>
-                                </div>
-                                <div className='menubox'>
-                                    <div className="subtitle">{newAggregate.sideBreakdown[1].nWins}</div>
-                                    <div className="subtitle">{' win' + (newAggregate.sideBreakdown[1].nWins > 1 || !newAggregate.sideBreakdown[1].nWins? 's' :'')}</div>
-                                </div>
-                                <div className='menubox'>
-                                    <div className="subtitle">{newAggregate.sideBreakdown[0].nWins}</div>
-                                    <div className="subtitle">{' loss' + (newAggregate.sideBreakdown[0].nWins > 1 || !newAggregate.sideBreakdown[0].nWins? 'es' :'')}</div>
-                                </div>
-                            </div>
-                            <div className='settingsItem'>
-                                <div className='subtitle'>Stats</div>
-                                <div className="menubox misc">
-                                    <div className="subtitle">High Score: {newAggregate.sideBreakdown[1].highestScore}</div>
-                                    <div className="subtitle">Dice Destroyed: {aggregate[1].numDestroyed + 0}</div>
-                                    <div className="subtitle">Closest Win: {aggregate[1].closestWin.o === null ? 'None':aggregate[1].closestWin.p + ' - ' + aggregate[1].closestWin.o}</div>
-                                    <div className="subtitle">Most Destroyed in a Game: {aggregate[1].mostDestroyed + 0}</div>
-                                    <div className="subtitle">Closest Defeat: {aggregate[0].closestWin.o === null ? 'None': aggregate[0].closestWin.o + ' - ' + aggregate[0].closestWin.p}</div>
-                                    <div className="subtitle">Most Destroyed in a Turn: {aggregate[1].mostDestroyedTurn + 0}</div>
-                                    <div className="subtitle">Board Clears: {aggregate[1].numClears + 0}</div>
-                                    <div className="subtitle">Most Clears in a Game: {aggregate[1].mostClears + 0}</div>
-                                    <div className="subtitle">Playtime: {newAggregate.time ? timeFormatLong(newAggregate.time / 1000) : 'None'}</div>
-                                    <div className="subtitle">Fastest Win: {aggregate[1].fastestWinTime ? timeFormatLong(aggregate[1].fastestWinTime / 1000) : 'None'}</div>
-                                    <div className="subtitle">Fastest Defeat: {aggregate[0].fastestWinTime ? timeFormatLong(aggregate[0].fastestWinTime / 1000) : 'None'}</div>
-                                </div>
-                                <div className='subtitle'>Opponent Breakdown</div>
-                                <div className="menubox settingsList opponent">
-                                    {statsProps.aiBreakdown.map((p,i)=>(
-                                        <div key={i*6} className='settingsItem'>
-                                            <div key={i*6+2} className='menubox'>
-                                                <div key={i*6+3} className='subtitle'><b>{Profile.ai[p.profileInd].name}</b></div>
-                                                <div key={i*6+4} className='subtitle'>{
-                                                (!p.nGames ? 'No' : p.nGames) + ' Game' + (p.nGames > 1 || !p.nGames? 's' :'') + ', ' +
-                                                (!p.sideBreakdown[0].nWins ? 'No' : p.sideBreakdown[0].nWins) + ' Win' + (p.sideBreakdown[0].nWins > 1 || !p.sideBreakdown[0].nWins ? 's' :'') + ', ' +
-                                                (!p.sideBreakdown[1].nWins ? 'No' : p.sideBreakdown[1].nWins) + ' Loss' + (p.sideBreakdown[1].nWins > 1 || !p.sideBreakdown[1].nWins ? 'es' :'')
-                                                }</div>
-                                                <div key={i*6+5} className='subtitle'>High Score: {p.sideBreakdown[0].highestScore ? p.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(p.time / 1000)}</div>
-                                            </div>
-                                            <div key={i*6+1} className='pfp' loading='lazy' style={{backgroundImage: `url(${Profile.ai[p.profileInd].img})`}}/>
-                                        </div>
-                                    ))}
-                                </div>
-                                {statsProps.pvpBreakdown.name ? <div className='subtitle'>Online Opponents</div> : null}
-                                {statsProps.pvpBreakdown.name ?
-                                    <div className="menubox settingsList opponent">
-                                        <div className='settingsItem'>
-                                            <div className='menubox'>
-                                                <div className='subtitle'>Most Recent: <b>{statsProps.pvpBreakdown.name}</b></div>
-                                                <div className='subtitle'>{
-                                                (!statsProps.pvpBreakdown.nGames ? 'No' : statsProps.pvpBreakdown.nGames) + ' Game' + (statsProps.pvpBreakdown.nGames > 1 || !statsProps.pvpBreakdown.nGames? 's' :'') + ', ' +
-                                                (!statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[1].nWins) + ' Win' + (statsProps.pvpBreakdown.sideBreakdown[1].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 's' :'') + ', ' +
-                                                (!statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[0].nWins) + ' Loss' + (statsProps.pvpBreakdown.sideBreakdown[0].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'es' :'')
-                                                }</div>
-                                                <div className='subtitle'>High Score: {statsProps.pvpBreakdown.sideBreakdown[0].highestScore ? statsProps.pvpBreakdown.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(statsProps.pvpBreakdown.time / 1000)}</div>
-                                            </div>
-                                            <div className='pfp' loading='lazy' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, scale : '-1 1'}}/>
-                                        </div>
+                    {showProfiles &&
+                        <PicSelect playProfileInd={playProfileInd} onClick={i => {
+                            setProfileInd(i)
+                            buttons[1].onClick()
+                        }}/>
+                    }
+                    {!showProfiles &&
+                        <div className="scrollContainer">
+                            <div className='menubox stats'>
+                                <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
+                                <KButton text={buttons[1].text} onClick={ focusedNode => {
+                                    buttons[1].onClick()
+                                }}/>
+                                <div className="menubox across">
+                                    <div className='menubox'>
+                                        <div className="subtitle">{newAggregate.nGames}</div>
+                                        <div className="subtitle">{' game' + (newAggregate.nGames > 1 || !newAggregate.nGames ? 's' :'')}</div>
                                     </div>
-                                : null}
+                                    <div className='menubox'>
+                                        <div className="subtitle">{newAggregate.sideBreakdown[1].nWins}</div>
+                                        <div className="subtitle">{' win' + (newAggregate.sideBreakdown[1].nWins > 1 || !newAggregate.sideBreakdown[1].nWins? 's' :'')}</div>
+                                    </div>
+                                    <div className='menubox'>
+                                        <div className="subtitle">{newAggregate.sideBreakdown[0].nWins}</div>
+                                        <div className="subtitle">{' loss' + (newAggregate.sideBreakdown[0].nWins > 1 || !newAggregate.sideBreakdown[0].nWins? 'es' :'')}</div>
+                                    </div>
+                                </div>
+                                <div className='settingsItem'>
+                                    <div className='subtitle'>Stats</div>
+                                    <div className="menubox misc">
+                                        <div className="subtitle">High Score: {newAggregate.sideBreakdown[1].highestScore}</div>
+                                        <div className="subtitle">Dice Destroyed: {aggregate[1].numDestroyed + 0}</div>
+                                        <div className="subtitle">Closest Win: {aggregate[1].closestWin.o === null ? 'None':aggregate[1].closestWin.p + ' - ' + aggregate[1].closestWin.o}</div>
+                                        <div className="subtitle">Most Destroyed in a Game: {aggregate[1].mostDestroyed + 0}</div>
+                                        <div className="subtitle">Closest Defeat: {aggregate[0].closestWin.o === null ? 'None': aggregate[0].closestWin.o + ' - ' + aggregate[0].closestWin.p}</div>
+                                        <div className="subtitle">Most Destroyed in a Turn: {aggregate[1].mostDestroyedTurn + 0}</div>
+                                        <div className="subtitle">Board Clears: {aggregate[1].numClears + 0}</div>
+                                        <div className="subtitle">Most Clears in a Game: {aggregate[1].mostClears + 0}</div>
+                                        <div className="subtitle">Playtime: {newAggregate.time ? timeFormatLong(newAggregate.time / 1000) : 'None'}</div>
+                                        <div className="subtitle">Fastest Win: {aggregate[1].fastestWinTime ? timeFormatLong(aggregate[1].fastestWinTime / 1000) : 'None'}</div>
+                                        <div className="subtitle">Fastest Defeat: {aggregate[0].fastestWinTime ? timeFormatLong(aggregate[0].fastestWinTime / 1000) : 'None'}</div>
+                                    </div>
+                                    <div className='subtitle'>Opponent Breakdown</div>
+                                    <div className="menubox settingsList opponent">
+                                        {statsProps.aiBreakdown.map((p,i)=>(
+                                            <div key={i*6} className='settingsItem'>
+                                                <div key={i*6+2} className='menubox'>
+                                                    <div key={i*6+3} className='subtitle'><b>{Profile.ai[p.profileInd].name}</b></div>
+                                                    <div key={i*6+4} className='subtitle'>{
+                                                    (!p.nGames ? 'No' : p.nGames) + ' Game' + (p.nGames > 1 || !p.nGames? 's' :'') + ', ' +
+                                                    (!p.sideBreakdown[0].nWins ? 'No' : p.sideBreakdown[0].nWins) + ' Win' + (p.sideBreakdown[0].nWins > 1 || !p.sideBreakdown[0].nWins ? 's' :'') + ', ' +
+                                                    (!p.sideBreakdown[1].nWins ? 'No' : p.sideBreakdown[1].nWins) + ' Loss' + (p.sideBreakdown[1].nWins > 1 || !p.sideBreakdown[1].nWins ? 'es' :'')
+                                                    }</div>
+                                                    <div key={i*6+5} className='subtitle'>High Score: {p.sideBreakdown[0].highestScore ? p.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(p.time / 1000)}</div>
+                                                </div>
+                                                <div key={i*6+1} className='pfp' loading='lazy' style={{backgroundImage: `url(${Profile.ai[p.profileInd].img})`}}/>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {statsProps.pvpBreakdown.name ? <div className='subtitle'>Online Opponents</div> : null}
+                                    {statsProps.pvpBreakdown.name ?
+                                        <div className="menubox settingsList opponent">
+                                            <div className='settingsItem'>
+                                                <div className='menubox'>
+                                                    <div className='subtitle'>Most Recent: <b>{statsProps.pvpBreakdown.name}</b></div>
+                                                    <div className='subtitle'>{
+                                                    (!statsProps.pvpBreakdown.nGames ? 'No' : statsProps.pvpBreakdown.nGames) + ' Game' + (statsProps.pvpBreakdown.nGames > 1 || !statsProps.pvpBreakdown.nGames? 's' :'') + ', ' +
+                                                    (!statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[1].nWins) + ' Win' + (statsProps.pvpBreakdown.sideBreakdown[1].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[1].nWins ? 's' :'') + ', ' +
+                                                    (!statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'No' : statsProps.pvpBreakdown.sideBreakdown[0].nWins) + ' Loss' + (statsProps.pvpBreakdown.sideBreakdown[0].nWins > 1 || !statsProps.pvpBreakdown.sideBreakdown[0].nWins ? 'es' :'')
+                                                    }</div>
+                                                    <div className='subtitle'>High Score: {statsProps.pvpBreakdown.sideBreakdown[0].highestScore ? statsProps.pvpBreakdown.sideBreakdown[0].highestScore : 'None'} --- Playtime: {timeFormatLong(statsProps.pvpBreakdown.time / 1000)}</div>
+                                                </div>
+                                                <div className='pfp' loading='lazy' style={{backgroundImage: `url(${Profile.cosm[statsProps.pvpBreakdown.profileInd].img})`, scale : '-1 1'}}/>
+                                            </div>
+                                        </div>
+                                    : null}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                     <div className="menubox settingsList">
                         <div className="settingsItem">
                             <div className='subtitle'>Name</div>

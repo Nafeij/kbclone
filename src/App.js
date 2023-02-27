@@ -665,10 +665,9 @@ class App extends React.Component{
       default:
     }
     if (key) {
-      // console.log(this.props.tree.focusedNode)
       e.preventDefault()
       this.props.tree.resolve(key)
-      console.log(this.props.tree.getFocusedPath())
+      //console.log(this.props.tree.getFocusedPath())
     }
   }
 

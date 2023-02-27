@@ -383,10 +383,9 @@ body
   &.greyed
     opacity: .2
 
-.navigable
-  .arrowR, .arrowL
-    &.nav-focused
-      background-position: 99% 54.05%
+.navigable .nav-focused
+  &>.arrowR:not(.greyed), &>.arrowL:not(.greyed)
+    background-position: 99% 54.05%
 
 .arrowL
   transform: scaleX(-1)
