@@ -1,6 +1,8 @@
 /* eslint react/prop-types: 0 */
 
 import React, { forwardRef } from "react"
+import Nav from "react-navtree"
+
 import {isFull} from '../util/Utils';
 import Die from "./Die";
 
@@ -20,7 +22,7 @@ const RefBox = forwardRef((props, ref) => {
 
 RefBox.displayName = 'RefBox'
 
-class Tub extends React.Component {
+export default class Tub extends React.Component {
 
     renderBox(i){
         return <RefBox key={i} aspectRatio={this.props.boxAspectRatio} ref={this.props.boxRefs[i]}>
@@ -46,7 +48,7 @@ class Tub extends React.Component {
         const ordering = Array(tubLen).fill().map((_,i)=>i)
         if (!flip) ordering.reverse()
         return (
-        <div className='tubOuter'>
+        <Nav className='tubOuter' func={key => {if (key === 'enter' && clickable) proccessClick()}}>
             <div
             className={`tub ${fillClass} ${hoverClass} ${shakeClass}`}
             onPointerEnter={()=>{if (clickable) scoreHover(true)}}
@@ -60,8 +62,6 @@ class Tub extends React.Component {
                 onAnimationEnd={onScoreAnimEnd} style={{scale : scoreScale}}>
                     {score ? score : '\u00A0'}
             </h1>
-        </div>
+        </Nav>
     )}
 }
-
-export default Tub

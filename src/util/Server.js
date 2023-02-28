@@ -2,7 +2,7 @@ import { Peer } from "peerjs";
 
 const chars = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
 
-class Server{
+export default class Server{
     constructor() {
         if (Server._instance) {
           return Server._instance
@@ -76,5 +76,3 @@ class Server{
         return Array(4).fill().map(_=>chars[Math.floor(Math.random() * chars.length)]).join('')
     }
 }
-
-export default Server

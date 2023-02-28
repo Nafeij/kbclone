@@ -36,7 +36,7 @@ const MainMenu = (props) => (
   </div>
 )
 
-class App extends React.Component{
+export default class App extends React.Component{
 
   constructor(props){
     super(props)
@@ -648,8 +648,11 @@ class App extends React.Component{
   }
 
   navigate(e){
+    // e.stopPropagation()
     let key
     switch (e.key) {
+      case "Tab":
+        e.preventDefault(); break
       case "ArrowDown":
         key = 'down'; break
       case "ArrowUp":
@@ -665,9 +668,9 @@ class App extends React.Component{
       default:
     }
     if (key) {
-      e.preventDefault()
       this.props.tree.resolve(key)
-      //console.log(this.props.tree.getFocusedPath())
+      e.preventDefault()
+      // console.log(this.props.tree.getFocusedPath())
     }
   }
 
@@ -711,5 +714,3 @@ class App extends React.Component{
     )
   }
 }
-
-export default App

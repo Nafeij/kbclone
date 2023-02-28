@@ -1,17 +1,21 @@
 /* eslint react/prop-types: 0 */
 
-import React from "react";
-import Profile from "../util/Profile";
-import Bar from "./Bar";
+import React from "react"
+import Nav from "react-navtree"
+
+import Profile from "../util/Profile"
+import SlidePane from "./SlidePane"
+import KButton from "./KButton"
+import Bar from "./Bar"
+
+import Squiggle from "./Squiggle"
 import skullImg from "../img/skulls.png"
 import skullRImg from "../img/skulls_red.png"
 import skullBImg from "../img/skulls_blue.png"
 import heartsImg from "../img/hearts.png"
 import sprites from "../img/sprites.png"
-import Squiggle from "./Squiggle"
-import SlidePane from "./SlidePane";
 
-function CharSelect (props) {
+export default function CharSelect (props) {
 
     const {selectedAIInd, buttons, modAIInd,
             fadeAway, onFade, modSetAIInd, hasWrapped} = props,
@@ -45,9 +49,19 @@ function CharSelect (props) {
                         ))}
                     </SlidePane>
                 </div>
-                <div className="menubox across cselect">
+                <Nav className="menubox across cselect"
+                    func={key => {
+                        if (key === 'left') {
+                            modAIInd(-1)
+                        } else if (key === 'right') {
+                            modAIInd(1)
+                        } else if (key === 'enter') {
+                            buttons[0].onClick()
+                        }
+                    }
+                }>
                     <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
-                    <div className={`charInfo`} onClick={() => buttons[0].onClick()}>
+                    <div className="charInfo" onClick={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{translate: translationName + '%'}}>
                             {Profile.ai.map((p, i)=>(
@@ -63,19 +77,17 @@ function CharSelect (props) {
                             dim={{width: '8rem', height : '1.7081rem'}}
                         />
                     </div>
-                    {effect ?
-                    <div className="difficulty">
-                        <div className='text red'>{effect.text}</div>
-                        <Bar progress={effect.val} fillImg={heartsImg} dim={{width: '5rem', height : '1.843rem'}}/>
-                    </div>
-                    : null}
+                    {effect &&
+                        <div className="difficulty">
+                            <div className='text red'>{effect.text}</div>
+                            <Bar progress={effect.val} fillImg={heartsImg} dim={{width: '5rem', height : '1.843rem'}}/>
+                        </div>
+                    }
                     </div>
                     <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(1)} />
-                </div>
-                <div className={`kbutton space`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+                </Nav>
+                <KButton className={`kbutton space`} onClick={() => buttons[1].onClick()} text={buttons[1].text}/>
             </div>
         </div>
     )
 }
-
-export default CharSelect

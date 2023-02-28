@@ -13,7 +13,7 @@ const Timer = (props) => (
     <div className="timer" style={{color : props.color}}>{props.time}</div>
 )
 
-class Side extends React.Component {
+export default class Side extends React.Component {
     renderTub(i){
         const id = this.props.id
         return (<Tub
@@ -76,5 +76,3 @@ class Side extends React.Component {
         )
     }
 }
-
-export default Side

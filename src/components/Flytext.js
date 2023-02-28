@@ -2,7 +2,7 @@
 
 import React from "react";
 
-function Flytext(props){
+export default function Flytext(props){
   return (
   <div id="flytext" className={props.show ? 'show' : ''} onTransitionEnd={() => {
     props.slideEnd()
@@ -16,5 +16,3 @@ function Flytext(props){
       </div>
 	)
 }
-
-export default Flytext

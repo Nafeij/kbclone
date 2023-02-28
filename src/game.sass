@@ -578,6 +578,19 @@ body
       padding: .5rem
       max-height: 1rem
 
+  .settingInput
+    justify-content: center
+    width: 80%
+    align-self: center
+
+  .kbutton
+    width: max-content
+    clip-path: none
+    border: none
+    border-radius: 3px
+    font-size: 1.2rem
+    background-color: #222
+
   input[type=text]
     font-size: 2rem
     color: $color_1
@@ -596,18 +609,8 @@ body
     &:focus
       box-shadow: 0 2px white
 
-  .settingInput
-    justify-content: center
-    width: 80%
-    align-self: center
-
-  .kbutton
-    width: max-content
-    clip-path: none
-    border: none
-    border-radius: 3px
-    font-size: 1.2rem
-    background-color: #222
+.navigable .menubox.across.personal input[type=text].nav-focused
+  box-shadow: 0 2px white
 
 .menubox.stats
   .settingsItem
@@ -746,12 +749,20 @@ body
       z-index: 1
 
 .testColor
-  width: 1.4rem
+  width: auto
+  aspect-ratio: 1
   aspect-ratio: 1
   border-radius: 3px
   position: relative
-  border: 2px solid white
+  border: 2px solid transparent
+  background: none
   padding: 0
+
+  &:focus, &:hover
+    border-color: white
+
+.navigable .testColor.nav-focused
+  border-color: white
 
 .react-switch-checkbox
   height: 0
@@ -855,8 +866,7 @@ body
     border-color: maroon
     color: $color_1
 
-.navigable .nav-focused
-  &>.kbutton
+.navigable .kbutton.nav-focused
     background-color: red !important
     border-color: maroon
     color: $color_1
@@ -892,12 +902,12 @@ body
       left: -1em
       top: 1em
 
-  &:first-of-type
+  &.profile
     &:focus-within
       &::before
         top: -1em
 
-  &:first-of-type.lock
+  &.profile.lock
     &::before
       top: -1em
 
@@ -911,6 +921,7 @@ body
     background-color: #222
     width: 100%
     margin: 5%
+
   input
     background: #171916
     border: none
@@ -946,6 +957,9 @@ body
 
   input.shake
     animation: shake-h-anim .3s 1
+
+.navigable .ssBox input.nav-focused
+  background: black
 
 .side
   flex: 1 1 0%
@@ -1211,26 +1225,6 @@ body
   margin: 1em 0
   position: relative
 
-  &::before
-    display: block
-    transition: .2s
-    width: 100%
-    height: 100%
-    content: ""
-    position: absolute
-    z-index: -1
-    background: transparent
-    left: 0
-    top: 0
-    translate: 0
-
-  &:hover
-    &::before
-      background: red
-      padding: 0 1em
-      left: -1em
-      top: 1em
-
   .slidePaneContainer
     aspect-ratio: auto
     width: 3rem
@@ -1253,12 +1247,31 @@ body
     &:first-of-type
       margin-left: -11rem
 
-.charInfohover
   &::before
-    background: red
-    padding: 0 1em
-    left: -1em
-    top: 1em
+    display: block
+    transition: .2s
+    width: 100%
+    height: 100%
+    content: ""
+    position: absolute
+    z-index: -1
+    background: transparent
+    left: 0
+    top: 0
+    translate: 0
+
+  &:hover
+    &::before
+      background: red
+      padding: 0 1em
+      left: -1em
+      top: 1em
+
+.navigable .nav-focused > .charInfo::before
+  background: red
+  padding: 0 1em
+  left: -1em
+  top: 1em
 
 .die
   display: grid
@@ -1516,19 +1529,25 @@ body
     width: 15rem
 
   .tub.hover
-    &:hover, &:focus
-      &::before
+    &:hover::before
         scale: 1
         background: red
 
-    &.tubB
-      &:hover, &:focus
-        &::before
+    &.tubB:hover::before
           background: black
 
-    &.tubC
-      &:hover, &:focus
-        &::before
+    &.tubC:hover::before
+          background: #01d5a2
+
+  .navigable .nav-focused > .tub
+    &::before
+      scale: 1
+      background: red
+
+    &.tubB::before
+          background: black
+
+    &.tubC::before
           background: #01d5a2
 
 @media (min-aspect-ratio: 3/2)

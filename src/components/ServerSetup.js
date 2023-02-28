@@ -1,44 +1,72 @@
 /* eslint react/prop-types: 0 */
 
-import React from "react";
-import Profile from "../util/Profile";
+import React, { useEffect, useRef } from "react";
+import Nav, { navDynamic } from "react-navtree";
 
-function ServerSetup (props) {
+import KButton from "./KButton";
+import PicSelect from "./PicSelect";
+import Profile from "../util/Profile";
+import NavInput from "./NavInput";
+
+
+export default function ServerSetup (props) {
     const {buttons, shake, onShakeDone, fadeAway,
-        onFade, onFocus, onBlur, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles} = props
-    const button = (i, space=false)=>(
-        <div key={i} className={`kbutton ${space ? 'space' : ''}`} style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}} onClick={() => buttons[i].onClick()}>{buttons[i].text}</div>
+        onFade, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles} = props
+    const returnId = 'return'
+    const button = (i, space = false)=>(
+        <KButton
+            navId={i === 0 ? returnId : null}
+            key={i}
+            hasSpacer={space}
+            defaultFocused={i === 0}
+            style={{pointerEvents : lock && i !== 0 ? 'none' : 'auto'}}
+            onClick={() => buttons[i].onClick()}
+            text={buttons[i].text}
+        />
     )
+    let tree = useRef(null)
+    useEffect(() => {
+        if (lock) {
+            tree && tree.current.focus([returnId])
+        }
+    }, [lock])
     return (
     <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
-        <div className="menubox profile">
-            <div className={`ssBox profile ${lock ? 'lock' : ''}`}>
-                <div className="menubox">
-                    <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
-                    {button(1)}
-                </div>
-                <input type='text' value={name} placeholder="Enter Username" readOnly={lock} onFocus={onFocus} onBlur={onBlur} onChange={evt => setUsername(evt)}/>
-            </div>
-            {showProfiles ? <div className="ssBox profile">
-                <div className="formGrid">
-                    {Profile.cosm.map((p,i)=>(
-                        <div key={i} className={`pfp ${i === playProfileInd ? 'active':''}`} style={{backgroundImage: `url(${p.img})`}} onClick={()=>{buttons[1].onClick();setProfileInd(i)}}/>
-                    ))}
-                </div>
-            </div> : null}
-            {!showProfiles ?
-            <div className={`ssBox ${lock ? 'lock' : ''}`}>
-                <span>
-                    <input className={shake ? 'shake' : ''} value={roomID} type='text' placeholder="XXXX" size="4" readOnly={lock} onFocus={onFocus} onBlur={onBlur} maxLength="4" onChange={evt => setID(evt)} onAnimationEnd={onShakeDone}/>
-                </span>
-                <div className="menubox across ssinner" >
-                    {Array(buttons.length - 2).fill().map((_,i)=>button(i+2))}
-                </div>
-            </div> : null}
+        <Nav className="menubox profile" func={(key, navTree, focusedNode) => {
+            if (lock) return returnId
+            tree.current = navTree
+            // console.log(tree)
+            return navDynamic(key, navTree, focusedNode)
+        }}>
+            <Nav>
+                <Nav className={`ssBox profile ${lock ? 'lock' : ''}`} func={navDynamic}>
+                    <div className="menubox">
+                        <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>
+                        {button(1)}
+                    </div>
+                    <NavInput value={name} placeholder="Enter Username" readOnly={lock} onChange={evt => setUsername(evt)}/>
+                </Nav>
+                {showProfiles &&
+                    <div className="ssBox profile">
+                        <PicSelect playProfileInd={playProfileInd} onClick={i => {
+                            setProfileInd(i)
+                            buttons[1].onClick()
+                        }}/>
+                    </div>
+                }
+                {!showProfiles &&
+                    <div className={`ssBox ${lock ? 'lock' : ''}`}>
+                        <span>
+                            <NavInput className={shake ? 'shake' : ''} value={roomID} placeholder="XXXX" size="4" readOnly={lock} maxLength="4" onChange={evt => setID(evt)} onAnimationEnd={onShakeDone}/>
+                        </span>
+                        <div className="menubox across ssinner" >
+                            {Array(buttons.length - 2).fill().map((_,i)=>button(i+2))}
+                        </div>
+                    </div>
+                }
+            </Nav>
             {button(0,true)}
-        </div>
+        </Nav>
     </div>
     )
 }
-
-export default ServerSetup

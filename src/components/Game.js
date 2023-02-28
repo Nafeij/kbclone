@@ -3,16 +3,17 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
+import { navHorizontal } from "react-navtree";
+
 import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions, tubBoxWidth} from '../util/Utils.js';
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
 import Server from "../util/Server.js";
 import Loading from "./Loading.js";
 import Profile from "../util/Profile.js";
 
-
 const scale = .95, numFaces = 6, boxAspectRatio = 7/5
 
-class Game extends React.Component {
+export default class Game extends React.Component {
     constructor(props){
         super(props)
         this.server = new Server()
@@ -102,6 +103,10 @@ class Game extends React.Component {
             turnCount: props.settings.turnLimit,
             gameTime: null
         }
+
+        this.gameStart = this.gameStart.bind(this)
+        this.proccessClick = this.proccessClick.bind(this)
+        this.onShakeAnimEnd = this.onShakeAnimEnd.bind(this)
     }
 
     generateDice(){
@@ -790,23 +795,6 @@ class Game extends React.Component {
         })
     }
 
-    renderSide(side){
-        return (<Side
-            {...this.state.sideProps[side]}
-            tubProps={this.state.tubProps[side]}
-            diceMatrix={this.state.diceMatrix[side]}
-            turn={this.state.turn}
-            rollDice={() => this.rollDice()}
-            rolled={this.state.rolled}
-            hasSlid={() => this.gameStart()}
-            slid={this.state.slid}
-            proccessClick={(i,t) => this.proccessClick(i,t)}
-            onShakeAnimEnd={(i,t) => this.onShakeAnimEnd(i,t)}
-            onSideScoreAnimEnd={() => this.onSideScoreAnimEnd(side)}
-            id={side}
-        />)
-    }
-
     proccessClick(tub, turn = this.state.turn){
         if (isFull(this.state.diceMatrix[turn][tub])) {
             let tubProps = this.state.tubProps.slice()
@@ -885,13 +873,41 @@ class Game extends React.Component {
         window.removeEventListener("resize", this.onResize)
     }
 
+    funcClickable (key, navTree, focusedNode) {
+        const flag = this.state.sideProps.map(s => s.tubsClickable).reduce((res, x) => res << 1 | x)
+        // switch flag {
+        //     case 0:
+
+        // }
+    }
+
+    renderSide(side){
+        return (<Side
+            {...this.state.sideProps[side]}
+            tubProps={this.state.tubProps[side]}
+            diceMatrix={this.state.diceMatrix[side]}
+            turn={this.state.turn}
+            rolled={this.state.rolled}
+            slid={this.state.slid}
+            hasSlid={this.gameStart}
+            proccessClick={this.proccessClick}
+            onShakeAnimEnd={this.onShakeAnimEnd}
+            onSideScoreAnimEnd={() => this.onSideScoreAnimEnd(side)}
+            id={side}
+        />)
+    }
+
     render(){
         const {ignoreFull, pickable, caravan} = this.props.settings
         const isPVP = this.props.settings.gameType === 'PVP'
         return (
-            <div className="game">
-                {this.renderSide(0)}
-                {this.renderSide(1)}
+            <Nav className="game" func={this.funcClickable}>
+                <Nav navId="0">
+                    {this.renderSide(0)}
+                </Nav>
+                <Nav navId="1">
+                    {this.renderSide(1)}
+                </Nav>
                 <Flytext {...this.state.flytextProps}/>
                 <Loading show={this.state.isLoading}/>
                 {this.props.settings.turnLimit ? <div className="turnCounter">
@@ -901,9 +917,7 @@ class Game extends React.Component {
                 <div className="settingsInfo">
                     {`${ignoreFull && isPVP? 'Longplay, ' : ''}${pickable && isPVP? 'Sabotage, ' : ''}${!!caravan ? `Caravan ${caravan}` : ''}`}
                 </div>
-            </div>
+            </Nav>
         )
     }
 }
-
-export default Game
