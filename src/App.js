@@ -22,8 +22,8 @@ import dkey from "./img/dkey.png"
 import logo from "./img/logo.png"
 
 const MainMenu = (props) => (
-  <div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}} onTransitionEnd={
-    () => ( props.fadeAway ?  props.onFadeOut() : props.onFadeIn() ) }>
+  <div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}}
+    onTransitionEnd={ () => { props.fadeAway ?  props.onFadeOut() : props.onFadeIn() } }>
     <div className='menubox'>
       <div className='title' style={{backgroundImage: `url(${logo})`}}/>
       <div className='text'>Based on the dice game of risk and reward from Cult of the Lamb</div>
@@ -42,67 +42,224 @@ export default class App extends React.Component{
     super(props)
     this.server = new Server()
     this.cookies = new Cookies()
-    this.maxAge = 60 * 60 * 24 * 365 * 100
+    this.maxAge = 60 * 60 * 24 * 365 * 100;
+    ['startCharSelect', 'startGame', 'startHt', 'startSettings', 'startServerSetup',
+    'pageTransition', 'statUpdate', 'setProfileInd', 'modAIInd', 'modSetAIInd',
+    'startAIGame', 'return', 'setNavigable', 'setUnNavigable', 'navigate'].forEach(
+      (fn) => this[fn] = this[fn].bind(this)
+    )
     this.state = {
-      menuProps:{
-        fadeAway: false ,
-        show: true,
-        onFadeOut: ()=>{
-          let {menuProps} = this.state
-          menuProps.show = false
-          this.setState({menuProps})
+      loadedPages : new Set(['mainMenu']),
+      pageProps : {
+        mainMenu:{
+          fadeAway: false,
+          onFadeOut: ()=>{},
+          onFadeIn: ()=>{
+            const {loadedPages} = this.state
+            loadedPages.clear()
+            loadedPages.add('mainMenu')
+            this.setState({
+              loadedPages,
+              settingChanged : false
+            })
+          },
+          buttons: [
+            {
+              text : 'Play',
+              onClick: this.startGame
+            },
+            {
+              text : 'Play with the Shack',
+              onClick: this.startCharSelect
+            },
+            {
+              text : 'Play with a Friend',
+              onClick: this.startServerSetup
+            },
+            {
+              text : 'Settings',
+              onClick: this.startSettings
+            },
+            {
+              text : 'How to Play',
+              onClick: this.startHt
+            }
+          ]
         },
-        onFadeIn: ()=>{
-          this.setState({
-            htProps : null,
-            gameProps : null,
-            charSelectProps : null,
-            serverSetupProps : null,
-            settingsProps : null,
-            settingChanged : false
-          })
+        howTo : {
+          onClick: this.return
         },
-        buttons: [
-          {
-            text : 'Play',
-            onClick: () => {
-              this.startGame()
+        game : null,
+        charSelect : {
+          buttons: [
+            {
+              onClick: this.startAIGame,
+            },
+            {
+              text : 'Go Back',
+              onClick: this.return
+            },
+          ],
+          modAIInd : this.modAIInd,
+          modSetAIInd: this.modSetAIInd,
+          fadeAway : false,
+          hasWrapped: false,
+          onFade : (fadeAway)=>{
+            const {loadedPages} = this.state
+            if (fadeAway) {
+              loadedPages.clear()
+              loadedPages.add('game')
+              this.setState({loadedPages})
+            }
+          }
+        },
+        serverSetup: {
+          buttons: [
+            {
+              text : 'Go Back',
+              onClick: () => {
+                this.server.close()
+                this.return()
+              },
+              enabled : true
+            },
+            {
+              text : 'Choose Form',
+              onClick: () => {
+                const {pageProps} = this.state
+                const toggle = pageProps.serverSetup.showProfiles
+                pageProps.serverSetup.showProfiles = !toggle
+                pageProps.serverSetup.buttons[2].enabled = toggle
+                pageProps.serverSetup.buttons[3].enabled = toggle
+                if (pageProps.serverSetup.showProfiles) {
+                  pageProps.serverSetup.buttons[1].text = 'Done'
+                } else {
+                  pageProps.serverSetup.buttons[1].text = 'Choose Form'
+                }
+                this.setState({pageProps})
+              },
+              enabled : true
+            },
+            {
+              text : 'Create Room',
+              onClick: () => {
+                this.startRoom()
+              },
+              enabled : true
+            },
+            {
+              text : 'Join Room',
+              onClick: () => {
+                this.joinRoom()
+              },
+              enabled : true
+            }
+          ],
+          lock : false,
+          shake : false,
+          onShakeDone : ()=>{},
+          fadeAway : false,
+          showProfiles : false,
+          onFade : (fadeAway)=>{
+            const {loadedPages} = this.state
+            if (fadeAway) {
+              loadedPages.clear()
+              loadedPages.add('game')
+              this.setState({loadedPages})
             }
           },
-          {
-            text : 'Play with the Shack',
-            onClick: () => {
-              this.startCharacterSelect()
-            },
+          setUsername : (evt)=>{
+            const gameSettingsProps = this.state.gameSettingsProps
+            gameSettingsProps.name = evt.target.value
+            this.setState({gameSettingsProps})
           },
-          {
-            text : 'Play with a Friend',
-            onClick: () => {
-              this.startServerSetup()
-            },
+          setID : (evt)=>{
+            const id = evt.target.value.toUpperCase()
+            this.setState({roomID : id})
           },
-          {
-            text : 'Settings',
-            onClick: () => {
-              this.startSettings()
-            },
+          setProfileInd : (i)=>this.setProfileInd(i)
+        },
+        settings : {
+          modVal : (setting,val)=>{
+            const gameSettingsProps = this.state.gameSettingsProps
+            gameSettingsProps[setting] = val
+            this.setState({gameSettingsProps, settingChanged : true})
           },
-          {
-            text : 'How to Play',
-            onClick: () => {
-              this.startHt()
+          mod : (setting,i)=>{
+            const gameSettingsProps = this.state.gameSettingsProps
+            gameSettingsProps[setting] = gameSettingsProps[setting] + i
+            this.setState({gameSettingsProps, settingChanged : true})
+          },
+          modDscrt : (setting,i)=>{
+            const {gameSettingsProps, settingsRanges} = this.state
+            const rcursor = settingsRanges[setting].range.indexOf(gameSettingsProps[setting])
+            if ((rcursor === 0 && i < 0) || (rcursor === settingsRanges[setting].range.length -1 && i > 0 )) return
+            settingsRanges[setting].rcursor = rcursor + i
+            gameSettingsProps[setting] = settingsRanges[setting].range[settingsRanges[setting].rcursor]
+            this.setState({gameSettingsProps, settingsRanges, settingChanged : true})
+          },
+          modBool : (setting)=>{
+            const gameSettingsProps = this.state.gameSettingsProps
+            gameSettingsProps[setting] = !gameSettingsProps[setting]
+            this.setState({gameSettingsProps, settingChanged : true})
+          },
+          modSpec : (setting)=>{
+            if (setting === 'caravan') {
+              const {gameSettingsProps} = this.state
+              if (gameSettingsProps.caravan) {
+                gameSettingsProps.caravan = null
+              }
+              else {
+                gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
+              }
+              this.setState({gameSettingsProps, settingChanged : true})
+              //console.log(gameSettingsProps.caravan)
+            }
+          },
+          modColor : (setting,side,color)=>{
+            const gameSettingsProps = this.state.gameSettingsProps
+            gameSettingsProps[setting][side] = color
+            this.setState({gameSettingsProps, settingChanged : true})
+          },
+          setProfileInd : this.setProfileInd,
+          buttons: [
+            {
+              text : 'Go Back',
+              onClick: () => {
+                const {gameSettingsProps} = this.state
+                if (gameSettingsProps.caravan){
+                  gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
+                }
+                this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge: this.maxAge, sameSite : 'strict' });
+                this.setState({gameSettingsProps},this.return)
+              },
+              enabled : true
             },
+            {
+              text : 'Choose Form',
+              onClick: () => {
+                const {pageProps} = this.state
+                pageProps.settings.showProfiles = !pageProps.settings.showProfiles
+                this.setState({pageProps})
+              },
+              enabled : true
+            }
+          ],
+          showProfiles : false,
+          tabs : ['gameplay', 'personal'],
+          activeTab : 0,
+          switchTab : (destTab)=>{
+            const {pageProps} = this.state
+            if (pageProps.settings.showProfiles){
+              pageProps.settings.buttons[1].onClick()
+            }
+            pageProps.settings.activeTab = destTab
+            this.setState({pageProps})
           }
-        ]
+        }
       },
-      htProps : null,
-      gameProps : null,
-      charSelectProps : null,
-      serverSetupProps: null,
-      settingsProps : null,
       flytextProps: null,
       selectedAIInd : 0,
-      next: null,
       roomID : '',
       isLoading : false,
       settingChanged : false,
@@ -155,10 +312,6 @@ export default class App extends React.Component{
       }
       , navEnabled : true
     }
-    this.return = this.return.bind(this)
-    this.setNavigable = this.setNavigable.bind(this)
-    this.setUnNavigable = this.setUnNavigable.bind(this)
-    this.navigate = this.navigate.bind(this)
   }
 
   statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
@@ -204,28 +357,39 @@ export default class App extends React.Component{
     this.setState({statsProps})
   }
 
+  pageTransition({name, pageProps = this.state.pageProps, ...rest}){
+    const {loadedPages} = this.state
+    loadedPages.add(name)
+    pageProps.mainMenu.fadeAway = true
+    pageProps.mainMenu.onFadeOut = ()=>{
+      // console.log(this.state.loadedPages)
+      loadedPages.clear()
+      loadedPages.add(name)
+      this.setState({
+        loadedPages,
+        settingChanged : false
+      })
+    }
+    this.setState({pageProps, loadedPages, ...rest})
+  }
+
   startGame(){
     // this.cookies.set('statsProps', {a:1}, { path: '/', maxAge: this.maxAge, sameSite : 'strict'});
     //console.log('test')
-    let {menuProps, gameProps, gameSettingsProps} = this.state
+    const {pageProps, gameSettingsProps} = this.state
     gameSettingsProps.oppName = gameSettingsProps.name
     gameSettingsProps.oppProfileInd = gameSettingsProps.playProfileInd
     gameSettingsProps.gameType ='DEFAULT'
-    gameProps = {settings : gameSettingsProps,
+    pageProps.game = {
+      settings : gameSettingsProps,
       return : this.return,
       statUpdate : ()=>{}
     }
-    menuProps.fadeAway = true
-    this.setState({gameProps, menuProps})
+    this.pageTransition({name: 'game', pageProps, gameSettingsProps})
   }
 
   startHt(){
-    let {menuProps, htProps} = this.state
-    htProps = {
-      onClick: this.return
-    }
-    menuProps.fadeAway = true
-    this.setState({menuProps, htProps})
+    this.pageTransition({name: 'howTo'})
   }
 
   cycleSetting(propsName,settingName,change,clamp){
@@ -236,88 +400,7 @@ export default class App extends React.Component{
   }
 
   startSettings(){
-    let {menuProps, settingsProps} = this.state
-
-    settingsProps = {
-      modVal : (setting,val)=>{
-        const gameSettingsProps = this.state.gameSettingsProps
-        gameSettingsProps[setting] = val
-        this.setState({gameSettingsProps, settingChanged : true})
-      },
-      mod : (setting,i)=>{
-        const gameSettingsProps = this.state.gameSettingsProps
-        gameSettingsProps[setting] = gameSettingsProps[setting] + i
-        this.setState({gameSettingsProps, settingChanged : true})
-      },
-      modDscrt : (setting,i)=>{
-        const {gameSettingsProps, settingsRanges} = this.state
-        const rcursor = settingsRanges[setting].range.indexOf(gameSettingsProps[setting])
-        if ((rcursor === 0 && i < 0) || (rcursor === settingsRanges[setting].range.length -1 && i > 0 )) return
-        settingsRanges[setting].rcursor = rcursor + i
-        gameSettingsProps[setting] = settingsRanges[setting].range[settingsRanges[setting].rcursor]
-        this.setState({gameSettingsProps, settingsRanges, settingChanged : true})
-      },
-      modBool : (setting)=>{
-        const gameSettingsProps = this.state.gameSettingsProps
-        gameSettingsProps[setting] = !gameSettingsProps[setting]
-        this.setState({gameSettingsProps, settingChanged : true})
-      },
-      modSpec : (setting)=>{
-        if (setting === 'caravan') {
-          const {gameSettingsProps} = this.state
-          if (gameSettingsProps.caravan) {
-            gameSettingsProps.caravan = null
-          }
-          else {
-            gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
-          }
-          this.setState({gameSettingsProps, settingChanged : true})
-          //console.log(gameSettingsProps.caravan)
-        }
-      },
-      modColor : (setting,side,color)=>{
-        const gameSettingsProps = this.state.gameSettingsProps
-        gameSettingsProps[setting][side] = color
-        this.setState({gameSettingsProps, settingChanged : true})
-      },
-      setProfileInd : (i)=>this.setProfileInd(i),
-      buttons: [
-        {
-          text : 'Go Back',
-          onClick: () => {
-            const {gameSettingsProps} = this.state
-            if (gameSettingsProps.caravan){
-              gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
-            }
-            this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge: this.maxAge, sameSite : 'strict' });
-            this.setState({gameSettingsProps},this.return)
-          },
-          enabled : true
-        },
-        {
-          text : 'Choose Form',
-          onClick: () => {
-            const {settingsProps} = this.state
-            settingsProps.showProfiles = !settingsProps.showProfiles
-            this.setState({settingsProps})
-          },
-          enabled : true
-        }
-      ],
-      showProfiles : false,
-      tabs : ['gameplay', 'personal'],
-      activeTab : 0,
-      switchTab : (destTab)=>{
-        const settingsProps = this.state.settingsProps
-        if (settingsProps.showProfiles){
-          settingsProps.buttons[1].onClick()
-        }
-        settingsProps.activeTab = destTab
-        this.setState({settingsProps})
-      }
-    }
-    menuProps.fadeAway = true
-    this.setState({menuProps, settingsProps})
+    this.pageTransition({name: 'settings'})
   }
 
   setProfileInd(i){
@@ -328,33 +411,15 @@ export default class App extends React.Component{
     this.setState({gameSettingsProps})
   }
 
-  startCharacterSelect(){
-    let {menuProps, charSelectProps} = this.state
-    charSelectProps = {
-      buttons: [
-        {
-          onClick: () => {
-            this.startAIGame()
-          },
-        },
-        {
-          text : 'Go Back',
-          onClick: this.return
-        },
-      ],
-      modAIInd : (i)=>this.modAIInd(i),
-      modSetAIInd: (i)=>this.modSetAIInd(i),
-      fadeAway : false,
-      hasWrapped: false,
-      onFade : ()=>{}
-    }
-    menuProps.fadeAway = true
-    this.setState({menuProps, charSelectProps})
+  startCharSelect(){
+    const {pageProps} = this.state
+    pageProps.charSelect.fadeAway = false
+    this.pageTransition({name: 'charSelect', pageProps})
   }
 
   modAIInd(i){
     const pLength = Profile.ai.length,
-      {charSelectProps, selectedAIInd} = this.state,
+      {pageProps, selectedAIInd} = this.state,
       newInd = selectedAIInd + i,
       inbounds = (0 <= newInd && newInd <= pLength-1)
     // console.log(this.state.selectedAIInd)
@@ -363,8 +428,8 @@ export default class App extends React.Component{
     //     this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
     //   }
     // else this.shakeSelect()
-    charSelectProps.hasWrapped ^= !inbounds
-    this.setState({selectedAIInd : strictMod(newInd, pLength), charSelectProps,})
+    pageProps.charSelect.hasWrapped ^= !inbounds
+    this.setState({selectedAIInd : strictMod(newInd, pLength), pageProps})
   }
 
   modSetAIInd(i){
@@ -393,86 +458,27 @@ export default class App extends React.Component{
   }
 
   startServerSetup(){
-    let {menuProps, serverSetupProps} = this.state
-    serverSetupProps = {
-      buttons: [
-        {
-          text : 'Go Back',
-          onClick: () => {
-            this.server.close()
-            this.return()
-          },
-          enabled : true
-        },
-        {
-          text : 'Choose Form',
-          onClick: () => {
-            const {serverSetupProps} = this.state
-            const toggle = serverSetupProps.showProfiles
-            serverSetupProps.showProfiles = !toggle
-            serverSetupProps.buttons[2].enabled = toggle
-            serverSetupProps.buttons[3].enabled = toggle
-            if (serverSetupProps.showProfiles) {
-              serverSetupProps.buttons[1].text = 'Done'
-            } else {
-              serverSetupProps.buttons[1].text = 'Choose Form'
-            }
-            this.setState({serverSetupProps})
-          },
-          enabled : true
-        },
-        {
-          text : 'Create Room',
-          onClick: () => {
-            this.startRoom()
-          },
-          enabled : true
-        },
-        {
-          text : 'Join Room',
-          onClick: () => {
-            this.joinRoom()
-          },
-          enabled : true
-        }
-      ],
-      lock : false,
-      shake : false,
-      onShakeDone : ()=>{},
-      fadeAway : false,
-      showProfiles : false,
-      onFade : ()=>{},
-      setUsername : (evt)=>{
-        const gameSettingsProps = this.state.gameSettingsProps
-        gameSettingsProps.name = evt.target.value
-        this.setState({gameSettingsProps})
-      },
-      setID : (evt)=>{
-        const id = evt.target.value.toUpperCase()
-        this.setState({roomID : id})
-      },
-      setProfileInd : (i)=>this.setProfileInd(i)
-    }
-    menuProps.fadeAway = true
-    this.setState({menuProps, serverSetupProps})
+    const {pageProps} = this.state
+    pageProps.serverSetup.fadeAway = false
+    this.pageTransition({name: 'serverSetup', pageProps})
   }
 
   startRoom(){
-    let {gameSettingsProps, serverSetupProps} = this.state
+    let {gameSettingsProps, pageProps} = this.state
     let username = gameSettingsProps.name
     if (!username.length){
       username = 'Player 1'
     }
-    serverSetupProps.lock = true
+    pageProps.serverSetup.lock = true
     const baseText = 'Waiting'
     let count = 1
-    serverSetupProps.buttons[2].text = baseText
+    pageProps.serverSetup.buttons[2].text = baseText
     const interval = setInterval(()=>{
-      serverSetupProps.buttons[2].text = baseText + ('.'.repeat(count))
-      this.setState({serverSetupProps})
+      pageProps.serverSetup.buttons[2].text = baseText + ('.'.repeat(count))
+      this.setState({pageProps})
       count = (count + 1) % 4
     },1000)
-    serverSetupProps.buttons[0].onClick = ()=>{
+    pageProps.serverSetup.buttons[0].onClick = ()=>{
       this.setState({isLoading : false})
       clearInterval(interval)
       this.server.close()
@@ -499,7 +505,7 @@ export default class App extends React.Component{
       this.shakeServer()
     })
     navigator.clipboard.writeText(roomID)
-    this.setState({serverSetupProps, username, roomID, isLoading : true})
+    this.setState({pageProps, username, roomID, isLoading : true})
   }
 
   joinRoom(){
@@ -563,72 +569,69 @@ export default class App extends React.Component{
         oppProfileInd : init.oppProfileInd
       }
     }
-    let {gameProps, serverSetupProps} = this.state
+    let {pageProps, loadedPages} = this.state
     gameSettingsProps.gameType = 'PVP'
-    gameProps = {settings : gameSettingsProps,
+    pageProps.game = {
+      settings : gameSettingsProps,
       turn,
-      return : ()=> {
+      return : () => {
         this.server.close()
         this.return()
       },
-      statUpdate : (...args)=>{this.statUpdate(...args)}
+      statUpdate : this.statUpdate
     }
-    serverSetupProps.fadeAway = true
-    serverSetupProps.onFade = ()=>{
-      serverSetupProps = null
-      this.setState({serverSetupProps})
-    }
-    this.setState({gameProps, serverSetupProps, gameSettingsProps, isLoading : false})
+    pageProps.serverSetup.fadeAway = true
+    pageProps.serverSetup.lock = false
+    loadedPages.add('game')
+    this.setState({pageProps, gameSettingsProps, isLoading : false, loadedPages})
   }
 
   shakeServer(){
-    const serverSetupProps = this.state.serverSetupProps
-    serverSetupProps.shake = true
-    serverSetupProps.onShakeDone = ()=>{
-      serverSetupProps.shake = false
-      serverSetupProps.onShakeDone = ()=>{}
-      this.setState({serverSetupProps})
+    const {pageProps} = this.state.pageProps
+    pageProps.serverSetup.shake = true
+    pageProps.serverSetup.onShakeDone = ()=>{
+      pageProps.serverSetup.shake = false
+      pageProps.serverSetup.onShakeDone = ()=>{}
+      this.setState({pageProps})
     }
-    this.setState({serverSetupProps})
+    this.setState({pageProps})
   }
 
   shakeSelect(){
-    const charSelectProps = this.state.charSelectProps
-    charSelectProps.shakeSelect = true
-    charSelectProps.onShakeDone = ()=>{
-      charSelectProps.shakeSelect = false
-      charSelectProps.onShakeDone = ()=>{}
-      this.setState({charSelectProps})
+    const {pageProps} = this.state
+    pageProps.charSelect.shakeSelect = true
+    pageProps.charSelect.onShakeDone = ()=>{
+      pageProps.charSelect.shakeSelect = false
+      pageProps.charSelect.onShakeDone = ()=>{}
+      this.setState({pageProps})
     }
-    this.setState({charSelectProps})
+    this.setState({pageProps})
   }
 
   startAIGame(){
-    let {gameProps, charSelectProps, gameSettingsProps} = this.state
+    const {pageProps, gameSettingsProps, loadedPages} = this.state
     gameSettingsProps.oppProfileInd = this.state.selectedAIInd
     gameSettingsProps.oppName = Profile.ai[this.state.selectedAIInd].name
     gameSettingsProps.gameType = 'AI'
-    gameProps = {
+    pageProps.game = {
       settings : gameSettingsProps,
-      statUpdate : (...args)=>{this.statUpdate(...args)},
+      statUpdate : this.statUpdate,
       return : this.return,
     }
-    charSelectProps.fadeAway = true
-    charSelectProps.onFade = ()=>{
-      charSelectProps = null
-      this.setState({charSelectProps})
-    }
-    this.setState({gameProps, charSelectProps})
+    pageProps.charSelect.fadeAway = true
+    loadedPages.add('game')
+    this.setState({pageProps, loadedPages})
   }
 
   return(){
-    let {menuProps} = this.state
-    menuProps.show = true
-    menuProps.fadeAway = true
-    this.setState({menuProps},() => {
+    if (this.server.peer && !this.server.peer.destroyed) this.server.close()
+    let {pageProps, loadedPages} = this.state
+    loadedPages.add('mainMenu')
+    pageProps.mainMenu.fadeAway = true
+    this.setState({pageProps, loadedPages},() => {
       setTimeout(()=>{
-        menuProps.fadeAway = false
-        this.setState({menuProps})
+        pageProps.mainMenu.fadeAway = false
+        this.setState({pageProps})
       }, 10)
     })
   }
@@ -638,7 +641,7 @@ export default class App extends React.Component{
     if (!navEnabled) {
       // We consume the event on nav context switch to prevent unintended selection
       this.setState({navEnabled : true})
-      return
+      if (["Enter", "e", " "].includes(e.key)) return
     }
     this.navigate(e)
   }
@@ -670,7 +673,7 @@ export default class App extends React.Component{
     if (key) {
       this.props.tree.resolve(key)
       e.preventDefault()
-      // console.log(this.props.tree.getFocusedPath())
+      console.log(this.props.tree.getFocusedPath())
     }
   }
 
@@ -686,30 +689,29 @@ export default class App extends React.Component{
   }
 
   render(){
-    const {flytextProps,isLoading,gameProps,settingsProps,gameSettingsProps,statsProps,
-      settingsRanges, settingChanged, serverSetupProps, roomID, charSelectProps,
-      selectedAIInd, htProps, menuProps, navEnabled} = this.state
+    const {flytextProps, isLoading, pageProps, loadedPages, gameSettingsProps,statsProps,
+      settingsRanges, settingChanged, roomID, selectedAIInd, navEnabled} = this.state
     return (
       <Nav id='app' tree={this.props.tree} className={navEnabled ? 'navigable' : null} func={navVertical}>
-        {(flytextProps) ? <Flytext {...flytextProps} /> : null}
+        {(flytextProps) && <Flytext {...flytextProps} />}
         <Loading show={isLoading}/>
         <div className='footer'>
-          <div className="fcontain mobile" style={{display : gameProps ? 'flex' : 'none'}} onClick={this.return}>
+          <div className="fcontain mobile" style={{display : loadedPages.has('game') ? 'flex' : 'none'}} onClick={this.return}>
             <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
           </div>
           <div className="fcontain">
             <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
           </div>
-          <div className="fcontain" style={{display : charSelectProps ? 'flex' : 'none'}}>
+          <div className="fcontain" style={{display : loadedPages.has('charSelect') ? 'flex' : 'none'}}>
             <div className="symb dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
           </div>
         </div>
-        {settingsProps ? <Settings {...settingsProps} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/> : null}
-        {gameProps ? <Game {...gameProps}/> : null}
-        {serverSetupProps ? <ServerSetup {...serverSetupProps} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/> : null}
-        {charSelectProps ? <CharSelect {...charSelectProps} selectedAIInd={selectedAIInd}/> : null}
-        {htProps ? <HowTo {...htProps}/> : null}
-        {menuProps.show ? <MainMenu {...menuProps}/> : null}
+        {loadedPages.has('settings') && <Settings {...pageProps.settings} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/>}
+        {loadedPages.has('game') && <Game {...pageProps.game}/>}
+        {loadedPages.has('serverSetup') && <ServerSetup {...pageProps.serverSetup} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/>}
+        {loadedPages.has('charSelect') && <CharSelect {...pageProps.charSelect} selectedAIInd={selectedAIInd}/>}
+        {loadedPages.has('howTo') && <HowTo {...pageProps.howTo}/>}
+        {loadedPages.has('mainMenu') && <MainMenu {...pageProps.mainMenu}/>}
       </Nav>
     )
   }

@@ -27,18 +27,18 @@ export default function ServerSetup (props) {
     let tree = useRef(null)
     useEffect(() => {
         if (lock) {
-            tree && tree.current.focus([returnId])
+            tree && tree.current && tree.current.focus([returnId])
         }
     }, [lock])
     return (
-    <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
+    <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={()=>onFade(fadeAway)}>
         <Nav className="menubox profile" func={(key, navTree, focusedNode) => {
             if (lock) return returnId
             tree.current = navTree
             // console.log(tree)
             return navDynamic(key, navTree, focusedNode)
         }}>
-            <Nav>
+            <Nav className="menubox">
                 <Nav className={`ssBox profile ${lock ? 'lock' : ''}`} func={navDynamic}>
                     <div className="menubox">
                         <div className="pfp" style={{backgroundImage: `url(${Profile.cosm[playProfileInd].img})`}}/>

@@ -35,7 +35,7 @@ export default function CharSelect (props) {
         }
     })
     return (
-        <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
+        <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={()=>onFade(fadeAway)}>
             <div className='menubox'>
                 <div className='subtitle'><Squiggle/>Select Opponent<Squiggle/></div>
                 <div className="slidePaneContainer">

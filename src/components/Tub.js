@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React, { forwardRef } from "react"
-import Nav from "react-navtree"
+import Nav, { navDynamic, navTable } from "react-navtree"
 
 import {isFull} from '../util/Utils';
 import Die from "./Die";
@@ -48,20 +48,28 @@ export default class Tub extends React.Component {
         const ordering = Array(tubLen).fill().map((_,i)=>i)
         if (!flip) ordering.reverse()
         return (
-        <Nav className='tubOuter' func={key => {if (key === 'enter' && clickable) proccessClick()}}>
-            <div
-            className={`tub ${fillClass} ${hoverClass} ${shakeClass}`}
-            onPointerEnter={()=>{if (clickable) scoreHover(true)}}
-            onPointerLeave={()=>{if (clickable) scoreHover(false)}}
-            onPointerUp={()=>{if (clickable) proccessClick()}}
-            onAnimationEnd={onShakeAnimEnd}
-            tabIndex={clickable ? "0" : "-1"}>
-                {ordering.map((i)=>this.renderBox(i))}
-            </div>
-            <h1 className={`scorer ${animClass}`}
-                onAnimationEnd={onScoreAnimEnd} style={{scale : scoreScale}}>
-                    {score ? score : '\u00A0'}
-            </h1>
-        </Nav>
-    )}
+            <Nav className='tubOuter' func={(key, navTree, focusedNode) => {
+                    if (!clickable) return false
+                    // console.log(`key: ${key}, navTree: ${navTree.focusedNode} focusedNode: ${focusedNode}`)
+                    if (key === 'enter') {
+                        proccessClick()
+                    } else {
+                        return navDynamic(key, navTree, focusedNode)
+                    }
+                }}>
+                <div
+                className={`tub ${fillClass} ${hoverClass} ${shakeClass}`}
+                onPointerEnter={()=>{if (clickable) scoreHover(true)}}
+                onPointerLeave={()=>{if (clickable) scoreHover(false)}}
+                onPointerUp={()=>{if (clickable) proccessClick()}}
+                onAnimationEnd={onShakeAnimEnd}>
+                    {ordering.map((i)=>this.renderBox(i))}
+                </div>
+                <h1 className={`scorer ${animClass}`}
+                    onAnimationEnd={onScoreAnimEnd} style={{scale : scoreScale}}>
+                        {score ? score : '\u00A0'}
+                </h1>
+            </Nav>
+        )
+    }
 }

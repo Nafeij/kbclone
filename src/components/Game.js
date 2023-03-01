@@ -3,7 +3,7 @@
 import React from "react";
 import Side from '../components/Side.js'
 import Flytext from "./Flytext.js";
-import { navHorizontal } from "react-navtree";
+import Nav, { navDynamic, navVertical } from "react-navtree";
 
 import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions, tubBoxWidth} from '../util/Utils.js';
 import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
@@ -73,6 +73,7 @@ export default class Game extends React.Component {
                 timeOut: -1,
                 slideEnd: ()=>{},
                 message: '',
+                display: false,
                 show: false,
                 hover : false,
                 buttons: [
@@ -102,11 +103,11 @@ export default class Game extends React.Component {
             isLoading: false,
             turnCount: props.settings.turnLimit,
             gameTime: null
-        }
+        };
 
-        this.gameStart = this.gameStart.bind(this)
-        this.proccessClick = this.proccessClick.bind(this)
-        this.onShakeAnimEnd = this.onShakeAnimEnd.bind(this)
+        ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'funcClickable'].forEach(func => {
+            this[func] = this[func].bind(this)
+        })
     }
 
     generateDice(){
@@ -244,34 +245,28 @@ export default class Game extends React.Component {
 
     playerActivate() {
         this.setTubClickable()
-        this.updateCurrSide({ tubsClickable: true }, {}, () => {
-            const { sideProps, turn } = this.state
-            const {pickable, time, gameType} = this.props.settings
-            if (pickable) sideProps[!turn + 0].tubsClickable = true
-            if (time) {
-                let thisTime = time
-                sideProps[turn].time = thisTime
-                this.timeInterval = setInterval(() => {
-                    if (thisTime <= 0) {
-                        clearInterval(this.timeInterval)
-                        if (gameType === 'PVP') this.server.send('timeout')
-                        this.timeoutDestroy()
-                        // this.proccessTurn(evaluate(diceMatrix, newDice.num, 0, turn))
-                    } else {
-                        thisTime--
-                        sideProps[turn].time = thisTime
-                        this.setState(sideProps)
-                    }
-                }, 1000)
-            }
-            this.setState(sideProps)
-        })
+        const { sideProps, turn } = this.state
+        const { time, gameType } = this.props.settings
+        if (time) {
+            let thisTime = time
+            sideProps[turn].time = thisTime
+            this.timeInterval = setInterval(() => {
+                if (thisTime <= 0) {
+                    clearInterval(this.timeInterval)
+                    if (gameType === 'PVP') this.server.send('timeout')
+                    this.timeoutDestroy()
+                } else {
+                    thisTime--
+                    sideProps[turn].time = thisTime
+                    this.setState(sideProps)
+                }
+            }, 1000)
+        }
+        this.setState(sideProps)
     }
 
     timeoutDestroy(){
         const {sideProps, turn} = this.state
-        sideProps[0].tubsClickable = false
-        sideProps[1].tubsClickable = false
         this.clearClickable()
 
         const newDice = sideProps[turn].newDice
@@ -287,25 +282,32 @@ export default class Game extends React.Component {
     }
 
     setTubClickable(){
-        let {tubProps, turn} = this.state
-        const offset = this.props.settings.numTubs
+        let {tubProps, sideProps, turn} = this.state
+        const {pickable} = this.props.settings
+
+        sideProps[turn].tubsClickable = true
+        if (pickable) sideProps[!turn + 0].tubsClickable = true
+        // const offset = this.props.settings.numTubs
         tubProps = tubProps.map((side)=>{
             return side.map((tub)=>{
                 return {...tub, scoreMemo : null, oldScore : tub.score}
             })
         })
-        this.setState({tubProps})
+        this.setState({tubProps, sideProps})
     }
 
     clearClickable(){
-        let {tubProps} = this.state
+        this.navTree && this.navTree.focus()
+        let {sideProps, tubProps} = this.state
+        sideProps[0].tubsClickable = false
+        sideProps[1].tubsClickable = false
         // const oldScore = (si,ti) => (memo ? memo[0][si][ti] : null)
         tubProps = tubProps.map((side)=>{
             return side.map((tub)=>{
                 return {...tub, scoreMemo : null}
             })
         })
-        this.setState({tubProps})
+        this.setState({sideProps, tubProps})
     }
 
     handleMoveAnim(tubId, destPos = null, srcPos = null, turn = this.state.turn){
@@ -358,8 +360,6 @@ export default class Game extends React.Component {
         const memo = this.fetchMemo(turn, tub)
         this.clearClickable()
         const {sideProps} = this.state
-        sideProps[0].tubsClickable = false
-        sideProps[1].tubsClickable = false
         this.setState({sideProps})
         const num = await this.handleMoveAnim(tub, null, null, turn)
         if (this.props.settings.caravan && num === 1){
@@ -457,17 +457,26 @@ export default class Game extends React.Component {
         const flytextProps = this.state.flytextProps
         flytextProps.message = text
         flytextProps.timeOut = timeOut
-        flytextProps.show = true
+        flytextProps.display = true
         if (timeOut <= 0) {
-            this.setState({flytextProps})
+            this.setState({flytextProps}, ()=>setTimeout(()=>this.setState({flytextProps : {...flytextProps, show : true}}), 10))
         } else {
             if (delay <= 0) delay = timeOut
-            this.setState({flytextProps})
-            return new Promise((resolve)=>setTimeout(()=>{
-                flytextProps.show = false
-                flytextProps.slideEnd = () => setTimeout(resolve, delay)
-                this.setState({flytextProps})
-            }, timeOut))
+            return new Promise((resolve)=>
+                this.setState({flytextProps}, ()=>setTimeout(
+                    ()=>this.setState({flytextProps : {...flytextProps, show : true}}, ()=>setTimeout(
+                        ()=>{
+                            flytextProps.show = false
+                            flytextProps.slideEnd = () => {
+                                setTimeout(resolve, delay)
+                                flytextProps.display = false
+                                flytextProps.slideEnd = ()=>{}
+                                this.setState({flytextProps})
+                            }
+                            this.setState({flytextProps})
+                    }, timeOut))
+                , 10))
+            )
         }
     }
 
@@ -489,7 +498,7 @@ export default class Game extends React.Component {
             }
             flytextProps.hover = false
         }
-        flytextProps.show = false
+
         const diceMatrix = Array.from({length:2}, ()=>(
             Array.from({length:this.props.settings.numTubs},()=>(Array(this.props.settings.tubLen).fill(null))))
         )
@@ -498,9 +507,11 @@ export default class Game extends React.Component {
         sideProps = sideProps.map((side)=>({...side, score : 0, destroyed : 0, destroyedTurn : 0, cleared : 0, prevDiceNum : 0, scoreShown : false, lives: side.maxLives}))
         tubProps = tubProps.map((side)=>(side.map((tub)=>({...tub, score : null}))))
 
+        flytextProps.show = false
         flytextProps.slideEnd = ()=>{
             flytextProps.slideEnd = ()=>{}
             flytextProps.onClick = ()=>{this.restart()}
+            flytextProps.display = false
             this.setState({diceMatrix, tubProps, sideProps, flytextProps, turn, rolled : false},()=> this.gameStart())
         }
         this.setState({flytextProps, gameTime : null, turnCount : this.props.settings.turnLimit, isLoading : false}, this.clearClickable)
@@ -801,7 +812,6 @@ export default class Game extends React.Component {
             tubProps[turn][tub].startShake = true
             this.setState({tubProps})
         } else {
-            // this.setState({tubsClickable : false})
             if (this.props.settings.time) {
                 clearInterval(this.timeInterval)
                 const {sideProps, turn} = this.state
@@ -873,12 +883,8 @@ export default class Game extends React.Component {
         window.removeEventListener("resize", this.onResize)
     }
 
-    funcClickable (key, navTree, focusedNode) {
-        const flag = this.state.sideProps.map(s => s.tubsClickable).reduce((res, x) => res << 1 | x)
-        // switch flag {
-        //     case 0:
-
-        // }
+    funcClickable(key, navTree, focusedNode) {
+        return navDynamic(key, navTree, focusedNode)
     }
 
     renderSide(side){
@@ -901,21 +907,19 @@ export default class Game extends React.Component {
         const {ignoreFull, pickable, caravan} = this.props.settings
         const isPVP = this.props.settings.gameType === 'PVP'
         return (
-            <Nav className="game" func={this.funcClickable}>
-                <Nav navId="0">
-                    {this.renderSide(0)}
-                </Nav>
-                <Nav navId="1">
-                    {this.renderSide(1)}
-                </Nav>
-                <Flytext {...this.state.flytextProps}/>
+            <Nav className="game" func={this.funcClickable} ref={nav => {this.navTree = nav && nav.tree}}>
+                {this.renderSide(0)}
+                {this.renderSide(1)}
+                {this.state.flytextProps.display && <Flytext {...this.state.flytextProps}/>}
                 <Loading show={this.state.isLoading}/>
-                {this.props.settings.turnLimit ? <div className="turnCounter">
-                    <p>{Math.ceil(this.state.turnCount)}</p>
-                    <p>{`of ${this.props.settings.turnLimit} turns left`}</p>
-                </div> : null}
+                {this.props.settings.turnLimit &&
+                    <div className="turnCounter">
+                        <p>{Math.ceil(this.state.turnCount)}</p>
+                        <p>{`of ${this.props.settings.turnLimit} turns left`}</p>
+                    </div>
+                }
                 <div className="settingsInfo">
-                    {`${ignoreFull && isPVP? 'Longplay, ' : ''}${pickable && isPVP? 'Sabotage, ' : ''}${!!caravan ? `Caravan ${caravan}` : ''}`}
+                    {`${ignoreFull && isPVP && 'Longplay, ' || ''}${pickable && isPVP && 'Sabotage, ' || ''}${!!caravan && `Caravan ${caravan}` || ''}`}
                 </div>
             </Nav>
         )
