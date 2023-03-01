@@ -1,24 +1,25 @@
 /* eslint react/prop-types: 0 */
 
 import React from 'react'
-import Nav, {navVertical} from 'react-navtree'
+import { Routes, Route } from 'react-router-dom'
+import Nav, { navVertical } from 'react-navtree'
 import Cookies from 'universal-cookie'
 
 import CharSelect from './components/CharSelect.js'
-import ServerSetup from './components/ServerSetup.js'
-import Server from './util/Server.js'
+import Flytext from './components/Flytext.js'
 import Game from './components/Game.js'
 import HowTo from './components/HowTo.js'
-import Profile from './util/Profile.js'
-import { caravanBounds, randomInRange, strictMod } from './util/Utils.js'
-import Flytext from './components/Flytext.js'
-import Loading from './components/Loading.js'
-import Settings from './components/Settings.js'
 import KButton from './components/KButton.js'
+import Loading from './components/Loading.js'
+import ServerSetup from './components/ServerSetup.js'
+import Settings from './components/Settings.js'
+import Profile from './util/Profile.js'
+import Server from './util/Server.js'
+import { caravanBounds, keyConvert, randomInRange, strictMod } from './util/Utils.js'
 
-import fkey from "./img/fkey.png"
 import akey from "./img/akey.png"
 import dkey from "./img/dkey.png"
+import fkey from "./img/fkey.png"
 import logo from "./img/logo.png"
 
 const MainMenu = (props) => (
@@ -42,12 +43,7 @@ export default class App extends React.Component{
     super(props)
     this.server = new Server()
     this.cookies = new Cookies()
-    this.maxAge = 60 * 60 * 24 * 365 * 100;
-    ['startCharSelect', 'startGame', 'startHt', 'startSettings', 'startServerSetup',
-    'pageTransition', 'statUpdate', 'setProfileInd', 'modAIInd', 'modSetAIInd',
-    'startAIGame', 'return', 'setNavigable', 'setUnNavigable', 'navigate'].forEach(
-      (fn) => this[fn] = this[fn].bind(this)
-    )
+    this.maxAge = 60 * 60 * 24 * 365 * 100
     this.state = {
       loadedPages : new Set(['mainMenu']),
       pageProps : {
@@ -311,7 +307,12 @@ export default class App extends React.Component{
         , time : 0}
       }
       , navEnabled : true
-    }
+    };
+    ['startCharSelect', 'startGame', 'startHt', 'startSettings', 'startServerSetup',
+    'pageTransition', 'statUpdate', 'setProfileInd', 'modAIInd', 'modSetAIInd',
+    'startAIGame', 'return', 'setNavigable', 'setUnNavigable', 'navigate'].forEach(
+      (fn) => this[fn] = this[fn].bind(this)
+    )
   }
 
   statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
@@ -459,7 +460,13 @@ export default class App extends React.Component{
 
   startServerSetup(){
     const {pageProps} = this.state
+    pageProps.serverSetup.lock = false
     pageProps.serverSetup.fadeAway = false
+    pageProps.serverSetup.buttons[2].text = 'Create Room'
+    pageProps.serverSetup.buttons[0].onClick = ()=>{
+      this.server.close()
+      this.return()
+    }
     this.pageTransition({name: 'serverSetup', pageProps})
   }
 
@@ -513,7 +520,6 @@ export default class App extends React.Component{
     let {gameSettingsProps, roomID} = this.state
     let username = gameSettingsProps.name
     if (!roomID || !pattern.test(roomID)) {
-      // console.log(pattern.test(roomID))
       this.shakeServer()
       return
     }
@@ -652,40 +658,27 @@ export default class App extends React.Component{
 
   navigate(e){
     // e.stopPropagation()
-    let key
-    switch (e.key) {
-      case "Tab":
-        e.preventDefault(); break
-      case "ArrowDown":
-        key = 'down'; break
-      case "ArrowUp":
-        key = 'up'; break
-      case "ArrowLeft":
-        key = 'left'; break
-      case "ArrowRight":
-        key = 'right'; break
-      case "Enter":
-      case "e":
-      case " ":
-        key = 'enter'; break
-      default:
+    if (e.key === "Tab") {
+      e.preventDefault()
+      return
     }
+    let key = keyConvert(e.key)
     if (key) {
       this.props.tree.resolve(key)
       e.preventDefault()
-      console.log(this.props.tree.getFocusedPath())
+      // console.log(this.props.tree.getFocusedPath())
     }
   }
 
   componentDidMount(){
     window.addEventListener('pointermove', this.setUnNavigable)
-    window.addEventListener('keydown', this.setNavigable)
+    window.addEventListener('keyup', this.setNavigable)
   }
 
   componentWillUnmount(){
     this.server.close()
     window.removeEventListener('pointermove', this.setUnNavigable)
-    window.removeEventListener('keydown', this.setNavigable)
+    window.removeEventListener('keyup', this.setNavigable)
   }
 
   render(){

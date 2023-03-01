@@ -1,10 +1,10 @@
 /* eslint react/prop-types: 0 */
 
 import React, { forwardRef } from "react"
-import Nav, { navDynamic, navTable } from "react-navtree"
+import Nav from "react-navtree"
 
-import {isFull} from '../util/Utils';
-import Die from "./Die";
+import { isFull } from '../util/Utils'
+import Die from "./Die"
 
 const RefBox = forwardRef((props, ref) => {
     return (
@@ -34,7 +34,7 @@ export default class Tub extends React.Component {
         const {
             tubLen, diceList, clickable, startShake,
             animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, caravan, scoreHover} = this.props
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, caravan, scoreHover, defaultFocused} = this.props
         const fillClass = (
                 caravan &&
                 score >= caravan[0] &&
@@ -48,20 +48,18 @@ export default class Tub extends React.Component {
         const ordering = Array(tubLen).fill().map((_,i)=>i)
         if (!flip) ordering.reverse()
         return (
-            <Nav className='tubOuter' func={(key, navTree, focusedNode) => {
-                    if (!clickable) return false
-                    // console.log(`key: ${key}, navTree: ${navTree.focusedNode} focusedNode: ${focusedNode}`)
-                    if (key === 'enter') {
-                        proccessClick()
-                    } else {
-                        return navDynamic(key, navTree, focusedNode)
-                    }
-                }}>
+            <Nav className='tubOuter'
+                defaultFocused={defaultFocused}
+                onNav={(path) => {clickable && scoreHover(!!path)}}
+                func={(key) => {
+                    key === 'enter' && proccessClick()
+                }}
+            >
                 <div
                 className={`tub ${fillClass} ${hoverClass} ${shakeClass}`}
                 onPointerEnter={()=>{if (clickable) scoreHover(true)}}
                 onPointerLeave={()=>{if (clickable) scoreHover(false)}}
-                onPointerUp={()=>{if (clickable) proccessClick()}}
+                onPointerUp={proccessClick}
                 onAnimationEnd={onShakeAnimEnd}>
                     {ordering.map((i)=>this.renderBox(i))}
                 </div>

@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Nav from 'react-navtree'
+
+import { keyConvert } from '../util/Utils'
 
 export default class NavInput extends Component {
   constructor (props) {
@@ -10,22 +12,30 @@ export default class NavInput extends Component {
     this.state = {
       navFocused: false,
       inputFocused: false
-    };
+    }
 
-    ['onInputKeyDown', 'onInputFocus', 'onInputBlur', 'onNav', 'navFunc', 'setRef'].forEach(func => {
+    this.cursorPos = -1;
+
+    ['onInputKeyUp', 'onInputFocus', 'onInputBlur', 'onNav', 'navFunc', 'setRef'].forEach(func => {
       this[func] = this[func].bind(this)
     })
   }
 
-  onInputKeyDown (e) {
+  onInputKeyUp (e) {
     if (this.props.type && this.props.type !== 'text') return
 
     e.stopPropagation()
 
-    if (e.keyCode === 27) { // Esc
-      if (this.state.inputFocused) this.inputEl.blur()
-    } else if (e.keyCode === 13) { // Enter
-      if (!this.state.inputFocused) this.inputEl.focus()
+    let key = keyConvert(e.key)
+
+    if (key === 'enter' && !this.state.inputFocused){
+      this.inputEl.focus()
+    } else if (!!key) {
+      if (this.cursorPos === e.target.selectionStart) {
+        this.inputEl.blur()
+      } else {
+        this.cursorPos = e.target.selectionStart
+      }
     }
   }
 
@@ -74,7 +84,7 @@ export default class NavInput extends Component {
         func={this.navFunc}
         ref={this.setRef}
         onNav={this.onNav}
-        onKeyDown={this.onInputKeyDown}
+        onKeyUp={this.onInputKeyUp}
         onFocus={this.onInputFocus}
         onBlur={this.onInputBlur}
         {...rest}

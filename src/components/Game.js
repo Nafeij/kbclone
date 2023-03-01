@@ -1,15 +1,15 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react";
-import Side from '../components/Side.js'
+import Nav, { navDynamic } from "react-navtree";
+import Side from '../components/Side.js';
 import Flytext from "./Flytext.js";
-import Nav, { navDynamic, navVertical } from "react-navtree";
 
-import {randomInRange, defLength, numMatchingDice, isFull, scoreTub, convertToNumMat, eleDimensions, tubBoxWidth} from '../util/Utils.js';
-import {evaluate, cheatDice, scoreAll} from "../util/AI.js";
-import Server from "../util/Server.js";
-import Loading from "./Loading.js";
+import { cheatDice, evaluate, scoreAll } from "../util/AI.js";
 import Profile from "../util/Profile.js";
+import Server from "../util/Server.js";
+import { convertToNumMat, defLength, eleDimensions, isFull, numMatchingDice, randomExcluding, randomInRange, scoreTub, tubBoxWidth } from '../util/Utils.js';
+import Loading from "./Loading.js";
 
 const scale = .95, numFaces = 6, boxAspectRatio = 7/5
 
@@ -79,33 +79,23 @@ export default class Game extends React.Component {
                 buttons: [
                     {
                       text : 'Rematch',
-                      onClick: () => {
-                        this.restart()
-                      },
+                      onClick: this.restart
                     },
                     {
                       text : 'Back',
-                      onClick: () => {
-                        const flytextProps = this.state.flytextProps
-                        flytextProps.show = false
-                        this.setState(flytextProps)
-                        if (props.settings.time) clearInterval(this.timeInterval)
-                        this.clearClickable()
-                        this.props.return()
-                      },
+                      onClick: this.return,
                     }
                 ]
             },
+            turnCount: props.settings.turnLimit,
+            gameTime: null,
             turn: 0,
             rolled: false,
             slid: false,
             dkey: 0,
-            isLoading: false,
-            turnCount: props.settings.turnLimit,
-            gameTime: null
+            isLoading: false
         };
-
-        ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'funcClickable'].forEach(func => {
+        ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart'].forEach(func => {
             this[func] = this[func].bind(this)
         })
     }
@@ -137,8 +127,10 @@ export default class Game extends React.Component {
     }
 
     boxMin(){
-        const rect = this.state.tubProps[this.state.turn][0].boxRefs[0].current.getBoundingClientRect()
-        return rect.height < rect.width ? rect.height : rect.width
+        let ref = this.state.tubProps[this.state.turn][0].boxRefs[0].current
+        if (!ref) return
+        const rect = ref.getBoundingClientRect()
+        return Math.min(rect.height, rect.width)
     }
 
     updateCurrSide(props, other={}, callback = ()=>{}){
@@ -178,14 +170,11 @@ export default class Game extends React.Component {
             newDice = sideProps[turn].newDice
             const diceHeight = newDice.height
             const {height, width} = eleDimensions(sideProps[turn].rollRef.current)
-            if (diceHeight < height){
-                /* console.log(rollH - diceHeight) */
-                newDice.translate = Math.round(((width - diceHeight) / 2) * (Math.random()*2-1))+ "px " + Math.round(((height - diceHeight) / 2) * (Math.random()*2-1)) + "px"
-            }
+            newDice.translate = this.translateCoords(diceHeight, diceHeight, width, height);
             const interval = setInterval(()=>{
                 const {sideProps, turn} = this.state
                 newDice = sideProps[turn].newDice
-                newDice.num = (newDice.num + randomInRange(numFaces-1) + 1) % numFaces + 1
+                newDice.num = randomExcluding(numFaces, newDice.num) + 1
                 this.setState({sideProps})
             },100);
             setTimeout(() => {
@@ -243,6 +232,13 @@ export default class Game extends React.Component {
         })
     }
 
+    translateCoords(srcX, srcY, destX, destY) {
+        const axisDiff = (src, dest) => {
+            return Math.round(((dest - src) / 2) * (Math.random() * 2 - 1));
+        }
+        return axisDiff(srcX, destX) + "px " + axisDiff(srcY, destY) + "px";
+    }
+
     playerActivate() {
         this.setTubClickable()
         const { sideProps, turn } = this.state
@@ -287,7 +283,7 @@ export default class Game extends React.Component {
 
         sideProps[turn].tubsClickable = true
         if (pickable) sideProps[!turn + 0].tubsClickable = true
-        // const offset = this.props.settings.numTubs
+        this.tree.focus([turn + '', '1'])
         tubProps = tubProps.map((side)=>{
             return side.map((tub)=>{
                 return {...tub, scoreMemo : null, oldScore : tub.score}
@@ -297,7 +293,6 @@ export default class Game extends React.Component {
     }
 
     clearClickable(){
-        this.navTree && this.navTree.focus()
         let {sideProps, tubProps} = this.state
         sideProps[0].tubsClickable = false
         sideProps[1].tubsClickable = false
@@ -459,7 +454,11 @@ export default class Game extends React.Component {
         flytextProps.timeOut = timeOut
         flytextProps.display = true
         if (timeOut <= 0) {
-            this.setState({flytextProps}, ()=>setTimeout(()=>this.setState({flytextProps : {...flytextProps, show : true}}), 10))
+            this.setState({flytextProps}, ()=>setTimeout(
+                ()=>this.setState(
+                    {flytextProps : {...flytextProps, show : true}}
+                ), 100
+            ))
         } else {
             if (delay <= 0) delay = timeOut
             return new Promise((resolve)=>
@@ -822,6 +821,16 @@ export default class Game extends React.Component {
         }
     }
 
+    return() {
+        const {flytextProps} = this.state
+        flytextProps.show = false
+        this.setState({flytextProps})
+        if (this.props.settings.time) {
+            clearInterval(this.timeInterval)
+        }
+        this.clearClickable()
+        this.props.return()
+    }
 
     onShakeAnimEnd(i, turn){
         const tubProps = this.state.tubProps
@@ -836,34 +845,39 @@ export default class Game extends React.Component {
     }
 
     onResize(){
-        try{
-            this.setState(prevState => {
-                prevState.sideProps = prevState.sideProps.map(s=>{
-                    const {height, width} = eleDimensions(s.tubsRef.current)
-                    s.maxWidth = tubBoxWidth(height / width, this.tubBoxAspect)
-                    // console.log(s.maxWidth)
-                    if (s.newDice) {
-                        s.newDice.height = this.boxMin() * scale
-                    }
-                    return s
-                })
-                return prevState
+        this.setState(prevState => {
+            prevState.sideProps = prevState.sideProps.map(s=>{
+                if (!s.tubsRef.current) return s
+                const {height, width} = eleDimensions(s.tubsRef.current)
+                s.maxWidth = tubBoxWidth(height / width, this.tubBoxAspect)
+                if (s.newDice) {
+                    s.newDice.height = this.boxMin() * scale
+                }
+                return s
             })
-        } catch (e) {}
+            return prevState
+        })
     }
 
-    // tubSizeOnResize(){
-    //     try{
-    //         this.setState(prevState => {
-    //             prevState.sideProps = prevState.sideProps.map(s=>{
-    //                 s.tubsDim = eleDimensions(s.tubsRef.current)
-    //                 return s
-    //             })
-    //             return prevState
-    //         })
-    //     } catch (e) {}
-    // }
+    onKeyUp(e){
+        if (e.key === 'f') {
+            this.return()
+        }
+    }
 
+    blockingFunc(key, navTree, focusedNode) {
+        const {turn, sideProps} = this.state
+        if (!navTree.focusedNode && sideProps[turn].tubsClickable) {
+            return ['' + turn, '0']
+        }
+        const [oCLickable, pCLickable] = sideProps.map(s=>s.tubsClickable)
+        let next = navDynamic(key, navTree, focusedNode)
+        if ((next === '0' && !oCLickable) || next === '1' && !pCLickable) {
+            navTree.focus(navTree.getFocusedPath())
+            return
+        }
+        return next
+    }
 
     componentDidMount(){
         // let {sideProps} = this.state
@@ -877,14 +891,12 @@ export default class Game extends React.Component {
         }
         this.onResize()
         window.addEventListener("resize", this.onResize)
+        window.addEventListener("keyup", this.onKeyUp)
     }
 
     componentWillUnmount(){
         window.removeEventListener("resize", this.onResize)
-    }
-
-    funcClickable(key, navTree, focusedNode) {
-        return navDynamic(key, navTree, focusedNode)
+        window.removeEventListener("keyup", this.onKeyUp)
     }
 
     renderSide(side){
@@ -907,7 +919,9 @@ export default class Game extends React.Component {
         const {ignoreFull, pickable, caravan} = this.props.settings
         const isPVP = this.props.settings.gameType === 'PVP'
         return (
-            <Nav className="game" func={this.funcClickable} ref={nav => {this.navTree = nav && nav.tree}}>
+            <Nav className="game" ref={(nav) => {
+                this.tree = nav && nav.tree
+            }} func={this.blockingFunc}>
                 {this.renderSide(0)}
                 {this.renderSide(1)}
                 {this.state.flytextProps.display && <Flytext {...this.state.flytextProps}/>}

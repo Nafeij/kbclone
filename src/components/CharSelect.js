@@ -4,16 +4,16 @@ import React from "react"
 import Nav from "react-navtree"
 
 import Profile from "../util/Profile"
-import SlidePane from "./SlidePane"
-import KButton from "./KButton"
 import Bar from "./Bar"
+import KButton from "./KButton"
+import SlidePane from "./SlidePane"
 
-import Squiggle from "./Squiggle"
-import skullImg from "../img/skulls.png"
-import skullRImg from "../img/skulls_red.png"
-import skullBImg from "../img/skulls_blue.png"
 import heartsImg from "../img/hearts.png"
+import skullImg from "../img/skulls.png"
+import skullBImg from "../img/skulls_blue.png"
+import skullRImg from "../img/skulls_red.png"
 import sprites from "../img/sprites.png"
+import Squiggle from "./Squiggle"
 
 export default function CharSelect (props) {
 

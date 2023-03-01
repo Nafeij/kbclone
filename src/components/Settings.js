@@ -1,13 +1,13 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react"
-import Nav, {navVertical} from 'react-navtree'
+import Nav, { navVertical } from 'react-navtree'
 
+import Profile from "../util/Profile"
+import { caravanBounds, timeFormatLong } from "../util/Utils"
 import KButton from './KButton.js'
 import NavInput from "./NavInput.js"
 import PicSelect from "./PicSelect.js"
-import Profile from "../util/Profile"
-import { caravanBounds, timeFormatLong } from "../util/Utils"
 
 import sprites from "../img/sprites.png"
 import Squiggle from "./Squiggle"
@@ -101,7 +101,7 @@ const Settings = (props) => {
                         navId="TabBar"
                         // onNav={path => {if (path) switchTab(Number(path[0]))}}
                         onClick={()=>switchTab(!activeTab + 0)}
-                        func={ key => (key === 'left' || key === 'right') && switchTab(!activeTab + 0) }
+                        func={ key => (key !== 'up' && key !== 'down') && switchTab(!activeTab + 0) }
                     >
                         <div className={`arrowL ${tabs[activeTab] === 'gameplay' ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}}/>
                         <div className={`Tab ${tabs[activeTab] === 'gameplay' ? 'hovering':''}`}>Gameplay</div>

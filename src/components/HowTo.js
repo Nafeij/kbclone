@@ -1,7 +1,5 @@
 /* eslint react/prop-types: 0 */
 
-import Nav from 'react-navtree'
-
 import React from "react"
 import Die from "./Die"
 import KButton from './KButton'

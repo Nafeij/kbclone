@@ -1,15 +1,15 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react"
-import Nav, { navDynamic, navHorizontal } from 'react-navtree'
+import Nav from 'react-navtree'
 
+import Bar from "./Bar"
 import Die from "./Die"
 import Tub from "./Tub"
-import Bar from "./Bar"
 
-import { timeFormat } from "../util/Utils"
-import rollerImg from "../img/sprites.png"
 import heartsImg from "../img/hearts.png"
+import rollerImg from "../img/sprites.png"
+import { timeFormat } from "../util/Utils"
 import Squiggle from "./Squiggle"
 
 const Timer = (props) => (
@@ -21,6 +21,7 @@ export default class Side extends React.Component {
         const id = this.props.id
         return (<Tub
             {...this.props.tubProps[i]}
+            defaultFocused={i === 0}
             boxAspectRatio={this.props.boxAspectRatio}
             tubLen={this.props.tubLen}
             key = {i}
@@ -45,7 +46,7 @@ export default class Side extends React.Component {
                 dim={{width: '8.14vmin', height : '3vmin'}}/>
                 : null
         return (
-            <Nav className="side" id={id ? "player" : "opponent"} navId={'side ' + id} defaultFocused={isTurn}>
+            <div className="side" id={id ? "player" : "opponent"}>
                 <div className="board">
                     <div
                         className='roller' onAnimationEnd={()=>{if (isTurn && !rolled){
@@ -58,7 +59,7 @@ export default class Side extends React.Component {
                         </div>
                     </div>
                     <div className="tubs" ref={tubsRef}>
-                        <Nav className="tubbox" style={{maxWidth}}>
+                        <Nav className="tubbox" style={{maxWidth}} defaultFocused={isTurn} navId={'' + id}>
                             {Array(numTubs).fill().map((_,i)=>this.renderTub(i))}
                         </Nav>
                     </div>
@@ -75,7 +76,7 @@ export default class Side extends React.Component {
                             onAnimationEnd={onSideScoreAnimEnd}>{score}{timer}{hBar}</div>
                     </div>
                 </div>
-            </Nav>
+            </div>
         )
     }
 }

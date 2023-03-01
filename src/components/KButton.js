@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import React, { useRef } from "react";
-import Nav from 'react-navtree'
+import Nav from 'react-navtree';
 
 const KButton = (props) => {
 

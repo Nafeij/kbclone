@@ -1,18 +1,21 @@
-import React, { useState } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
-// import './game.css'
-import './game.sass'
-import App from './App'
+import { BrowserRouter } from 'react-router-dom'
 import reportWebVitals from './reportWebVitals'
-import {NavTree} from 'react-navtree'
 
+// import './game.css'
+import { NavTree } from 'react-navtree'
+import App from './App'
+import './game.sass'
 // At the bootstrap phase (before rendering the app):
 
 const navTree = new NavTree()
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <App tree={navTree}/>
+  <BrowserRouter>
+    <App tree={navTree}/>
+  </BrowserRouter>
 )
 
 // If you want to start measuring performance in your app, pass a function

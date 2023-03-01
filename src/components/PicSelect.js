@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
-import React, {useRef, useEffect} from 'react'
-import Nav, {navDynamic} from 'react-navtree'
+import React, { useEffect, useRef } from 'react'
+import Nav, { navDynamic } from 'react-navtree'
 
 import Profile from '../util/Profile'
 

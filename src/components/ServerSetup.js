@@ -3,10 +3,10 @@
 import React, { useEffect, useRef } from "react";
 import Nav, { navDynamic } from "react-navtree";
 
-import KButton from "./KButton";
-import PicSelect from "./PicSelect";
 import Profile from "../util/Profile";
+import KButton from "./KButton";
 import NavInput from "./NavInput";
+import PicSelect from "./PicSelect";
 
 
 export default function ServerSetup (props) {

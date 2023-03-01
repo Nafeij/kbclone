@@ -2,7 +2,6 @@
 
 import React from "react";
 
-
 const Die = React.forwardRef((props, ref) =>{
 	const {height, transition, translate, scale, shrink, shrinkPreview, cheat, match, num, onMovEnd, onShrinkEnd,
 		transitionTimingFunction, diceColor, diceBorder, pipColor, zIndex, isCaravan, marginLeft, marginTop} = props

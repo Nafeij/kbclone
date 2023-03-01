@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
-import React from "react";
-import { strictMod } from "../util/Utils";
+import React from "react"
+import { strictMod } from "../util/Utils"
 
 const SLIDE_FACTOR = 2.0
 
