@@ -154,3 +154,20 @@ export function keyConvert(key) {
           return 'enter'
     }
 }
+
+export const GameType = {
+    DEFAULT : 0,
+    AI : 1,
+    ONLINE : 2,
+}
+
+export function typeFromParam(param) {
+    switch (param) {
+        case 'io':
+            return GameType.ONLINE
+        case 'shack':
+            return GameType.AI
+        default:
+            return GameType.DEFAULT
+    }
+}

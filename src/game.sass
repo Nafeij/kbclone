@@ -10,20 +10,6 @@ $font-family_2: "Times New Roman", Times, serif
 $font-family_3: Open Sans, sans-serif
 $font-family_4: "Courier New", Courier, monospace
 
-/* .title.rot {
- *	transform: rotate(45deg);
- *}
-/* .react-switch-label:active .react-switch-button {
- *	width: 60px;
- *}
-/* .dice {
- *	background: url("dices.png") 0 center / cover no-repeat;
- *	aspect-ratio: 1/1;
- *	flex: .8 .8 0;
- *	background-position-x: 0;
- *	z-index: 1;
- *}
-/* This selects the last pip of odd-valued dice (1, 3, 5) and positions the pip in the center
 @keyframes lds-ring
   0%
     rotate: 0deg
@@ -158,6 +144,7 @@ body
   overflow: hidden
   position: relative
   height: 100%
+  z-index: -1
 
 .menu
   position: absolute
@@ -171,7 +158,7 @@ body
   left: 0
   width: 100vw
   background: rgb(137, 118, 100)
-  z-index: 2
+  // z-index: 2
 
   &::before
     width: 100%
@@ -194,15 +181,29 @@ body
   > .menubox
     z-index: 1
 
-  &.fadeable
+.fade-enter
+  opacity: 0
+  z-index: 1
+
+  &.fade-enter-active
     opacity: 1
-    transition: opacity .5s
-    &.hide
-      opacity: 0
-      transition: opacity .5s
+    transition: opacity 300ms linear
+
+.fade-exit
+  z-index: 0
+  opacity: 1
+
+.game ~ .fade-exit
+  z-index: 1
+
+  &.fade-exit-active
+    opacity: 0
+    transition: opacity 300ms linear
+
+
 
 .menubox
-  z-index: 0
+  // z-index: 0
   flex: 3
   display: flex
   align-items: center
@@ -325,7 +326,7 @@ body
   left: 1rem
   display: flex
   gap: 1rem
-  z-index: 3
+  z-index: 1
   justify-content: center
   align-items: center
   color: $color_1
@@ -701,18 +702,11 @@ body
   flex-direction: column
   align-items: baseline
 
-  &:hover
-    z-index: 1
-
-    .subtitle
-      opacity: 1
-
   .subtitle
     font-family: $font-family_3
     font-size: 1rem
     font-style: italic
     letter-spacing: .14rem
-    opacity: .5
     font-weight: bold
     flex: 1
 
@@ -744,10 +738,6 @@ body
     flex-direction: row
     gap: 1em
     justify-content: center
-    z-index: 0
-
-    &:hover
-      z-index: 1
 
 .testColor
   width: auto
@@ -835,7 +825,6 @@ body
   translate: -50% -50%
   width: 5.5rem
   height: 5.5rem
-  z-index: 99
 
   p
     font-size: 2rem
@@ -868,9 +857,9 @@ body
     color: $color_1
 
 .navigable .kbutton.nav-focused
-    background-color: red !important
-    border-color: maroon
-    color: $color_1
+  background-color: red !important
+  border-color: maroon
+  color: $color_1
 
 .ssBox
   display: flex
@@ -1134,7 +1123,7 @@ body
   color: $color_1
   grid-column: 2 /span 1
   order: 3
-  z-index: 2
+  // z-index: 2
   position: relative
   animation: movDown .9s 1 ease-out forwards
   gap: .3rem
@@ -1285,7 +1274,7 @@ body
   grid-template-columns: repeat(3, minmax(0, 1fr))
   grid-template-rows: repeat(3, minmax(0, 1fr))
   padding: .1rem
-  z-index: 1
+  // z-index: 0
   position: relative
 
   &::after

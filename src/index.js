@@ -10,10 +10,9 @@ import './game.sass'
 // At the bootstrap phase (before rendering the app):
 
 const navTree = new NavTree()
-
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename='/kbclone'>
     <App tree={navTree}/>
   </BrowserRouter>
 )

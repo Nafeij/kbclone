@@ -1,8 +1,10 @@
 /* eslint react/prop-types: 0 */
 
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
 import Nav, { navVertical } from 'react-navtree'
+import { TransitionGroup, CSSTransition } from "react-transition-group"
+import { Route, Routes } from 'react-router-dom'
+
 import Cookies from 'universal-cookie'
 
 import CharSelect from './components/CharSelect.js'
@@ -13,9 +15,10 @@ import KButton from './components/KButton.js'
 import Loading from './components/Loading.js'
 import ServerSetup from './components/ServerSetup.js'
 import Settings from './components/Settings.js'
+import { withLocation, withNavigate } from './NavHooks.js'
 import Profile from './util/Profile.js'
 import Server from './util/Server.js'
-import { caravanBounds, keyConvert, randomInRange, strictMod } from './util/Utils.js'
+import { caravanBounds, GameType, keyConvert, randomInRange, strictMod } from './util/Utils.js'
 
 import akey from "./img/akey.png"
 import dkey from "./img/dkey.png"
@@ -23,69 +26,63 @@ import fkey from "./img/fkey.png"
 import logo from "./img/logo.png"
 
 const MainMenu = (props) => (
-  <div className={`menu fadeable ${props.fadeAway ? 'hide' : ''}`} style={{pointerEvents: props.pointerEvents}}
-    onTransitionEnd={ () => { props.fadeAway ?  props.onFadeOut() : props.onFadeIn() } }>
+  <div className='menu' style={{pointerEvents: props.pointerEvents}}>
     <div className='menubox'>
       <div className='title' style={{backgroundImage: `url(${logo})`}}/>
       <div className='text'>Based on the dice game of risk and reward from Cult of the Lamb</div>
       {props.buttons.map((btn,i)=>(
         <div key={i}>
-          <KButton defaultFocused={i === 0} text={btn.text} navId={`mainButton ${i}`} onClick={btn.onClick} hasSpacer={i === 0} />
+          <KButton defaultFocused={i === 0} text={btn.text} navId={`mainButton ${i}`} onClick={() => props.navigate(btn.to)} hasSpacer={i === 0} />
         </div>
       ))}
     </div>
   </div>
 )
 
-export default class App extends React.Component{
+class App extends React.Component{
 
   constructor(props){
     super(props)
     this.server = new Server()
     this.cookies = new Cookies()
-    this.maxAge = 60 * 60 * 24 * 365 * 100
+    this.maxAge = 60 * 60 * 24 * 365 * 100;
+    ['statUpdate', 'setProfileInd', 'modAIInd', 'modSetAIInd', 'startAIGame', 'return', 'setNavigable', 'setUnNavigable', 'navigate', 'keyNav', 'cleanup'].forEach(
+      (fn) => this[fn] = this[fn].bind(this)
+    )
     this.state = {
-      loadedPages : new Set(['mainMenu']),
       pageProps : {
         mainMenu:{
-          fadeAway: false,
-          onFadeOut: ()=>{},
-          onFadeIn: ()=>{
-            const {loadedPages} = this.state
-            loadedPages.clear()
-            loadedPages.add('mainMenu')
-            this.setState({
-              loadedPages,
-              settingChanged : false
-            })
-          },
+          navigate : this.navigate,
           buttons: [
             {
               text : 'Play',
-              onClick: this.startGame
+              to: '/play'
             },
             {
               text : 'Play with the Shack',
-              onClick: this.startCharSelect
+              to : '/shack',
             },
             {
               text : 'Play with a Friend',
-              onClick: this.startServerSetup
+              to : '/io'
             },
             {
               text : 'Settings',
-              onClick: this.startSettings
+              to : '/settings'
             },
             {
               text : 'How to Play',
-              onClick: this.startHt
+              to : '/help'
             }
           ]
         },
         howTo : {
           onClick: this.return
         },
-        game : null,
+        game : {
+          return : this.return,
+          statUpdate : this.statUpdate
+        },
         charSelect : {
           buttons: [
             {
@@ -98,16 +95,7 @@ export default class App extends React.Component{
           ],
           modAIInd : this.modAIInd,
           modSetAIInd: this.modSetAIInd,
-          fadeAway : false,
-          hasWrapped: false,
-          onFade : (fadeAway)=>{
-            const {loadedPages} = this.state
-            if (fadeAway) {
-              loadedPages.clear()
-              loadedPages.add('game')
-              this.setState({loadedPages})
-            }
-          }
+          hasWrapped: false
         },
         serverSetup: {
           buttons: [
@@ -154,16 +142,7 @@ export default class App extends React.Component{
           lock : false,
           shake : false,
           onShakeDone : ()=>{},
-          fadeAway : false,
           showProfiles : false,
-          onFade : (fadeAway)=>{
-            const {loadedPages} = this.state
-            if (fadeAway) {
-              loadedPages.clear()
-              loadedPages.add('game')
-              this.setState({loadedPages})
-            }
-          },
           setUsername : (evt)=>{
             const gameSettingsProps = this.state.gameSettingsProps
             gameSettingsProps.name = evt.target.value
@@ -227,7 +206,7 @@ export default class App extends React.Component{
                   gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
                 }
                 this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge: this.maxAge, sameSite : 'strict' });
-                this.setState({gameSettingsProps},this.return)
+                this.setState({gameSettingsProps, settingChanged : false},this.return)
               },
               enabled : true
             },
@@ -254,7 +233,12 @@ export default class App extends React.Component{
           }
         }
       },
-      flytextProps: null,
+      flytextProps: {
+        message : '',
+        display : false,
+        show: false,
+        timeOut : 1,
+      },
       selectedAIInd : 0,
       roomID : '',
       isLoading : false,
@@ -266,18 +250,18 @@ export default class App extends React.Component{
         diceBorder : ['#d7cbb3', '#d7cbb3'],
         pipColor : ['#382020','#382020'],
         // time : 120
-        time : null,
+        time,
+        turn,
         pickable : false,
         ignoreFull : false,
         preview : false,
         // caravan : [10,18]
-        caravan : null,
-        turnLimit : null,
+        caravan,
+        turnLimit,
         playProfileInd : 0,
         oppProfileInd : 0,
         name : Profile.cosm[0].name,
-        oppName : Profile.cosm[0].name,
-        gameType : 'DEFAULT'
+        oppName : Profile.cosm[0].name
       },
       settingsRanges : {
         time : {rcursor : 0, range : [null, 1, 5, 10, 20, 30, 60]},
@@ -305,17 +289,16 @@ export default class App extends React.Component{
             highestScore : null
           }))
         , time : 0}
-      }
-      , navEnabled : true
-    };
-    ['startCharSelect', 'startGame', 'startHt', 'startSettings', 'startServerSetup',
-    'pageTransition', 'statUpdate', 'setProfileInd', 'modAIInd', 'modSetAIInd',
-    'startAIGame', 'return', 'setNavigable', 'setUnNavigable', 'navigate'].forEach(
-      (fn) => this[fn] = this[fn].bind(this)
-    )
+      },
+      navEnabled : true
+    }
   }
 
-  statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList){
+  navigate(to = ''){
+    this.props.navigate(to, { replace: true })
+  }
+
+  statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList, gameType){
     let {statsProps, gameSettingsProps} = this.state
     statsProps.aggregate = statsProps.aggregate.map((side,i)=>{
       side.numDestroyed += destroyedList[i]
@@ -336,9 +319,8 @@ export default class App extends React.Component{
       }
       return side
     })
-
     let focusBreakdown
-    if (gameSettingsProps.gameType === 'AI'){
+    if (gameType === GameType.AI){
       focusBreakdown = statsProps.aiBreakdown[gameSettingsProps.oppProfileInd]
     } else {
       focusBreakdown = statsProps.pvpBreakdown
@@ -358,50 +340,11 @@ export default class App extends React.Component{
     this.setState({statsProps})
   }
 
-  pageTransition({name, pageProps = this.state.pageProps, ...rest}){
-    const {loadedPages} = this.state
-    loadedPages.add(name)
-    pageProps.mainMenu.fadeAway = true
-    pageProps.mainMenu.onFadeOut = ()=>{
-      // console.log(this.state.loadedPages)
-      loadedPages.clear()
-      loadedPages.add(name)
-      this.setState({
-        loadedPages,
-        settingChanged : false
-      })
-    }
-    this.setState({pageProps, loadedPages, ...rest})
-  }
-
-  startGame(){
-    // this.cookies.set('statsProps', {a:1}, { path: '/', maxAge: this.maxAge, sameSite : 'strict'});
-    //console.log('test')
-    const {pageProps, gameSettingsProps} = this.state
-    gameSettingsProps.oppName = gameSettingsProps.name
-    gameSettingsProps.oppProfileInd = gameSettingsProps.playProfileInd
-    gameSettingsProps.gameType ='DEFAULT'
-    pageProps.game = {
-      settings : gameSettingsProps,
-      return : this.return,
-      statUpdate : ()=>{}
-    }
-    this.pageTransition({name: 'game', pageProps, gameSettingsProps})
-  }
-
-  startHt(){
-    this.pageTransition({name: 'howTo'})
-  }
-
   cycleSetting(propsName,settingName,change,clamp){
     const sprops = this.state[propsName]
     sprops[settingName] = (sprops[settingName] + change + clamp) % clamp
     this.setState({propsName: sprops})
     return sprops[settingName]
-  }
-
-  startSettings(){
-    this.pageTransition({name: 'settings'})
   }
 
   setProfileInd(i){
@@ -410,12 +353,6 @@ export default class App extends React.Component{
     gameSettingsProps.playProfileInd = i
     this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge: this.maxAge, sameSite : 'strict' });
     this.setState({gameSettingsProps})
-  }
-
-  startCharSelect(){
-    const {pageProps} = this.state
-    pageProps.charSelect.fadeAway = false
-    this.pageTransition({name: 'charSelect', pageProps})
   }
 
   modAIInd(i){
@@ -443,31 +380,36 @@ export default class App extends React.Component{
   }
 
   showFlytext(text){
-    const flytextProps = {
-      message : text,
-      show : true,
-      timeOut : 1,
-    }
+    const {flytextProps} = this.state
+    flytextProps.message = text
+    flytextProps.display = true
+    flytextProps.show = false
     this.setState({flytextProps})
     setTimeout(()=>{
-      flytextProps.show = false
+      flytextProps.show = true
       flytextProps.slideEnd = () => {
-        this.setState({flytextProps : null})
+        setTimeout(()=>{
+          flytextProps.show = false
+          flytextProps.slideEnd = () => {
+            flytextProps.display = false
+            this.setState({flytextProps})
+          }
+          this.setState({flytextProps})
+        }, 2000)
       }
       this.setState({flytextProps})
-    }, 2000)
+    }, 100)
   }
 
-  startServerSetup(){
+  cleanup() {
     const {pageProps} = this.state
     pageProps.serverSetup.lock = false
-    pageProps.serverSetup.fadeAway = false
     pageProps.serverSetup.buttons[2].text = 'Create Room'
     pageProps.serverSetup.buttons[0].onClick = ()=>{
       this.server.close()
       this.return()
     }
-    this.pageTransition({name: 'serverSetup', pageProps})
+    this.setState({pageProps, isLoading : false})
   }
 
   startRoom(){
@@ -486,8 +428,8 @@ export default class App extends React.Component{
       count = (count + 1) % 4
     },1000)
     pageProps.serverSetup.buttons[0].onClick = ()=>{
-      this.setState({isLoading : false})
       clearInterval(interval)
+      this.cleanup()
       this.server.close()
       this.return()
     }
@@ -548,7 +490,7 @@ export default class App extends React.Component{
 
   async startPVPGame(name){
     // console.log(' Player: ' + name + ' Opponent: ' + oppName)
-    let turn, gameSettingsProps = this.state.gameSettingsProps
+    let turn, {gameSettingsProps} = this.state
     const playProfileInd =  gameSettingsProps.playProfileInd
     if(this.server.isHost){
       turn = randomInRange(2)
@@ -575,21 +517,9 @@ export default class App extends React.Component{
         oppProfileInd : init.oppProfileInd
       }
     }
-    let {pageProps, loadedPages} = this.state
-    gameSettingsProps.gameType = 'PVP'
-    pageProps.game = {
-      settings : gameSettingsProps,
-      turn,
-      return : () => {
-        this.server.close()
-        this.return()
-      },
-      statUpdate : this.statUpdate
-    }
-    pageProps.serverSetup.fadeAway = true
-    pageProps.serverSetup.lock = false
-    loadedPages.add('game')
-    this.setState({pageProps, gameSettingsProps, isLoading : false, loadedPages})
+    gameSettingsProps.turn = turn
+    this.cleanup()
+    this.setState({gameSettingsProps}, ()=>{this.navigate('/io/play')})
   }
 
   shakeServer(){
@@ -615,48 +545,31 @@ export default class App extends React.Component{
   }
 
   startAIGame(){
-    const {pageProps, gameSettingsProps, loadedPages} = this.state
+    const {pageProps, gameSettingsProps} = this.state
     gameSettingsProps.oppProfileInd = this.state.selectedAIInd
     gameSettingsProps.oppName = Profile.ai[this.state.selectedAIInd].name
-    gameSettingsProps.gameType = 'AI'
-    pageProps.game = {
-      settings : gameSettingsProps,
-      statUpdate : this.statUpdate,
-      return : this.return,
-    }
-    pageProps.charSelect.fadeAway = true
-    loadedPages.add('game')
-    this.setState({pageProps, loadedPages})
+    this.setState({pageProps, gameSettingsProps}, ()=>{this.navigate('/shack/play')})
   }
 
   return(){
-    if (this.server.peer && !this.server.peer.destroyed) this.server.close()
-    let {pageProps, loadedPages} = this.state
-    loadedPages.add('mainMenu')
-    pageProps.mainMenu.fadeAway = true
-    this.setState({pageProps, loadedPages},() => {
-      setTimeout(()=>{
-        pageProps.mainMenu.fadeAway = false
-        this.setState({pageProps})
-      }, 10)
-    })
+    this.server.close()
+    this.navigate('')
   }
 
   setNavigable(e){
-    const {navEnabled} = this.state
-    if (!navEnabled) {
+    if (!this.state.navEnabled) {
       // We consume the event on nav context switch to prevent unintended selection
       this.setState({navEnabled : true})
       if (["Enter", "e", " "].includes(e.key)) return
     }
-    this.navigate(e)
+    this.keyNav(e)
   }
 
   setUnNavigable(){
-    this.setState({navEnabled : false})
+    this.state.navEnabled && this.setState({navEnabled : false})
   }
 
-  navigate(e){
+  keyNav(e){
     // e.stopPropagation()
     if (e.key === "Tab") {
       e.preventDefault()
@@ -682,30 +595,45 @@ export default class App extends React.Component{
   }
 
   render(){
-    const {flytextProps, isLoading, pageProps, loadedPages, gameSettingsProps,statsProps,
-      settingsRanges, settingChanged, roomID, selectedAIInd, navEnabled} = this.state
+    const {flytextProps, isLoading, pageProps, gameSettingsProps, statsProps,
+      settingsRanges, settingChanged, roomID, selectedAIInd, navEnabled, locChanged} = this.state
     return (
       <Nav id='app' tree={this.props.tree} className={navEnabled ? 'navigable' : null} func={navVertical}>
-        {(flytextProps) && <Flytext {...flytextProps} />}
+        <Flytext {...flytextProps} />
         <Loading show={isLoading}/>
         <div className='footer'>
-          <div className="fcontain mobile" style={{display : loadedPages.has('game') ? 'flex' : 'none'}} onClick={this.return}>
-            <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
-          </div>
           <div className="fcontain">
             <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
           </div>
-          <div className="fcontain" style={{display : loadedPages.has('charSelect') ? 'flex' : 'none'}}>
-            <div className="symb dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
-          </div>
+          <Routes>
+            <Route path='/io?/shack?/play' element={
+              <div className="fcontain mobile" onClick={this.return}>
+                <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
+              </div>
+            } />
+            <Route path='/shack' element={
+              <div className="fcontain">
+                <div className="symb dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
+              </div>
+            } />
+            <Route path='*' element={<></>}/>
+          </Routes>
         </div>
-        {loadedPages.has('settings') && <Settings {...pageProps.settings} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} settingChanged={settingChanged} playProfileInd={gameSettingsProps.playProfileInd}/>}
-        {loadedPages.has('game') && <Game {...pageProps.game}/>}
-        {loadedPages.has('serverSetup') && <ServerSetup {...pageProps.serverSetup} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/>}
-        {loadedPages.has('charSelect') && <CharSelect {...pageProps.charSelect} selectedAIInd={selectedAIInd}/>}
-        {loadedPages.has('howTo') && <HowTo {...pageProps.howTo}/>}
-        {loadedPages.has('mainMenu') && <MainMenu {...pageProps.mainMenu}/>}
+        <TransitionGroup component={null}>
+          <CSSTransition key={this.props.location.key} classNames="fade" timeout={300}>
+            <Routes location={this.props.location}>
+              <Route path='/:gameType?/play' element={<Game {...pageProps.game} settings={gameSettingsProps}/>}/>
+              <Route path='/' element={<MainMenu {...pageProps.mainMenu}/>} />
+              <Route path='/settings' element={<Settings {...pageProps.settings} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} settingChanged={settingChanged}/>}/>
+              <Route path='/io/' element={<ServerSetup {...pageProps.serverSetup} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/>}/>
+              <Route path='/shack/' element={<CharSelect {...pageProps.charSelect} selectedAIInd={selectedAIInd}/>}/>
+              <Route path='/help' element={<HowTo {...pageProps.howTo}/>}/>
+            </Routes>
+          </CSSTransition>
+        </TransitionGroup>
       </Nav>
     )
   }
 }
+
+export default withLocation(withNavigate(App))

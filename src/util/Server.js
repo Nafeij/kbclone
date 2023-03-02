@@ -49,11 +49,13 @@ export default class Server{
         })
     }
     close(){
-        console.log('Closing connection')
-        this.msgQueue = []
-        this.isHost = false
-        clearInterval(this.waitMsg)
-        if (this.peer) this.peer.destroy()
+        if (this.peer && !this.peer.destroyed) {
+            console.log('Closing connection')
+            this.msgQueue = []
+            this.isHost = false
+            clearInterval(this.waitMsg)
+            this.peer.destroy()
+        }
     }
     send(msg){
         this.conn.send(msg)

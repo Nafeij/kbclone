@@ -2,47 +2,61 @@
 
 import React from "react";
 import Nav, { navDynamic } from "react-navtree";
-import Side from '../components/Side.js';
-import Flytext from "./Flytext.js";
 
+import Side from '../components/Side.js';
+import { withParams } from "../NavHooks.js";
 import { cheatDice, evaluate, scoreAll } from "../util/AI.js";
 import Profile from "../util/Profile.js";
 import Server from "../util/Server.js";
-import { convertToNumMat, defLength, eleDimensions, isFull, numMatchingDice, randomExcluding, randomInRange, scoreTub, tubBoxWidth } from '../util/Utils.js';
+import { convertToNumMat, defLength, eleDimensions, GameType, isFull, numMatchingDice, randomExcluding, randomInRange, scoreTub, tubBoxWidth, typeFromParam } from '../util/Utils.js';
+import Flytext from "./Flytext.js";
 import Loading from "./Loading.js";
 
 const scale = .95, numFaces = 6, boxAspectRatio = 7/5
 
-export default class Game extends React.Component {
+class Game extends React.Component {
     constructor(props){
         super(props)
+        this.gameType = typeFromParam(this.props.params.gameType)
         this.server = new Server()
-        this.tubBoxAspect = (props.settings.tubLen + .8) / (boxAspectRatio * props.settings.numTubs)
-        // console.log(this.tubBoxAspect)
-        const isAI = props.settings.gameType === 'AI',
-            oppProfile = isAI ? Profile.ai[props.settings.oppProfileInd] : Profile.cosm[props.settings.oppProfileInd]
-        let numLives = null
-        if (isAI){
-            if (Profile.ai[props.settings.oppProfileInd].effects.includes('life2')) numLives = 1
-            else if (Profile.ai[props.settings.oppProfileInd].effects.includes('life3')) numLives = 2
-        }
+        this.tubBoxAspect = (this.props.settings.tubLen + .8) / (boxAspectRatio * this.props.settings.numTubs)
+
+        let numLives, oppProfile,
+        {oppProfileInd, oppName, playProfileInd, name, numTubs, tubLen, preview, caravan, time, turnLimit} = this.props.settings
+        if (this.gameType === GameType.AI){
+            oppProfile = Profile.ai[oppProfileInd]
+            oppName = oppProfile.name
+            if (oppProfile.effects.includes('life2')) numLives = 1
+            else if (oppProfile.effects.includes('life3')) numLives = 2
+        } else {
+            if (this.gameType === GameType.DEFAULT) {
+                oppName = name
+                oppProfileInd = playProfileInd
+            }
+            oppProfile = Profile.cosm[oppProfileInd]
+        };
+
+        ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart', 'onResize'].forEach(func => {
+            this[func] = this[func].bind(this)
+        })
+
         this.state = {
             diceMatrix: Array.from({length:2}, ()=>(
-                Array.from({length: props.settings.numTubs},()=>(Array(props.settings.tubLen).fill(null)))
+                Array.from({length: numTubs},()=>(Array(tubLen).fill(null)))
                 )
             ),
             tubProps: Array.from({length:2},(_,i)=>(
-                Array.from({length: props.settings.numTubs}, (_,j) => ({
+                Array.from({length: numTubs}, (_,j) => ({
                     startShake: false,
                     animClass: '',
                     onScoreAnimEnd: ()=>{},
                     score: null,
                     oldScore: null,
                     scoreMemo: null,
-                    boxRefs: Array(props.settings.tubLen).fill().map(React.createRef),
+                    boxRefs: Array(tubLen).fill().map(React.createRef),
                     scoreScale: 'none',
-                    caravan : props.settings.caravan,
-                    scoreHover : this.props.settings.preview ? (h)=>{this.scoreHover(h,i,j)} : ()=>{}
+                    caravan : caravan,
+                    scoreHover : preview ? (h)=>{this.scoreHover(h,i,j)} : ()=>{}
                 })))
             ),
             sideProps: Array.from({length:2},(_,i)=>({
@@ -52,15 +66,15 @@ export default class Game extends React.Component {
                     score: 0,
                     scoreShown: false,
                     scoreShake: false,
-                    profile: i ? Profile.cosm[props.settings.playProfileInd] : oppProfile,
-                    name : i ? props.settings.name : props.settings.oppName,
+                    profile: i ? Profile.cosm[playProfileInd] : oppProfile,
+                    name : i ? name : oppName,
                     rollRef : React.createRef(),
                     tubsRef : React.createRef(),
-                    numTubs: props.settings.numTubs,
-                    tubLen: props.settings.tubLen,
+                    numTubs: numTubs,
+                    tubLen: tubLen,
                     maxWidth: 0,
                     boxAspectRatio,
-                    time : props.settings.time === null ? props.settings.time : -1,
+                    time : time === null ? time : -1,
                     maxLives : !i ? numLives : null,
                     lives : !i ? numLives : null,
                     prevDiceNum : 0,
@@ -87,17 +101,14 @@ export default class Game extends React.Component {
                     }
                 ]
             },
-            turnCount: props.settings.turnLimit,
+            turnCount: turnLimit,
             gameTime: null,
             turn: 0,
             rolled: false,
             slid: false,
             dkey: 0,
             isLoading: false
-        };
-        ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart'].forEach(func => {
-            this[func] = this[func].bind(this)
-        })
+        }
     }
 
     generateDice(){
@@ -152,7 +163,7 @@ export default class Game extends React.Component {
     async rollDice(){
         this.setState({rolled : true})
         let rnum
-        if (this.props.settings.gameType === 'PVP'){
+        if (this.gameType === GameType.ONLINE){
             if (this.state.turn){
                 rnum = randomInRange(6) + 1
                 this.server.send(rnum)
@@ -181,7 +192,7 @@ export default class Game extends React.Component {
                 clearInterval(interval)
                 const {diceMatrix, sideProps, turn} = this.state
                 const {profile , newDice} = sideProps[turn]
-                if (this.props.settings.gameType === 'PVP'){
+                if (this.gameType === GameType.ONLINE){
                     newDice.num = rnum
                     if (!turn) {
                         this.setState({isLoading : true})
@@ -214,7 +225,7 @@ export default class Game extends React.Component {
                     } else {
                         this.playerActivate()
                     }
-                } else if (this.props.settings.gameType === 'AI' && !turn){
+                } else if (this.gameType === GameType.AI && !turn){
                     const numMat = convertToNumMat(diceMatrix)
                     if(profile.effects.includes('cheat') && Math.random() > 0.5) {
                         let best = cheatDice(numMat, turn, numFaces, this.props.settings, this.state.turnCount)
@@ -242,14 +253,16 @@ export default class Game extends React.Component {
     playerActivate() {
         this.setTubClickable()
         const { sideProps, turn } = this.state
-        const { time, gameType } = this.props.settings
+        const { time } = this.props.settings
         if (time) {
             let thisTime = time
             sideProps[turn].time = thisTime
             this.timeInterval = setInterval(() => {
                 if (thisTime <= 0) {
                     clearInterval(this.timeInterval)
-                    if (gameType === 'PVP') this.server.send('timeout')
+                    if (this.gameType === GameType.ONLINE) {
+                        this.server.send('timeout')
+                    }
                     this.timeoutDestroy()
                 } else {
                     thisTime--
@@ -283,7 +296,7 @@ export default class Game extends React.Component {
 
         sideProps[turn].tubsClickable = true
         if (pickable) sideProps[!turn + 0].tubsClickable = true
-        this.tree.focus([turn + '', '1'])
+        this.tree && this.tree.focus([turn + '', '1'])
         tubProps = tubProps.map((side)=>{
             return side.map((tub)=>{
                 return {...tub, scoreMemo : null, oldScore : tub.score}
@@ -338,7 +351,6 @@ export default class Game extends React.Component {
                 const diceMatrix = this.state.diceMatrix.slice()
                 if (srcPos !== null) diceMatrix[turn][tubId][srcPos] = null
                 diceMatrix[turn][tubId][destPos] = newDice
-                // if (srcPos) console.log(newDice)
                 return this.updateCurrSide({newDice:null}, {diceMatrix}, ()=>{
                     resolve(num)
                 })
@@ -349,7 +361,7 @@ export default class Game extends React.Component {
     }
 
     async proccessTurn(tub, turn = this.state.turn){
-        if (this.props.settings.gameType === 'PVP' && this.state.turn){
+        if (this.gameType === GameType.ONLINE && this.state.turn){
             this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub, side : turn})
         }
         const memo = this.fetchMemo(turn, tub)
@@ -445,7 +457,8 @@ export default class Game extends React.Component {
         const destroyedList = sideProps.map(s=>(s.destroyed)),
             clearList = sideProps.map(s=>(s.cleared)),
             destroyedMaxTurnList = sideProps.map(s=>(s.destroyedTurn))
-        statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList)
+
+        this.gameType !== GameType.DEFAULT && statUpdate(time, winnerInd, scoreList, clearList, destroyedList, destroyedMaxTurnList, this.gameType)
     }
 
     showFlytext(text, timeOut=-1, delay=-1){
@@ -467,13 +480,13 @@ export default class Game extends React.Component {
                         ()=>{
                             flytextProps.show = false
                             flytextProps.slideEnd = () => {
-                                setTimeout(resolve, delay)
+                                resolve()
                                 flytextProps.display = false
                                 flytextProps.slideEnd = ()=>{}
                                 this.setState({flytextProps})
                             }
                             this.setState({flytextProps})
-                    }, timeOut))
+                        }, timeOut))
                 , 10))
             )
         }
@@ -482,15 +495,13 @@ export default class Game extends React.Component {
     async restart(){
         let turn = randomInRange(2)
         const flytextProps = this.state.flytextProps
-        if (this.props.settings.gameType === 'PVP'){
+        if (this.gameType === GameType.ONLINE){
             flytextProps.hover = true
-            flytextProps.onClick = ()=>{}
+            flytextProps.buttons[0].onClick = ()=>{}
             this.setState({flytextProps,isLoading : true})
             if(this.server.isHost){
                 this.server.send(!turn + 0)
                 await this.server.recv()
-                //const msg = await this.server.recv()
-                // console.log(msg)
             } else {
                 turn = await this.server.recv()
                 this.server.send('restart')
@@ -509,7 +520,7 @@ export default class Game extends React.Component {
         flytextProps.show = false
         flytextProps.slideEnd = ()=>{
             flytextProps.slideEnd = ()=>{}
-            flytextProps.onClick = ()=>{this.restart()}
+            flytextProps.buttons[0].onClick = this.restart
             flytextProps.display = false
             this.setState({diceMatrix, tubProps, sideProps, flytextProps, turn, rolled : false},()=> this.gameStart())
         }
@@ -610,7 +621,6 @@ export default class Game extends React.Component {
                         if (tub !== i || turn !== si) promises.push(this.updateScore(i, si, memo));
                     })
                 })
-                // console.log(promises)
                 Promise.all(promises).then(async ()=>{
                     diceMatrix = this.state.diceMatrix
                     for(let i = 0; i < diceLost.length; i++) {
@@ -618,7 +628,6 @@ export default class Game extends React.Component {
                             let freePos = 0
                             for(let k = 0; k < diceMatrix[i][j].length; k++) {
                                 const dice = diceMatrix[i][j][k]
-                                //console.log(`side ${i} tub ${j} box${k}`)
                                 if (dice){
                                     if (k !== freePos) {
                                         await this.handleMoveAnim(j, freePos, k, i)
@@ -635,20 +644,17 @@ export default class Game extends React.Component {
     }
 
     async destroyTub(tub, num, turn = this.state.turn, memo = null){
-        const {diceMatrix, sideProps, tubProps} = this.state
+        const {diceMatrix, sideProps} = this.state
         const oppTurn = !turn + 0
         let destroyed = 0;
         const fLen = defLength(diceMatrix[oppTurn][tub])
         for (let i = 0; i < fLen; i++) {
-            // const dice = diceMatrix[turn][tub][i]
             const oppDice = diceMatrix[oppTurn][tub][i]
-            // console.log(`(${dice.num} : ${oppDice.num})`)
             if (num === oppDice.num){
                 destroyed++
                 oppDice.shrink = true
                 await new Promise((resolve)=>{
                     oppDice.onShrinkEnd = ()=>{
-                        // currDice.shrink = false
                         diceMatrix[oppTurn][tub][i] = null
                         this.setState({diceMatrix})
                         resolve()
@@ -699,19 +705,14 @@ export default class Game extends React.Component {
         if (scoreMemo) {
             newScore = scoreMemo[0][turn][i]
         }
-        // tubProps[turn][i].oldScore = newScore
-        // console.log(`${turn},${i} : memo fetch oldScore set ${newScore}`)
         this.setState({diceMatrix, tubProps})
         return this.handleScoreHover(newScore,turn,i,true)
     }
 
     handleScoreHover(newScore,side,tub,isHover){
         const tubProps = this.state.tubProps
-        //const p = tubProps.map((side)=>(side.map((tub)=>(tub.oldScore))))
-        //console.log(p)
         if (!isHover) {
             newScore = tubProps[side][tub].oldScore
-            // console.log(`${side},${tub} : oldScore ${newScore}`)
         }
         return new Promise((resolve)=>{
             if (!newScore) newScore = null
@@ -868,24 +869,28 @@ export default class Game extends React.Component {
     blockingFunc(key, navTree, focusedNode) {
         const {turn, sideProps} = this.state
         if (!navTree.focusedNode && sideProps[turn].tubsClickable) {
-            return ['' + turn, '0']
+            return '' + turn
+        }
+        let next = navDynamic(key, navTree, focusedNode)
+        if (next !== '0' && next !== '1') {
+            return next
         }
         const [oCLickable, pCLickable] = sideProps.map(s=>s.tubsClickable)
-        let next = navDynamic(key, navTree, focusedNode)
-        if ((next === '0' && !oCLickable) || next === '1' && !pCLickable) {
+        if ((next === '0' && !oCLickable) || (next === '1' && !pCLickable)) {
             navTree.focus(navTree.getFocusedPath())
-            return
+        } else if (next && next !== navTree.focusedNode) {
+            navTree.focus([next, navTree.getFocusedPath().at(-1)])
+            // console.log([next, navTree.getFocusedPath().at(-1)])
         }
-        return next
     }
 
     componentDidMount(){
         // let {sideProps} = this.state
         // sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
-        if (this.props.settings.gameType === 'PVP'){
+        if (this.gameType === GameType.ONLINE){
             const flytextProps = this.state.flytextProps
             flytextProps.buttons[1].text = "Disconnect"
-            this.setState({turn : this.props.turn, flytextProps})
+            this.setState({turn : this.props.settings.turn, flytextProps})
         } else {
             this.setState({turn : randomInRange(2)})
         }
@@ -917,11 +922,17 @@ export default class Game extends React.Component {
 
     render(){
         const {ignoreFull, pickable, caravan} = this.props.settings
-        const isPVP = this.props.settings.gameType === 'PVP'
+        const isPVP = this.gameType === GameType.ONLINE
         return (
-            <Nav className="game" ref={(nav) => {
+            <Nav className="game" func={(key, ...rest) => {
+                if (key === 'enter') {
+                    return navDynamic(key, ...rest)
+                } else {
+                    return this.blockingFunc(key, ...rest)
+                }
+            }} ref={(nav) => {
                 this.tree = nav && nav.tree
-            }} func={this.blockingFunc}>
+            }}>
                 {this.renderSide(0)}
                 {this.renderSide(1)}
                 {this.state.flytextProps.display && <Flytext {...this.state.flytextProps}/>}
@@ -939,3 +950,5 @@ export default class Game extends React.Component {
         )
     }
 }
+
+export default withParams(Game)

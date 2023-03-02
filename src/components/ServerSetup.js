@@ -8,10 +8,8 @@ import KButton from "./KButton";
 import NavInput from "./NavInput";
 import PicSelect from "./PicSelect";
 
-
 export default function ServerSetup (props) {
-    const {buttons, shake, onShakeDone, fadeAway,
-        onFade, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles} = props
+    const {buttons, shake, onShakeDone, setID, setUsername, roomID, lock, name, playProfileInd, setProfileInd, showProfiles} = props
     const returnId = 'return'
     const button = (i, space = false)=>(
         <KButton
@@ -31,7 +29,7 @@ export default function ServerSetup (props) {
         }
     }, [lock])
     return (
-    <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={()=>onFade(fadeAway)}>
+    <div className='menu'>
         <Nav className="menubox profile" func={(key, navTree, focusedNode) => {
             if (lock) return returnId
             tree.current = navTree

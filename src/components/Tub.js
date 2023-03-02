@@ -49,7 +49,7 @@ export default class Tub extends React.Component {
         if (!flip) ordering.reverse()
         return (
             <Nav className='tubOuter'
-                defaultFocused={defaultFocused}
+                // defaultFocused={defaultFocused}
                 onNav={(path) => {clickable && scoreHover(!!path)}}
                 func={(key) => {
                     key === 'enter' && proccessClick()

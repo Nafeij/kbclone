@@ -17,8 +17,7 @@ import Squiggle from "./Squiggle"
 
 export default function CharSelect (props) {
 
-    const {selectedAIInd, buttons, modAIInd,
-            fadeAway, onFade, modSetAIInd, hasWrapped} = props,
+    const {selectedAIInd, buttons, modAIInd, modSetAIInd, hasWrapped} = props,
         translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100
     let effect = null, cheat = false
@@ -35,7 +34,7 @@ export default function CharSelect (props) {
         }
     })
     return (
-        <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={()=>onFade(fadeAway)}>
+        <div className='menu'>
             <div className='menubox'>
                 <div className='subtitle'><Squiggle/>Select Opponent<Squiggle/></div>
                 <div className="slidePaneContainer">

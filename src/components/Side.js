@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React from "react"
-import Nav from 'react-navtree'
+import Nav, { navHorizontal } from 'react-navtree'
 
 import Bar from "./Bar"
 import Die from "./Die"
@@ -59,7 +59,7 @@ export default class Side extends React.Component {
                         </div>
                     </div>
                     <div className="tubs" ref={tubsRef}>
-                        <Nav className="tubbox" style={{maxWidth}} defaultFocused={isTurn} navId={'' + id}>
+                        <Nav className="tubbox" style={{maxWidth}} defaultFocused={isTurn} func={navHorizontal} navId={'' + id}>
                             {Array(numTubs).fill().map((_,i)=>this.renderTub(i))}
                         </Nav>
                     </div>
