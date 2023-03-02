@@ -250,14 +250,14 @@ class App extends React.Component{
         diceBorder : ['#d7cbb3', '#d7cbb3'],
         pipColor : ['#382020','#382020'],
         // time : 120
-        time,
-        turn,
+        time : null,
+        turn : null,
         pickable : false,
         ignoreFull : false,
         preview : false,
         // caravan : [10,18]
-        caravan,
-        turnLimit,
+        caravan : null,
+        turnLimit : null,
         playProfileInd : 0,
         oppProfileInd : 0,
         name : Profile.cosm[0].name,
