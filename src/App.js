@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React from 'react'
+import PropTypes from 'prop-types'
 import Nav, { navVertical } from 'react-navtree'
 import { TransitionGroup, CSSTransition } from "react-transition-group"
 import { Route, Routes } from 'react-router-dom'
@@ -24,6 +23,9 @@ import akey from "./img/akey.png"
 import dkey from "./img/dkey.png"
 import fkey from "./img/fkey.png"
 import logo from "./img/logo.png"
+import caravanImg from "./img/caravan.png"
+import hourGlass from "./img/hourglass.png"
+import pick from "./img/pick.png"
 
 const MainMenu = (props) => (
   <div className='menu' style={{pointerEvents: props.pointerEvents}}>
@@ -32,12 +34,21 @@ const MainMenu = (props) => (
       <div className='text'>Based on the dice game of risk and reward from Cult of the Lamb</div>
       {props.buttons.map((btn,i)=>(
         <div key={i}>
-          <KButton defaultFocused={i === 0} text={btn.text} navId={`mainButton ${i}`} onClick={() => props.navigate(btn.to)} hasSpacer={i === 0} />
+          <KButton defaultFocused={i === 0} text={btn.text} navId={`mainButton ${i}`} onClick={(e) => {props.navigate(btn.to)}} hasSpacer={i === 0} />
         </div>
       ))}
     </div>
   </div>
 )
+
+MainMenu.propTypes = {
+  pointerEvents: PropTypes.string,
+  buttons: PropTypes.arrayOf(PropTypes.shape({
+    text: PropTypes.string.isRequired,
+    to: PropTypes.string.isRequired
+  })).isRequired,
+  navigate: PropTypes.func.isRequired
+}
 
 class App extends React.Component{
 
@@ -95,7 +106,7 @@ class App extends React.Component{
           ],
           modAIInd : this.modAIInd,
           modSetAIInd: this.modSetAIInd,
-          hasWrapped: false
+          hasWrapped: 0
         },
         serverSetup: {
           buttons: [
@@ -207,8 +218,7 @@ class App extends React.Component{
                 }
                 this.cookies.set('gameSettingsProps', gameSettingsProps, { path: '/', maxAge: this.maxAge, sameSite : 'strict' });
                 this.setState({gameSettingsProps, settingChanged : false},this.return)
-              },
-              enabled : true
+              }
             },
             {
               text : 'Choose Form',
@@ -216,8 +226,7 @@ class App extends React.Component{
                 const {pageProps} = this.state
                 pageProps.settings.showProfiles = !pageProps.settings.showProfiles
                 this.setState({pageProps})
-              },
-              enabled : true
+              }
             }
           ],
           showProfiles : false,
@@ -596,29 +605,12 @@ class App extends React.Component{
 
   render(){
     const {flytextProps, isLoading, pageProps, gameSettingsProps, statsProps,
-      settingsRanges, settingChanged, roomID, selectedAIInd, navEnabled, locChanged} = this.state
+      settingsRanges, settingChanged, roomID, selectedAIInd, navEnabled} = this.state,
+      {caravan, pickable, ignoreFull} = gameSettingsProps
     return (
       <Nav id='app' tree={this.props.tree} className={navEnabled ? 'navigable' : null} func={navVertical}>
         <Flytext {...flytextProps} />
         <Loading show={isLoading}/>
-        <div className='footer'>
-          <div className="fcontain">
-            <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
-          </div>
-          <Routes>
-            <Route path='/io?/shack?/play' element={
-              <div className="fcontain mobile" onClick={this.return}>
-                <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
-              </div>
-            } />
-            <Route path='/shack' element={
-              <div className="fcontain">
-                <div className="symb dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
-              </div>
-            } />
-            <Route path='*' element={<></>}/>
-          </Routes>
-        </div>
         <TransitionGroup component={null}>
           <CSSTransition key={this.props.location.key} classNames="fade" timeout={300}>
             <Routes location={this.props.location}>
@@ -631,9 +623,57 @@ class App extends React.Component{
             </Routes>
           </CSSTransition>
         </TransitionGroup>
+        <div className='footer'>
+          <div className="fcontain">
+            <div className="symb" style={{backgroundImage: `url(${akey})`}}/><div className="text">Navigate</div>
+          </div>
+          <Routes>
+            <Route path='/shack' element={
+              <div className="fcontain mobile">
+                <div className="symb mobile dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
+              </div>
+            } />
+            <Route path='/io?/shack?/play' element={
+              <>
+                <div className="fcontain mobile" onPointerUp={this.return}>
+                  <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
+                </div>
+                <div className="fcontain mobile right">
+                  {ignoreFull &&
+                    <div className="symb mobile infoSymb" style={{backgroundImage: `url(${hourGlass})`}}>
+                      <div className="text">Game continues until there are no legal moves</div>
+                    </div>
+                  }
+                  {pickable &&
+                    <div className="symb mobile infoSymb" style={{backgroundImage: `url(${pick})`}}>
+                      <div className="text">You can place dice on the opposing board</div>
+                    </div>
+                  }
+                  {caravan &&
+                    <div className="symb mobile infoSymb" style={{backgroundImage: `url(${caravanImg})`}}>
+                      <div className="text">{`Caravan Rules: Over ${caravan[0]}, Under ${caravan[1]}`}</div>
+                    </div>
+                  }
+                </div>
+              </>
+            } />
+            <Route path='*' element={<></>}/>
+          </Routes>
+        </div>
       </Nav>
     )
   }
+}
+
+App.propTypes = {
+  tree: PropTypes.shape({
+    resolve: PropTypes.func.isRequired,
+    getFocusedPath: PropTypes.func.isRequired
+  }).isRequired,
+  location: PropTypes.shape({
+    key: PropTypes.string.isRequired
+    }).isRequired,
+  navigate: PropTypes.func.isRequired
 }
 
 export default withLocation(withNavigate(App))

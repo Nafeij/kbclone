@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
 import Nav, { navHorizontal } from 'react-navtree'
 
 import Bar from "./Bar"
@@ -16,18 +15,22 @@ const Timer = (props) => (
     <div className="timer" style={{color : props.color}}>{props.time}</div>
 )
 
+Timer.propTypes = {
+    time: PropTypes.node.isRequired,
+    color: PropTypes.string.isRequired
+}
+
 export default class Side extends React.Component {
     renderTub(i){
         const id = this.props.id
         return (<Tub
             {...this.props.tubProps[i]}
-            defaultFocused={i === 0}
             boxAspectRatio={this.props.boxAspectRatio}
             tubLen={this.props.tubLen}
             key = {i}
             diceList={this.props.diceMatrix[i]}
             clickable={this.props.tubsClickable}
-            flip={this.props.id}
+            flip={!!this.props.id}
             proccessClick={() => {if (this.props.tubsClickable) this.props.proccessClick(i, id)}}
             onShakeAnimEnd={() => this.props.onShakeAnimEnd(i, id)}
         />)
@@ -39,8 +42,7 @@ export default class Side extends React.Component {
             dname = name ? name : profile.name,
             isTurn = turn === id,
             shakeClass = scoreShake && scoreShown ? 'shake' : '',
-            timer = time === null || profile.skill !== undefined ? null :
-                <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/>,
+            timer = time !== null && profile.skill === undefined ? <Timer time={timeFormat(time)} color={time > 5 || time === -1? 'white' : 'red'}/> : null,
             hBar = maxLives ? <Bar progress={(lives + 1) / 3}
                 fillImg={heartsImg}
                 dim={{width: '8.14vmin', height : '3vmin'}}/>
@@ -79,4 +81,38 @@ export default class Side extends React.Component {
             </div>
         )
     }
+}
+
+Side.propTypes = {
+    id: PropTypes.number.isRequired,
+    newDice: PropTypes.object,
+    score: PropTypes.number.isRequired,
+    turn: PropTypes.number.isRequired,
+    rolled: PropTypes.bool.isRequired,
+    slid: PropTypes.bool.isRequired,
+    hasSlid: PropTypes.func.isRequired,
+    scoreShown: PropTypes.bool.isRequired,
+    scoreShake: PropTypes.bool.isRequired,
+    onSideScoreAnimEnd: PropTypes.func.isRequired,
+    profile: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        img: PropTypes.string.isRequired,
+        skill: PropTypes.number,
+        effects: PropTypes.arrayOf(PropTypes.string)
+    }).isRequired,
+    numTubs: PropTypes.number.isRequired,
+    name: PropTypes.string,
+    rollRef: PropTypes.object.isRequired,
+    tubsRef: PropTypes.object.isRequired,
+    time: PropTypes.number,
+    lives: PropTypes.number,
+    maxLives: PropTypes.number,
+    maxWidth: PropTypes.string,
+    boxAspectRatio: PropTypes.number.isRequired,
+    tubLen: PropTypes.number.isRequired,
+    tubsClickable: PropTypes.bool.isRequired,
+    proccessClick: PropTypes.func.isRequired,
+    onShakeAnimEnd: PropTypes.func.isRequired,
+    diceMatrix: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+    tubProps: PropTypes.arrayOf(PropTypes.object).isRequired
 }

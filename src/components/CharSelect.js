@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
 import Nav from "react-navtree"
 
 import Profile from "../util/Profile"
@@ -59,8 +58,8 @@ export default function CharSelect (props) {
                         }
                     }
                 }>
-                    <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
-                    <div className="charInfo" onClick={() => buttons[0].onClick()}>
+                    <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onPointerUp={()=>modAIInd(-1)} />
+                    <div className="charInfo" onPointerUp={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{translate: translationName + '%'}}>
                             {Profile.ai.map((p, i)=>(
@@ -83,10 +82,21 @@ export default function CharSelect (props) {
                         </div>
                     }
                     </div>
-                    <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(1)} />
+                    <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onPointerUp={()=>modAIInd(1)} />
                 </Nav>
-                <KButton className={`kbutton space`} onClick={() => buttons[1].onClick()} text={buttons[1].text}/>
+                <KButton className={`kbutton space`} onPointerUp={() => buttons[1].onClick()} text={buttons[1].text}/>
             </div>
         </div>
     )
+}
+
+CharSelect.propTypes = {
+    selectedAIInd: PropTypes.number.isRequired,
+    buttons: PropTypes.arrayOf(PropTypes.shape({
+        text: PropTypes.string,
+        onClick: PropTypes.func
+    })),
+    modAIInd: PropTypes.func.isRequired,
+    modSetAIInd: PropTypes.func.isRequired,
+    hasWrapped: PropTypes.number.isRequired
 }

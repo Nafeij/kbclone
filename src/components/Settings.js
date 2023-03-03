@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
 import Nav, { navVertical } from 'react-navtree'
 
 import Profile from "../util/Profile"
@@ -31,7 +30,18 @@ const Switch = ({ isOn, handleToggle, sid}) => (
       </Nav>
 )
 
+Switch.propTypes = {
+    isOn: PropTypes.bool.isRequired,
+    handleToggle: PropTypes.func.isRequired,
+    sid: PropTypes.number.isRequired
+}
+
 const Picker = ({color, onChange}) => (<NavInput type="color" className="testColor" value={color} onChange={e => onChange(e.target.value)}/>)
+
+Picker.propTypes = {
+    color: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired
+}
 
 const NavCounter = (props) => (
     <Nav sid={`counter ${props.id}`} className="settingInput" func={ key => {
@@ -42,20 +52,33 @@ const NavCounter = (props) => (
         <div
             className={`arrowL ${!props.within.l ? 'greyed':''}`}
             style={{backgroundImage:`url(${sprites})`}}
-            onClick={()=>{ props.within.l && props.click.l() }}
+            onPointerUp={()=>{ props.within.l && props.click.l() }}
         />
         {props.value}
         <div
             className={`arrowR ${!props.within.r ? 'greyed':''}`}
             style={{backgroundImage:`url(${sprites})`}}
-            onClick={()=>{ props.within.r && props.click.r() }}
+            onPointerUp={()=>{ props.within.r && props.click.r() }}
         />
     </Nav>
 )
 
+NavCounter.propTypes = {
+    id: PropTypes.string.isRequired,
+    value: PropTypes.node.isRequired,
+    within: PropTypes.shape({
+        l: PropTypes.bool.isRequired,
+        r: PropTypes.bool.isRequired
+    }).isRequired,
+    click: PropTypes.shape({
+        l: PropTypes.func.isRequired,
+        r: PropTypes.func.isRequired
+    }).isRequired
+}
+
 const Settings = (props) => {
-    const {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name, playProfileInd} = props.gameSettingsProps,
-    {mod, modDscrt, modBool, modSpec, modVal, modColor, settingChanged, tabs, activeTab, switchTab, showProfiles, setProfileInd, buttons, statsProps} = props,
+    const {mod, modDscrt, modBool, modSpec, modVal, modColor, settingChanged, tabs, activeTab, switchTab, showProfiles, setProfileInd, buttons, statsProps, gameSettingsProps} = props,
+    {tubLen, numTubs, diceColor, diceBorder, pipColor, time, pickable, caravan, turnLimit, ignoreFull, preview, name, playProfileInd} = gameSettingsProps,
     combiBreakdown = statsProps.aiBreakdown.slice(),
     tubLenInLimit = {l: tubLen > 1 && tubLen > numTubs - 2, r: tubLen < numTubs + 2},
     numTubsInLimit = {l: numTubs > 1 && numTubs > tubLen - 2, r: numTubs < tubLen + 2}
@@ -100,7 +123,7 @@ const Settings = (props) => {
                     <Nav className="menubox across TabBar"
                         navId="TabBar"
                         // onNav={path => {if (path) switchTab(Number(path[0]))}}
-                        onClick={()=>switchTab(!activeTab + 0)}
+                        onPointerUp={()=>switchTab(!activeTab + 0)}
                         func={ key => (key !== 'up' && key !== 'down') && switchTab(!activeTab + 0) }
                     >
                         <div className={`arrowL ${tabs[activeTab] === 'gameplay' ? 'greyed':''}`} style={{backgroundImage:`url(${sprites})`}}/>
@@ -288,7 +311,7 @@ const Settings = (props) => {
                             <div className="settingsItem">
                                 <div className='subtitle'>
                                     Caravan Rules
-                                    <div className='text'>{`over ${caravanBounds(tubLen)[0] - 1}, under ${caravanBounds(tubLen)[1] + 1}, ones are Jokers`}</div>
+                                    <div className='text'>{`${caravanBounds(tubLen)[0] - 1} is under, ${caravanBounds(tubLen)[1] + 1} is over, ones are Jokers`}</div>
                                 </div>
                                 <Switch sid={3} isOn={!!caravan} handleToggle={()=>{modSpec('caravan')}}/>
                             </div>
@@ -299,6 +322,43 @@ const Settings = (props) => {
             </div>
         </div>
     )
+}
+
+Settings.propTypes = {
+    mod: PropTypes.func.isRequired,
+    modDscrt: PropTypes.func.isRequired,
+    modBool: PropTypes.func.isRequired,
+    modSpec: PropTypes.func.isRequired,
+    modVal: PropTypes.func.isRequired,
+    modColor: PropTypes.func.isRequired,
+    settingChanged: PropTypes.bool.isRequired,
+    tabs: PropTypes.array.isRequired,
+    activeTab: PropTypes.number.isRequired,
+    switchTab: PropTypes.func.isRequired,
+    showProfiles: PropTypes.bool.isRequired,
+    setProfileInd: PropTypes.func.isRequired,
+    buttons: PropTypes.arrayOf(
+        PropTypes.shape({
+            text: PropTypes.string,
+            onClick: PropTypes.func.isRequired,
+        })
+    ).isRequired,
+    statsProps: PropTypes.object.isRequired,
+    gameSettingsProps: PropTypes.shape({
+        tubLen: PropTypes.number.isRequired,
+        numTubs: PropTypes.number.isRequired,
+        diceColor: PropTypes.arrayOf(PropTypes.string).isRequired,
+        diceBorder: PropTypes.arrayOf(PropTypes.string).isRequired,
+        pipColor: PropTypes.arrayOf(PropTypes.string).isRequired,
+        time: PropTypes.number,
+        pickable: PropTypes.bool.isRequired,
+        caravan: PropTypes.arrayOf(PropTypes.number),
+        turnLimit: PropTypes.number,
+        ignoreFull: PropTypes.bool.isRequired,
+        preview: PropTypes.bool.isRequired,
+        name: PropTypes.string.isRequired,
+        playProfileInd: PropTypes.number.isRequired,
+    }).isRequired,
 }
 
 export default Settings

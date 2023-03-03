@@ -1,10 +1,14 @@
-$color_1: white
-$color_2: #130a03
-$color_3: red
-$color_4: black
-$color_5: #01d5a2
-$color_6: #fff
-$color_7: gray
+$text-color: white
+$text-color-light: gray
+$pip-color: #382020 // #130a03
+$p1-color: red
+$p11-color: #BB0011
+$p12-color: #430011
+$p2-color: black
+$p3-color: #01d5a2
+$p4-color: #897664
+$p5-color: #232822
+
 $font-family_1: roboto thin, roboto, calibri
 $font-family_2: "Times New Roman", Times, serif
 $font-family_3: Open Sans, sans-serif
@@ -19,22 +23,22 @@ $font-family_4: "Courier New", Courier, monospace
 
 @keyframes shake-h-anim
   0%
-    translate: 6px
+    translate: 6%
 
   16%
-    translate: -6px
+    translate: -6%
 
-  33%
-    translate: 4px
+  32%
+    translate: 4%
 
   50%
-    translate: -4px
+    translate: -4%
 
-  67%
-    translate: 2px
+  64%
+    translate: 2%
 
-  83%
-    translate: -2px
+  82%
+    translate: -2%
 
   100%
     translate: 0
@@ -42,27 +46,27 @@ $font-family_4: "Courier New", Courier, monospace
 @keyframes scale-away
   0%
     scale: 1
-    translate: 6px
+    translate: 8%
 
   16%
     scale: .83
-    translate: -6px
+    translate: -8%
 
-  33%
+  32%
     scale: .67
-    translate: 4px
+    translate: 5%
 
   50%
     scale: .5
-    translate: -4px
+    translate: -5%
 
-  67%
+  64%
     scale: .33
-    translate: 2px
+    translate: 2%
 
-  83%
+  82%
     scale: .16
-    translate: -2px
+    translate: -2%
 
   100%
     scale: 0
@@ -88,14 +92,14 @@ $font-family_4: "Courier New", Courier, monospace
 
 @keyframes movLeft
   from
-    left: -100vw
+    left: -100%
 
   to
     left: 0
 
 @keyframes movRight
   from
-    left: 100vw
+    left: 100%
 
   to
     left: 0
@@ -124,7 +128,7 @@ html
   > div
     > .lds-ring
       div
-        border-color: white transparent transparent transparent
+        border-color: $text-color transparent transparent transparent
 
     > #flytext
       box-shadow: 0 0 0 50vh rgba(0, 0, 0, 0.7)
@@ -137,10 +141,12 @@ html
   overflow: hidden
   height: 100%
   outline: none
+  display: flex
+  flex-direction: column
 
 body
   margin: 0
-  background: linear-gradient(to right, rgb(67, 0, 17), rgb(187, 0, 17) 25%, rgb(137, 118, 100) 38%, rgb(137, 118, 100) 61%, rgb(187, 0, 17) 74%, rgb(67, 0, 17))
+  background: linear-gradient(to right, $p12-color, $p11-color 25%, $p4-color 38%, $p4-color 61%, $p11-color 74%, $p12-color)
   overflow: hidden
   position: relative
   height: 100%
@@ -153,11 +159,11 @@ body
   justify-content: center
   align-items: center
   text-align: center
-  color: $color_1
+  color: $text-color
   top: 0
   left: 0
   width: 100vw
-  background: rgb(137, 118, 100)
+  background: $p4-color
   // z-index: 2
 
   &::before
@@ -166,7 +172,7 @@ body
     display: block
     content: ""
     position: absolute
-    background: rgb(187, 0, 17)
+    background: $p11-color
     clip-path: polygon(0 10em, 10em 0, calc(100% - 10em) 0, 100% 10em, 100% calc(100% - 10em), calc(100% - 10em) 100%, 10em 100%, 0% calc(100% - 10em))
 
   &::after
@@ -175,7 +181,7 @@ body
     display: block
     content: ""
     position: absolute
-    background: rgb(17, 17, 17)
+    background: $p2-color
     clip-path: polygon(0 15em, 15em 0, calc(100% - 15em) 0, 100% 15em, 100% calc(100% - 15em), calc(100% - 15em) 100%, 15em 100%, 0% calc(100% - 15em))
 
   > .menubox
@@ -286,7 +292,7 @@ body
       z-index: 0
       top: 0
       display: block
-      color: $color_3
+      color: $p1-color
       font-size: 700%
       position: absolute
       left: 50%
@@ -303,7 +309,7 @@ body
       padding: 0
       opacity: 1
       z-index: 0
-      color: $color_2
+      color: $pip-color
       content: "☇"
       font-size: 350%
       left: 0
@@ -321,15 +327,16 @@ body
         translate: -50% 0
 
 .footer
-  position: absolute
-  bottom: 1rem
-  left: 1rem
+  bottom: 0
+  left: 0
+  width: 100%
   display: flex
-  gap: 1rem
-  z-index: 1
-  justify-content: center
+  justify-content: flex-start
+  // padding: 1.4rem
   align-items: center
-  color: $color_1
+  color: $text-color
+  z-index: 1
+  pointer-events: none
 
   .text
     font-size: 1.1rem
@@ -340,6 +347,15 @@ body
   gap: 1rem
   align-items: center
   justify-content: center
+  pointer-events: all
+  margin: 1.4rem 0 1.4rem 1.4rem
+
+.game ~ .footer>.fcontain
+  margin: 1.8rem 0 1rem 1rem
+
+  &.right
+    margin-left: auto
+    margin-right: 1.4rem
 
 .symb
   background-size: contain
@@ -353,6 +369,37 @@ body
 
 .dragSymb
   aspect-ratio: 2
+
+.infoSymb
+  background-size: contain
+  aspect-ratio: 1
+  height: 1.7rem
+
+  .text
+    position: absolute
+    display: none
+    background: $p5-color
+    padding: 0.8rem
+    right: 1.4rem
+    width: auto
+    bottom: 4rem
+    border-radius: 1rem 1rem 0 1rem
+    z-index: 4
+
+
+  &:active .text, &:hover .text
+    display: inline-block
+
+  + .infoSymb
+    margin-left: 1.6rem
+
+    &::before
+      content: "|"
+      right: 1.4rem
+      position: relative
+      font-size: 1.4rem
+      line-height: 100%
+
 
 .title
   width: 90%
@@ -410,19 +457,6 @@ body
 
   &:last-child
     grid-column: 2 /span 1
-    // min-width: 7vmin
-
-  // .pip
-  //   height: 1.7vmin
-  //   width: auto
-  //   box-shadow: none
-
-  // .menubox.across
-  //   width: 100%
-  //   height: auto
-  //   margin: 0
-  //   flex: none
-  //   gap: .7vmin
 
   .text.red
     margin: 0 0 .6rem 0
@@ -439,7 +473,7 @@ body
   color: transparent
 
 .text.red
-  color: $color_3
+  color: $p1-color
   margin: 0.5em 0 .3em 0
   font-size: 1.4rem
 
@@ -481,22 +515,22 @@ body
   flex: 1
   padding: .4em 0 .1em 0
   transition: .3s
-  background: white
-  color: $color_4
+  background: $text-color
+  color: $p2-color
   border-bottom: 5px solid #0008
   font-weight: bold
   letter-spacing: .05em
   border-radius: 3px 3px 0 0
 
   &:hover, &.hovering
-    background: red
-    color: $color_1
+    background: $p1-color
+    color: $text-color
     padding: .4em 0
 
 .navigable .nav-focused
   >.Tab
-    background: red
-    color: $color_1
+    background: $p1-color
+    color: $text-color
     padding: .4em 0
 
 .formGrid
@@ -512,14 +546,14 @@ body
     background-repeat: no-repeat
 
     &:hover
-      border-color: #01d5a2
+      border-color: $p3-color
 
   .pfp.active
-    border-color: red
+    border-color: $p1-color
 
 .navigable .formGrid .nav-focused
   &.pfp
-    border-color: #01d5a2
+    border-color: $p3-color
 
 .menubox.across.personal
   margin: 0
@@ -595,7 +629,7 @@ body
 
   input[type=text]
     font-size: 2rem
-    color: $color_1
+    color: $text-color
     outline: none
     box-sizing: border-box
     background-color: transparent
@@ -609,10 +643,10 @@ body
     margin: 0
 
     &:focus
-      box-shadow: 0 2px white
+      box-shadow: 0 2px $text-color
 
 .navigable .menubox.across.personal input[type=text].nav-focused
-  box-shadow: 0 2px white
+  box-shadow: 0 2px $text-color
 
 .menubox.stats
   .settingsItem
@@ -682,7 +716,7 @@ body
   background: transparent
 
   &:hover
-    background: white
+    background: $text-color
 
 \::-webkit-scrollbar-thumb
   border-radius: 3px
@@ -715,7 +749,7 @@ body
     font-weight: 100
     letter-spacing: .05rem
     font-style: normal
-    color: $color_5
+    color: $p3-color
     text-indent: 1.5rem
     margin: 0
 
@@ -750,10 +784,10 @@ body
   padding: 0
 
   &:focus, &:hover
-    border-color: white
+    border-color: $text-color
 
 .navigable .testColor.nav-focused
-  border-color: white
+  border-color: $text-color
 
 .react-switch-checkbox
   height: 0
@@ -767,14 +801,14 @@ body
           left: calc(100% - 4px)
           translate: -100% 0
 
-.settingsInfo
-  color: $color_5
+/* .settingsInfo
+  color: $p3-color
   font-family: $font-family_4
   font-size: 1.4rem
   position: absolute
   bottom: 0
   left: 50%
-  translate: -50% 0
+  translate: -50% 0 */
 
 .react-switch-label
   // display: flex
@@ -790,7 +824,7 @@ body
   height: 2.4rem
 
   &:hover
-    border: .1em solid white
+    border: .1em solid $text-color
 
   .react-switch-button
     content: ''
@@ -806,25 +840,29 @@ body
 
 .navigable .nav-focused
   &>.react-switch-label
-    border: .1em solid white
+    border: .1em solid $text-color
 
 .turnCounter
-  align-items: center
-  background: #111
-  border: .5rem solid #e80016
+  background: $p11-color
+  border: .8rem solid $p2-color
+  outline: .5rem solid $p11-color
   border-radius: 50%
-  color: $color_6
+  color: white
   display: flex
   flex-direction: column
   font-weight: 700
-  justify-content: flex-end
-  left: 50%
-  padding: 1rem
+  padding: .6rem
   position: absolute
-  top: 0
-  translate: -50% -50%
-  width: 5.5rem
-  height: 5.5rem
+  z-index: 4
+  justify-content: center
+  aspect-ratio: 1
+  width: 4rem
+  letter-spacing: 0.05rem
+  margin-left: 100%
+  bottom: 50%
+  translate: -100% 50%
+  font-family: $font-family_1
+  animation: movRight .9s 1 ease-out forwards
 
   p
     font-size: 2rem
@@ -834,15 +872,27 @@ body
       font-size: .6rem
 
 .game
-  height: 100%
   display: flex
   flex-direction: column
   text-align: center
+  min-height: 0
+  position: relative
+
+  ~ .footer
+    background: $p2-color
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, $p2-color 30%, $p2-color 100%)
+
+    > .fcontain > .text
+      background: $p11-color
+      padding: 1rem
+      border-radius: 0.5rem
+      min-width: 4rem
+      text-align: center
 
 .kbutton
   outline: 0
   font-size: 1.4rem
-  color: $color_7
+  color: $text-color-light
   position: relative
   background-color: transparent
   padding: 0.5rem 1rem
@@ -851,19 +901,9 @@ body
   transition: .1s
   font-family: inherit
 
-  &:hover, &:focus
-    background-color: red !important
-    border-color: maroon
-    color: $color_1
-
-.navigable .kbutton.nav-focused
-  background-color: red !important
-  border-color: maroon
-  color: $color_1
-
 .ssBox
   display: flex
-  background-color: #232822
+  background-color: $p5-color
   padding: 5%
   width: 75%
   margin: 1rem
@@ -887,7 +927,7 @@ body
 
   &:focus-within
     &::before
-      background: red
+      background: $p1-color
       padding: 0 1em
       left: -1em
       top: 1em
@@ -917,7 +957,7 @@ body
     border: none
     box-shadow: 2px 2px #d52f2f
     caret-color: #d52f2f
-    color: $color_1
+    color: $text-color
     outline: none
     padding: .7rem
     box-sizing: border-box
@@ -937,7 +977,7 @@ body
         width: 0
 
     &:focus
-      background: black
+      background: $p2-color
 
   span
     position: relative
@@ -949,7 +989,7 @@ body
     animation: shake-h-anim .3s 1
 
 .navigable .ssBox input.nav-focused
-  background: black
+  background: $p2-color
 
 .side
   flex: 1 1 0%
@@ -1044,7 +1084,7 @@ body
 .name
   margin: -1rem 0 0 0
   font-size: 1.4rem
-  white-space: nowrap
+  $text-color-space: nowrap
 
 .tubs
   order: 4
@@ -1120,7 +1160,7 @@ body
   align-items: center
   flex-direction: column
   text-align: center
-  color: $color_1
+  color: $text-color
   grid-column: 2 /span 1
   order: 3
   // z-index: 2
@@ -1146,7 +1186,7 @@ body
 
 .ssBox.lock
   &::before
-    background: red
+    background: $p1-color
     padding: 0 1em
     left: -1em
     top: 1em
@@ -1182,8 +1222,8 @@ body
   height: 100%
   position: absolute
   box-sizing: border-box
-  mask-image: linear-gradient(to right, transparent, black 33%, black 66%, transparent)
-  -webkit-mask-image: linear-gradient(to right, transparent, black 33%, black 66%, transparent)
+  mask-image: linear-gradient(to right, transparent, $p2-color 33%, $p2-color 66%, transparent)
+  -webkit-mask-image: linear-gradient(to right, transparent, $p2-color 33%, $p2-color 66%, transparent)
 
 .pfp
   width: 7rem
@@ -1205,8 +1245,8 @@ body
 .charInfo
   display: grid
   gap: 2rem
-  background-color: #232822
-  border: solid red
+  background-color: $p5-color
+  border: solid $p1-color
   border-width: 0
   transition: .3s
   padding: 2rem
@@ -1252,13 +1292,13 @@ body
 
   &:hover
     &::before
-      background: red
+      background: $p1-color
       padding: 0 1em
       left: -1em
       top: 1em
 
 .navigable .nav-focused > .charInfo::before
-  background: red
+  background: $p1-color
   padding: 0 1em
   left: -1em
   top: 1em
@@ -1276,6 +1316,7 @@ body
   padding: .1rem
   // z-index: 0
   position: relative
+  transition: .3s
 
   &::after
     content: ""
@@ -1314,13 +1355,13 @@ body
 
   &.cheated
     &::after
-      background-color: #01d5a2
-      border-color: #01d5a2
+      background-color: $p3-color
+      border-color: $p3-color
 
   &.shrink-pre, &.shrink-out
     &::after
-      background-color: red
-      border-color: red
+      background-color: $p1-color
+      border-color: $p1-color
 
   &.shrink-out
     animation: scale-away .4s 1 forwards
@@ -1332,7 +1373,7 @@ body
   align-self: center
   justify-self: center
   border-radius: 50%
-  background-color: #382020
+  background-color: $pip-color
   box-shadow: inset 0 3px #111
   aspect-ratio: 1/1
   width: 85%
@@ -1375,10 +1416,10 @@ body
     width: 80%
     height: 80%
     margin: 10%
-    border: .8rem solid red
+    border: .8rem solid $p1-color
     border-radius: 50%
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
-    border-color: red transparent transparent transparent
+    border-color: $p1-color transparent transparent transparent
 
     &:nth-child(1)
       animation-delay: -0.45s
@@ -1394,18 +1435,18 @@ body
   align-items: center
   flex-direction: column
   position: absolute
-  color: $color_1
+  color: $text-color
   top: 50%
   translate: 0 -50%
   width: 200%
   font-size: 2rem
   font-weight: bold
-  background-color: black
+  background-color: $p2-color
   padding: 1rem 0
   opacity: 0
   transition: .4s
   pointer-events: none
-  z-index: 3
+  z-index: 99
   gap: 1rem
   .menubox.across
     margin: 0
@@ -1434,17 +1475,33 @@ body
 #result
   margin: 0
 
-@media screen and (max-aspect-ratio: 2/3)
-  .fcontain
-    &:not(.mobile)
-      display: none !important
-
-  .symb.backSymb
+@media screen and (max-width: 40em)
+  .fcontain:not(.mobile)
     display: none !important
 
-@media (min-aspect-ratio: 2/3)
+  .symb:not(.mobile)
+    display: none !important
+
+@media (min-width: 40em)
   html
     font-size: 2vmin
+
+  .footer
+      position: absolute
+
+  .game
+    height: 100%
+
+    ~ .footer
+      background: none
+
+      > .fcontain
+        margin: 1.4rem 0 1.4rem 1.4rem
+
+        > .text
+          background: none
+          padding: 0
+          min-width: auto
 
   .title
     width: 70%
@@ -1453,7 +1510,7 @@ body
     padding: 2rem 3rem
 
   .logo.red
-      color: $color_3
+      color: $p1-color
 
   .graphicbox
     width: 16rem
@@ -1521,26 +1578,26 @@ body
   .tub.hover
     &:hover::before
         scale: 1
-        background: red
+        background: $p1-color
 
     &.tubB:hover::before
-          background: black
+          background: $p2-color
 
     &.tubC:hover::before
-          background: #01d5a2
+          background: $p3-color
 
   .navigable .nav-focused > .tub.hover
     &::before
       scale: 1
-      background: red
+      background: $p1-color
 
     &.tubB::before
-          background: black
+          background: $p2-color
 
     &.tubC::before
-          background: #01d5a2
+          background: $p3-color
 
-@media (min-aspect-ratio: 3/2)
+@media (min-width: 70em)
   html
     font-size: 2vmin
   .title
@@ -1554,6 +1611,15 @@ body
   .game
     display: grid
     grid-template-rows: repeat(2, minmax(0, 1fr))
+
+  .turnCounter
+    margin-left: 2rem
+    bottom: auto
+    translate: 0 0
+    right: auto
+    top: 2rem
+    animation: movLeft .9s 1 ease-out forwards
+
   .side
     grid-row: 1 / span 1
     grid-column: 1 / 1
@@ -1603,6 +1669,16 @@ body
     order: 3
     animation: movRight .9s 1 ease-out forwards
     top: 5rem
+
+  .kbutton:hover, .kbutton:focus
+    background-color: $p1-color !important
+    border-color: maroon
+    color: $text-color
+
+  .navigable .kbutton.nav-focused
+    background-color: $p1-color !important
+    border-color: maroon
+    color: $text-color
 
   .scorebox, .name
     font-size: 2rem

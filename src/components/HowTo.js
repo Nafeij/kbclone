@@ -1,6 +1,6 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
+
 import Die from "./Die"
 import KButton from './KButton'
 
@@ -56,5 +56,9 @@ const HowTo = (props) => (
     </div>
   </div>
 )
+
+HowTo.propTypes = {
+  onClick: PropTypes.func.isRequired
+}
 
 export default HowTo

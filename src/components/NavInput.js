@@ -1,7 +1,6 @@
-/* eslint-disable react/prop-types */
-
 import React, { Component } from 'react'
 import Nav from 'react-navtree'
+import PropTypes from 'prop-types'
 
 import { keyConvert } from '../util/Utils'
 
@@ -91,4 +90,10 @@ export default class NavInput extends Component {
       />
     )
   }
+}
+
+NavInput.propTypes = {
+  component: PropTypes.string,
+  type: PropTypes.string,
+  onNav: PropTypes.func
 }

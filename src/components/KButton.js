@@ -1,13 +1,12 @@
-/* eslint-disable react/prop-types */
-
 import React, { useRef } from "react";
+import PropTypes from "prop-types";
 import Nav from 'react-navtree';
 
 const KButton = (props) => {
 
     let el = useRef(null)
 
-    const {defaultFocused = false, text = "placeholder", onClick, hasSpacer = false, scrollOnFocus = false, ...rest} = props
+    const {defaultFocused, text, onClick, hasSpacer, scrollOnFocus, ...rest} = props
 
     const setRef = (nav) => {
         el = scrollOnFocus && nav && nav.tree.el
@@ -29,10 +28,8 @@ const KButton = (props) => {
         }
     }
 
-
     return (
-        <Nav
-            className={ `kbutton ${hasSpacer ? 'space' : ''}` }
+        <Nav className={ `kbutton ${hasSpacer ? 'space' : ''}` }
             component="button"
             defaultFocused={defaultFocused}
             ref={setRef}
@@ -45,6 +42,22 @@ const KButton = (props) => {
             {text}
         </Nav>
     )
+}
+
+KButton.propTypes = {
+    defaultFocused: PropTypes.bool,
+    text: PropTypes.string,
+    onClick: PropTypes.func,
+    hasSpacer: PropTypes.bool,
+    scrollOnFocus: PropTypes.bool
+}
+
+KButton.defaultProps = {
+    defaultFocused: false,
+    text: "placeholder",
+    onClick: () => {},
+    hasSpacer: false,
+    scrollOnFocus: false
 }
 
 export default KButton

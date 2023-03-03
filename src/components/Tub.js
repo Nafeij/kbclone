@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React, { forwardRef } from "react"
+import PropTypes from "prop-types"
 import Nav from "react-navtree"
 
 import { isFull } from '../util/Utils'
@@ -14,13 +13,12 @@ const RefBox = forwardRef((props, ref) => {
     )
 })
 
-{/* <div className="stretchbox">
-            <div className="box" ref={ref}>
-                {props.children}
-            </div>
-        </div> */} //TODO
-
 RefBox.displayName = 'RefBox'
+
+RefBox.propTypes = {
+    aspectRatio: PropTypes.number.isRequired,
+    children: PropTypes.node
+}
 
 export default class Tub extends React.Component {
 
@@ -31,10 +29,8 @@ export default class Tub extends React.Component {
     }
 
     render(){
-        const {
-            tubLen, diceList, clickable, startShake,
-            animClass, flip, proccessClick,
-            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, caravan, scoreHover, defaultFocused} = this.props
+        const { tubLen, diceList, clickable, startShake, animClass, flip, proccessClick,
+            onShakeAnimEnd, onScoreAnimEnd, score, scoreScale, caravan, scoreHover} = this.props
         const fillClass = (
                 caravan &&
                 score >= caravan[0] &&
@@ -49,7 +45,6 @@ export default class Tub extends React.Component {
         if (!flip) ordering.reverse()
         return (
             <Nav className='tubOuter'
-                // defaultFocused={defaultFocused}
                 onNav={(path) => {clickable && scoreHover(!!path)}}
                 func={(key) => {
                     key === 'enter' && proccessClick()
@@ -70,4 +65,22 @@ export default class Tub extends React.Component {
             </Nav>
         )
     }
+}
+
+Tub.propTypes = {
+    tubLen: PropTypes.number.isRequired,
+    boxAspectRatio: PropTypes.number.isRequired,
+    diceList: PropTypes.array.isRequired,
+    clickable: PropTypes.bool.isRequired,
+    startShake: PropTypes.bool.isRequired,
+    animClass: PropTypes.string.isRequired,
+    flip: PropTypes.bool.isRequired,
+    proccessClick: PropTypes.func.isRequired,
+    onShakeAnimEnd: PropTypes.func.isRequired,
+    onScoreAnimEnd: PropTypes.func.isRequired,
+    score: PropTypes.number,
+    scoreScale: PropTypes.string.isRequired,
+    caravan: PropTypes.array,
+    scoreHover: PropTypes.func.isRequired,
+    boxRefs: PropTypes.array.isRequired
 }

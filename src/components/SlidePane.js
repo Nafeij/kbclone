@@ -1,6 +1,6 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
+
 import { strictMod } from "../util/Utils"
 
 const SLIDE_FACTOR = 2.0
@@ -18,28 +18,8 @@ export default class SlidePane extends React.Component{
     this.onPointerUp = this.onPointerUp.bind(this)
     this.onPointerMove = this.onPointerMove.bind(this)
     this.onPointerDown = this.onPointerDown.bind(this)
-    // document.addEventListener('pointerdown', this.onPointerDown)
-  }
-/*
-  componentDidUpdate(state){
-  	if (this.state.dragging && !state.dragging) {
-      document.addEventListener('pointermove', this.onPointerMove)
-      document.addEventListener('pointerup', this.onPointerUp)
-      document.removeEventListener('pointerdown', this.onPointerDown)
-    } else if (!this.state.dragging && state.dragging) {
-      document.removeEventListener('pointermove', this.onPointerMove)
-      document.removeEventListener('pointerup', this.onPointerUp)
-      document.addEventListener('pointerdown', this.onPointerDown)
-      // this.props.releaseCallback(this.state.translateX)
-    }
   }
 
-  componentWillUnmount(){
-    document.removeEventListener('pointermove', this.onPointerMove)
-    document.removeEventListener('pointerup', this.onPointerUp)
-    document.removeEventListener('pointerdown', this.onPointerDown)
-  }
- */
   onPointerDown(e){
 	  // only left mouse button
     if (this.state.dragging || e.button !== 0) return
@@ -119,4 +99,12 @@ export default class SlidePane extends React.Component{
       </div>
     )
   }
+}
+
+SlidePane.propTypes = {
+  translateX: PropTypes.number.isRequired,
+  numSep: PropTypes.number.isRequired,
+  hasWrapped: PropTypes.number.isRequired,
+  releaseCallback: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired
 }

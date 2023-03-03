@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React, { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import Nav, { navDynamic } from 'react-navtree'
 
 import Profile from '../util/Profile'
@@ -39,13 +38,18 @@ const PicSelect = (props) => {
                     defaultFocused={i === props.playProfileInd}
                     className={`nav-block pfp ${i === props.playProfileInd ? 'active':''}`}
                     loading='lazy' style={{backgroundImage: `url(${p.img})`}}
-                    onClick={() => props.onClick(i)}
+                    onPointerUp={() => props.onClick(i)}
                     ref={ (nav) => setRef(nav, i) }
                     func={inputFunc(i)}
                 />
             ))}
         </Nav>
     )
+}
+
+PicSelect.propTypes = {
+    playProfileInd: PropTypes.number.isRequired,
+    onClick: PropTypes.func.isRequired
 }
 
 export default PicSelect
