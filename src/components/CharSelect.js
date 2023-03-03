@@ -1,20 +1,22 @@
-/* eslint react/prop-types: 0 */
+import React from "react"
+import PropTypes from "prop-types"
+import Nav from "react-navtree"
 
-import React from "react";
-import Profile from "../util/Profile";
-import Bar from "./Bar";
-import skullImg from "../img/skulls.png"
-import skullRImg from "../img/skulls_red.png"
-import skullBImg from "../img/skulls_blue.png"
+import Profile from "../util/Profile"
+import Bar from "./Bar"
+import KButton from "./KButton"
+import SlidePane from "./SlidePane"
+
 import heartsImg from "../img/hearts.png"
+import skullImg from "../img/skulls.png"
+import skullBImg from "../img/skulls_blue.png"
+import skullRImg from "../img/skulls_red.png"
 import sprites from "../img/sprites.png"
 import Squiggle from "./Squiggle"
-import SlidePane from "./SlidePane";
 
-function CharSelect (props) {
+export default function CharSelect (props) {
 
-    const {selectedAIInd, buttons, cursor, modAIInd,
-            fadeAway, onFade, modSetAIInd, hasWrapped} = props,
+    const {selectedAIInd, buttons, modAIInd, modSetAIInd, hasWrapped} = props,
         translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100
     let effect = null, cheat = false
@@ -31,7 +33,7 @@ function CharSelect (props) {
         }
     })
     return (
-        <div className={`menu fadeable ${fadeAway ? 'hide' : ''}`} onTransitionEnd={onFade}>
+        <div className='menu'>
             <div className='menubox'>
                 <div className='subtitle'><Squiggle/>Select Opponent<Squiggle/></div>
                 <div className="slidePaneContainer">
@@ -45,9 +47,19 @@ function CharSelect (props) {
                         ))}
                     </SlidePane>
                 </div>
-                <div className="menubox across cselect">
-                    <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(-1)} />
-                    <div className={`charInfo ${buttons[0].cursorID === cursor ? 'charInfohover' : ''}`} onClick={() => buttons[0].onClick()}>
+                <Nav className="menubox across cselect"
+                    func={key => {
+                        if (key === 'left') {
+                            modAIInd(-1)
+                        } else if (key === 'right') {
+                            modAIInd(1)
+                        } else if (key === 'enter') {
+                            buttons[0].onClick()
+                        }
+                    }
+                }>
+                    <div className="arrowL" style={{backgroundImage:`url(${sprites})`}} onPointerUp={()=>modAIInd(-1)} />
+                    <div className="charInfo" onPointerUp={() => buttons[0].onClick()}>
                     <div className="slidePaneContainer">
                         <div className="slidePane" style={{translate: translationName + '%'}}>
                             {Profile.ai.map((p, i)=>(
@@ -63,19 +75,28 @@ function CharSelect (props) {
                             dim={{width: '8rem', height : '1.7081rem'}}
                         />
                     </div>
-                    {effect ?
-                    <div className="difficulty">
-                        <div className='text red'>{effect.text}</div>
-                        <Bar progress={effect.val} fillImg={heartsImg} dim={{width: '5rem', height : '1.843rem'}}/>
+                    {effect &&
+                        <div className="difficulty">
+                            <div className='text red'>{effect.text}</div>
+                            <Bar progress={effect.val} fillImg={heartsImg} dim={{width: '5rem', height : '1.843rem'}}/>
+                        </div>
+                    }
                     </div>
-                    : null}
-                    </div>
-                    <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onClick={()=>modAIInd(1)} />
-                </div>
-                <div className={`kbutton space ${buttons[1].cursorID === cursor ? 'hovering' : ''}`} onClick={() => buttons[1].onClick()}>{buttons[1].text}</div>
+                    <div className="arrowR" style={{backgroundImage:`url(${sprites})`}} onPointerUp={()=>modAIInd(1)} />
+                </Nav>
+                <KButton className={`kbutton space`} onPointerUp={() => buttons[1].onClick()} text={buttons[1].text}/>
             </div>
         </div>
     )
 }
 
-export default CharSelect
+CharSelect.propTypes = {
+    selectedAIInd: PropTypes.number.isRequired,
+    buttons: PropTypes.arrayOf(PropTypes.shape({
+        text: PropTypes.string,
+        onClick: PropTypes.func
+    })),
+    modAIInd: PropTypes.func.isRequired,
+    modSetAIInd: PropTypes.func.isRequired,
+    hasWrapped: PropTypes.number.isRequired
+}

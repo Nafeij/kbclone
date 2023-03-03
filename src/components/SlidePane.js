@@ -1,9 +1,11 @@
-/* eslint react/prop-types: 0 */
+import React from "react"
+import PropTypes from "prop-types"
 
-import React from "react";
-import { strictMod } from "../util/Utils";
+import { strictMod } from "../util/Utils"
 
-class SlidePane extends React.Component{
+const SLIDE_FACTOR = 2.0
+
+export default class SlidePane extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
@@ -16,30 +18,10 @@ class SlidePane extends React.Component{
     this.onPointerUp = this.onPointerUp.bind(this)
     this.onPointerMove = this.onPointerMove.bind(this)
     this.onPointerDown = this.onPointerDown.bind(this)
-    document.addEventListener('pointerdown', this.onPointerDown)
-  }
-
-  componentDidUpdate(state){
-  	if (this.state.dragging && !state.dragging) {
-      document.addEventListener('pointermove', this.onPointerMove)
-      document.addEventListener('pointerup', this.onPointerUp)
-      document.removeEventListener('pointerdown', this.onPointerDown)
-    } else if (!this.state.dragging && state.dragging) {
-      document.removeEventListener('pointermove', this.onPointerMove)
-      document.removeEventListener('pointerup', this.onPointerUp)
-      document.addEventListener('pointerdown', this.onPointerDown)
-      // this.props.releaseCallback(this.state.translateX)
-    }
-  }
-
-  componentWillUnmount(){
-    document.removeEventListener('pointermove', this.onPointerMove)
-    document.removeEventListener('pointerup', this.onPointerUp)
-    document.removeEventListener('pointerdown', this.onPointerDown)
   }
 
   onPointerDown(e){
-	  // only left pointer button
+	  // only left mouse button
     if (this.state.dragging || e.button !== 0) return
     const rect = this.selfRef.current.getBoundingClientRect()
     if (e.pageY < rect.top || e.pageY > rect.bottom) return
@@ -54,6 +36,7 @@ class SlidePane extends React.Component{
   }
 
   onPointerUp(e) {
+    if (!this.state.dragging) return
 	  this.setState({
       dragging: false,
       initTranslate: null
@@ -63,15 +46,14 @@ class SlidePane extends React.Component{
   }
 
   onPointerMove(e) {
-    const {dragging, relX, initTranslate, translateX} = this.state,
-    sepRatio = 0.5/this.props.numSep
+    const {dragging, relX, initTranslate, translateX} = this.state
     if (!dragging) return
-    const width = this.selfRef.current.clientWidth,
-      //delta = (e.pageX - relX) / width
-      delta = (((e.pageX - relX) / width)+initTranslate-sepRatio)
+    const sepRatio = 0.5/this.props.numSep,
+      width = this.selfRef.current.clientWidth,
+      delta = (((e.pageX - relX) * SLIDE_FACTOR) / width) + initTranslate - sepRatio
     this.setState({
       // translateX: clamp(delta + initTranslate, -((this.props.numSep-1)/this.props.numSep),0)
-      translateX: strictMod(delta,-1)+sepRatio
+      translateX: strictMod(delta,-1) + sepRatio
     }, ()=>{
       // console.log(delta + ' ' + this.props.numSep)
       this.props.releaseCallback(translateX)
@@ -97,15 +79,21 @@ class SlidePane extends React.Component{
       </div>
     )
   }
-
   render(){
     const maskSize = 50*Math.ceil(this.props.numSep)
     return (
-      <div className="containerMask" style={{
+      <div
+        className="containerMask"
+        style={{
           width: maskSize + '%',
           left: (50 - maskSize/2) + '%',
           paddingLeft: (maskSize/2 - 50) + '%'
-        }}>
+        }}
+        onPointerDown={this.onPointerDown}
+        onPointerUp={this.onPointerUp}
+        onPointerMove={this.onPointerMove}
+        onPointerLeave={this.onPointerUp}
+      >
         {this.renderPane(false)}
         {this.renderPane(true)}
       </div>
@@ -113,4 +101,10 @@ class SlidePane extends React.Component{
   }
 }
 
-export default SlidePane
+SlidePane.propTypes = {
+  translateX: PropTypes.number.isRequired,
+  numSep: PropTypes.number.isRequired,
+  hasWrapped: PropTypes.number.isRequired,
+  releaseCallback: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired
+}

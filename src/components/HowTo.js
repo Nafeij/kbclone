@@ -1,7 +1,8 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
+
 import Die from "./Die"
+import KButton from './KButton'
 
 const mDieProps = {
   diceColor: "#ecd77a",
@@ -33,35 +34,31 @@ const DestroyGraphic = () => (
   </div>
 )
 
-function HowTo (props) {
-
-    const button = (msg)=>(
-      <div className={`kbutton space ${props.cursorID === props.cursor ? 'hovering' : ''}`} onClick={() => props.onClick()}>{msg}</div>
-    )
-
-    // console.log(props.cursorID + ' : ' + props.cursor)
-    // console.log(props.graphicwidth)
-
-    return (<div className='menu'>
-      <div className='menubox'>
-        <div className='subtitle'>~ HOW TO PLAY ∽</div>
-        <div className='text'>Your score is calculated by adding all your dice together.</div>
-        <div className="menubox across">
-            <div className="menubox">
-                <MatchGraphic />
-                <div className='text red'>MATCH DICE</div>
-                <div className='text'>When dice of the same number are placed in the same column, multiply their value.</div>
-            </div>
-            <div className='logo red'>✵</div>
-            <div className="menubox">
-                <DestroyGraphic />
-                <div className='text red'>DESTROY OPPONENT</div>
-                <div className='text'>Destory your opponent&rsquo;s dice by matching yours to theirs.</div>
-            </div>
-        </div>
-        {button("Got it")}
+const HowTo = (props) => (
+  <div className='menu'>
+    <div className='menubox'>
+      <div className='subtitle'>~ HOW TO PLAY ∽</div>
+      <div className='text'>Your score is calculated by adding all your dice together.</div>
+      <div className="menubox across">
+          <div className="menubox">
+              <MatchGraphic />
+              <div className='text red'>MATCH DICE</div>
+              <div className='text'>When dice of the same number are placed in the same column, multiply their value.</div>
+          </div>
+          <div className='logo red'>✵</div>
+          <div className="menubox">
+              <DestroyGraphic />
+              <div className='text red'>DESTROY OPPONENT</div>
+              <div className='text'>Destory your opponent&rsquo;s dice by matching yours to theirs.</div>
+          </div>
       </div>
-    </div>)
+      <KButton text="Got it" navId="howToReturn" onClick={props.onClick} hasSpacer defaultFocused/>
+    </div>
+  </div>
+)
+
+HowTo.propTypes = {
+  onClick: PropTypes.func.isRequired
 }
 
 export default HowTo

@@ -2,7 +2,7 @@ import { Peer } from "peerjs";
 
 const chars = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
 
-class Server{
+export default class Server{
     constructor() {
         if (Server._instance) {
           return Server._instance
@@ -49,11 +49,13 @@ class Server{
         })
     }
     close(){
-        console.log('Closing connection')
-        this.msgQueue = []
-        this.isHost = false
-        clearInterval(this.waitMsg)
-        if (this.peer) this.peer.destroy()
+        if (this.peer && !this.peer.destroyed) {
+            console.log('Closing connection')
+            this.msgQueue = []
+            this.isHost = false
+            clearInterval(this.waitMsg)
+            this.peer.destroy()
+        }
     }
     send(msg){
         this.conn.send(msg)
@@ -76,5 +78,3 @@ class Server{
         return Array(4).fill().map(_=>chars[Math.floor(Math.random() * chars.length)]).join('')
     }
 }
-
-export default Server

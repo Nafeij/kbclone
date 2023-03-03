@@ -33,13 +33,6 @@ import img31 from "../img/31.png"
 import img32 from "../img/32.png"
 import img33 from "../img/33.png"
 
-
-/* const Profile = {
-    imgs : [img0,img1,img2,img3,img4,img5],
-    names : ['The Lamb', 'Ratau', 'Flinky', 'Klunko & Bop', 'Shrumy', 'The Fox'],
-    skill : [-1,.1,.25,.5,.9,1]
-} */
-
 const Profile = {
     cosm  : [
         {img : img0, name : 'The Lamb'},
@@ -76,7 +69,7 @@ const Profile = {
         {img : img27, name : 'Heket', skill : .7, effects : ['life2']},
         {img : img28, name : 'Kallamar', skill : .9, effects : ['life2']},
         {img : img29, name : 'Shamura', skill : 1, effects : ['life2']},
-        {img : img30, name : 'Narinder', skill : 1, effects : ['life3']},
+        {img : img30, name : 'The Waiter', skill : 1, effects : ['life3']},
         {img : img5, name : 'The Fox', skill : 1, effects : ['cheat']}
     ]
 }

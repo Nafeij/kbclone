@@ -1,6 +1,5 @@
-/* eslint react/prop-types: 0 */
-
 import React from "react"
+import PropTypes from "prop-types"
 
 const Loading = (props) => (
     <div className="lds-ring" style={{display : props.show ? 'inline-block' : 'none'}}>
@@ -8,4 +7,7 @@ const Loading = (props) => (
     </div>
 )
 
+Loading.propTypes = {
+    show: PropTypes.bool.isRequired
+}
 export default Loading
