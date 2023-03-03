@@ -26,3 +26,5 @@ yarn-error.log*
 .eslintrc.js
 package-lock.json
 TODO.md
+
+/.github
