@@ -19,7 +19,9 @@ export default function CharSelect (props) {
     const {selectedAIInd, buttons, modAIInd, modSetAIInd, hasWrapped} = props,
         translation = -selectedAIInd / Profile.ai.length,
         translationName = selectedAIInd * -100
+
     let effect = null, cheat = false
+
     Profile.ai[selectedAIInd].effects.forEach(e=>{
         switch (e) {
             case 'life2': effect = {text : 'Lives', val : 2 / 3, heartsImg}
@@ -28,10 +30,9 @@ export default function CharSelect (props) {
                 break
             case 'cheat': cheat = true
                 break
-            default:
-                break
         }
     })
+
     return (
         <div className='menu'>
             <div className='menubox'>

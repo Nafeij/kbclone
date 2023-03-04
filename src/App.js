@@ -369,12 +369,6 @@ class App extends React.Component{
       {pageProps, selectedAIInd} = this.state,
       newInd = selectedAIInd + i,
       inbounds = (0 <= newInd && newInd <= pLength-1)
-    // console.log(this.state.selectedAIInd)
-    // if ((this.state.selectedAIInd > 0 && i === -1)
-    //   || (this.state.selectedAIInd < pLength - 1 && i === 1)) {
-    //     this.setState((prevstate)=>({selectedAIInd : prevstate.selectedAIInd + i}))
-    //   }
-    // else this.shakeSelect()
     pageProps.charSelect.hasWrapped ^= !inbounds
     this.setState({selectedAIInd : strictMod(newInd, pLength), pageProps})
   }
@@ -554,10 +548,10 @@ class App extends React.Component{
   }
 
   startAIGame(){
-    const {pageProps, gameSettingsProps} = this.state
-    gameSettingsProps.oppProfileInd = this.state.selectedAIInd
-    gameSettingsProps.oppName = Profile.ai[this.state.selectedAIInd].name
-    this.setState({pageProps, gameSettingsProps}, ()=>{this.navigate('/shack/play')})
+    const {pageProps, gameSettingsProps, selectedAIInd} = this.state
+    gameSettingsProps.oppProfileInd = selectedAIInd
+    gameSettingsProps.oppName = Profile.ai[selectedAIInd].name
+    this.setState({pageProps, gameSettingsProps}, ()=>{this.navigate(`/shack/${selectedAIInd}/play`)})
   }
 
   return(){
@@ -610,11 +604,11 @@ class App extends React.Component{
     return (
       <Nav id='app' tree={this.props.tree} className={navEnabled ? 'navigable' : null} func={navVertical}>
         <Flytext {...flytextProps} />
-        <Loading show={isLoading}/>
+        {isLoading && <Loading/>}
         <TransitionGroup component={null}>
           <CSSTransition key={this.props.location.key} classNames="fade" timeout={300}>
             <Routes location={this.props.location}>
-              <Route path='/:gameType?/play' element={<Game {...pageProps.game} settings={gameSettingsProps}/>}/>
+              <Route path='/:gameType?/:charInd?/play' element={<Game {...pageProps.game} settings={gameSettingsProps}/>}/>
               <Route path='/' element={<MainMenu {...pageProps.mainMenu}/>} />
               <Route path='/settings' element={<Settings {...pageProps.settings} gameSettingsProps={gameSettingsProps} statsProps={statsProps} settingsRanges={settingsRanges} settingChanged={settingChanged}/>}/>
               <Route path='/io/' element={<ServerSetup {...pageProps.serverSetup} name={gameSettingsProps.name} playProfileInd={gameSettingsProps.playProfileInd} roomID={roomID}/>}/>
@@ -633,7 +627,7 @@ class App extends React.Component{
                 <div className="symb mobile dragSymb" style={{backgroundImage: `url(${dkey})`}}/><div className="text">Drag</div>
               </div>
             } />
-            <Route path='/io?/shack?/play' element={
+            <Route path='/:_?/:_?/play' element={
               <>
                 <div className="fcontain mobile" onPointerUp={this.return}>
                   <div className="symb backSymb" style={{backgroundImage: `url(${fkey})`}}/><div className="text">Back</div>
@@ -657,7 +651,7 @@ class App extends React.Component{
                 </div>
               </>
             } />
-            <Route path='*' element={<></>}/>
+            <Route path='/*' element={<></>}/>
           </Routes>
         </div>
       </Nav>

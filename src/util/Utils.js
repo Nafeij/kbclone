@@ -75,7 +75,9 @@ export function scoreTub(tub) {
 export function scoreNumTub(tub) {
     let points = 0
     for (const dice of tub) {
-        if (dice) points += dice * numMatchingNum(tub, dice);
+        if (dice) {
+            points += dice * numMatchingNum(tub, dice)
+        }
     }
     return points
 }

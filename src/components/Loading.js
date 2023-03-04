@@ -1,13 +1,10 @@
 import React from "react"
 import PropTypes from "prop-types"
 
-const Loading = (props) => (
-    <div className="lds-ring" style={{display : props.show ? 'inline-block' : 'none'}}>
+const Loading = () => (
+    <div className="lds-ring">
         <div/><div/><div/><div/>
     </div>
 )
 
-Loading.propTypes = {
-    show: PropTypes.bool.isRequired
-}
 export default Loading

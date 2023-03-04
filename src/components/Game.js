@@ -21,9 +21,9 @@ class Game extends React.Component {
     this.tubBoxAspect = (this.props.settings.tubLen + .8) / (boxAspectRatio * this.props.settings.numTubs)
 
     let numLives, oppProfile,
-    {oppProfileInd, oppName, playProfileInd, name, numTubs, tubLen, preview, caravan, time, turnLimit} = this.props.settings
+      {oppProfileInd, oppName, playProfileInd, name, numTubs, tubLen, preview, caravan, time, turnLimit} = this.props.settings
     if (this.gameType === GameType.AI){
-      oppProfile = Profile.ai[oppProfileInd]
+      oppProfile = Profile.ai[this.props.params.charInd]
       oppName = oppProfile.name
       if (oppProfile.effects.includes('life2')) numLives = 1
       else if (oppProfile.effects.includes('life3')) numLives = 2
@@ -35,7 +35,7 @@ class Game extends React.Component {
       oppProfile = Profile.cosm[oppProfileInd]
     };
 
-    ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart', 'onResize'].forEach(func => {
+    ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart', 'onResize', 'scrambleDice'].forEach(func => {
       this[func] = this[func].bind(this)
     })
 
@@ -173,26 +173,16 @@ class Game extends React.Component {
     }
 
     let newDice = this.generateDice()
-    const {gameTime} = this.state
+    const {gameTime, turn} = this.state
     this.updateCurrSide({newDice}, {gameTime : gameTime ?? Date.now()}, ()=>{
-      const {sideProps, turn} = this.state
-      newDice = sideProps[turn].newDice
-      const diceHeight = newDice.height
-      const {height, width} = eleDimensions(sideProps[turn].rollRef.current)
-      newDice.translate = this.translateCoords(diceHeight, diceHeight, width, height);
-      const interval = setInterval(()=>{
-        const {sideProps, turn} = this.state
-        newDice = sideProps[turn].newDice
-        newDice.num = randomExcluding(numFaces, newDice.num) + 1
-        this.setState({sideProps})
-      },100);
+      const { interval } = this.scrambleDice(newDice)
       setTimeout(() => {
         clearInterval(interval)
-        const {diceMatrix, sideProps, turn} = this.state
-        const {profile , newDice} = sideProps[turn]
         if (this.gameType === GameType.ONLINE){
           newDice.num = rnum
           if (!turn) {
+            const {sideProps, turn} = this.state
+            const {newDice} = sideProps[turn]
             this.setState({isLoading : true})
             if (this.props.settings.time) {
               let thisTime = this.props.settings.time
@@ -224,6 +214,8 @@ class Game extends React.Component {
             this.playerActivate()
           }
         } else if (this.gameType === GameType.AI && !turn){
+          const {diceMatrix, sideProps} = this.state
+          const {profile , newDice} = sideProps[turn]
           const numMat = convertToNumMat(diceMatrix)
           if(profile.effects.includes('cheat') && Math.random() > 0.5) {
             let best = cheatDice(numMat, turn, numFaces, this.props.settings, this.state.turnCount)
@@ -239,6 +231,19 @@ class Game extends React.Component {
         }
       }, 800)
     })
+  }
+
+  scrambleDice(newDice) {
+    const { turn, sideProps } = this.state
+    const diceHeight = newDice.height
+    const { height, width } = eleDimensions(sideProps[turn].rollRef.current)
+    newDice.translate = this.translateCoords(diceHeight, diceHeight, width, height)
+    const interval = setInterval(() => {
+      newDice = sideProps[turn].newDice
+      newDice.num = randomExcluding(numFaces, newDice.num) + 1
+      this.setState({ sideProps })
+    }, 100)
+    return { interval }
   }
 
   translateCoords(srcX, srcY, destX, destY) {
@@ -285,7 +290,7 @@ class Game extends React.Component {
         this.setState({sideProps, turn: !turn + 0}, this.checkEnd)
       }
     }
-    this.setState({sideProps})
+    this.setState({sideProps, isLoading : false})
   }
 
   setTubClickable(){
@@ -756,12 +761,13 @@ class Game extends React.Component {
   }
 
   fetchMemo(i, j) {
-    let {diceMatrix, tubProps, turn, sideProps} = this.state
+    let { tubProps } = this.state
     if (!tubProps[i][j].scoreMemo) {
+      const {diceMatrix, turn, sideProps} = this.state
       const settings = this.props.settings
-      const newDice = sideProps[turn].newDice.num
+      const newDiceNum = sideProps[turn].newDice.num
       const numMat = convertToNumMat(diceMatrix);
-      tubProps[i][j].scoreMemo = scoreAll(newDice, numMat, turn, { side: i, tub: j }, settings, true);
+      tubProps[i][j].scoreMemo = scoreAll(newDiceNum, numMat, turn, { side: i, tub: j }, settings, true);
       this.setState({tubProps})
     }
     return tubProps[i][j].scoreMemo
@@ -771,30 +777,12 @@ class Game extends React.Component {
     let {diceMatrix, tubProps} = this.state
     if (isFull(diceMatrix[i][j])) return
     const memo = this.fetchMemo(i, j);
-    const [scores, changes ,] = memo
-    // if (isHover) {
-    //     changes.forEach(t=>{
-    //         diceMatrix[t.s][t.t][t.d].shrinkPreview = isHover
-    //     })
-    // } else {
-    //     diceMatrix = diceMatrix.map(s=>(
-    //         s.map(t=>(
-    //             t.map(d=>{
-    //                 if(d) {d.shrinkPreview = false} return d
-    //             })
-    //         ))
-    //     ))
-    // }
-    changes.forEach(t=>{
+    const [scores, removedAt ,] = memo
+
+    removedAt.forEach(t=>{
       diceMatrix[t.s][t.t][t.d].shrinkPreview = isHover
     })
-    // this.setState({diceMatrix, tubProps},()=>{
-    //     scores.forEach((s,si)=>{
-    //         s.forEach((newScore,ti)=>{
-    //             this.handleScoreHover(newScore,si,ti,isHover)
-    //         })
-    //     })
-    // })
+
     this.setState({diceMatrix, tubProps},()=>{
       scores.forEach((s,si)=>{
         s.forEach((newScore,ti)=>{
@@ -878,13 +866,10 @@ class Game extends React.Component {
       navTree.focus(navTree.getFocusedPath())
     } else if (next && next !== navTree.focusedNode) {
       navTree.focus([next, navTree.getFocusedPath().at(-1)])
-      // console.log([next, navTree.getFocusedPath().at(-1)])
     }
   }
 
   componentDidMount(){
-    // let {sideProps} = this.state
-    // sideProps = sideProps.map(s=>{s.tubsDim = eleDimensions(s.tubsRef.current);return s})
     if (this.gameType === GameType.ONLINE){
       const flytextProps = this.state.flytextProps
       flytextProps.buttons[1].text = "Disconnect"
@@ -937,7 +922,7 @@ class Game extends React.Component {
         {this.renderSide(0)}
         {this.renderSide(1)}
         {flytextProps.display && <Flytext {...flytextProps}/>}
-        <Loading show={isLoading}/>
+        {isLoading && <Loading/>}
         {turnLimit &&
           <div className="turnCounter" style={{background : `linear-gradient(0deg, #BB0011 0%, #BB0011 ${turnRatio - 1}%, black ${turnRatio}%, black 100%)`}}>
             <p>{Math.ceil(turnCount)}</p>

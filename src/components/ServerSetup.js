@@ -48,7 +48,7 @@ export default function ServerSetup (props) {
                 </Nav>
                 {showProfiles &&
                     <div className="ssBox profile">
-                        <PicSelect playProfileInd={playProfileInd} onPointerUp={i => {
+                        <PicSelect playProfileInd={playProfileInd} onClick={i => {
                             setProfileInd(i)
                             buttons[1].onClick()
                         }}/>
