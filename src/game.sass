@@ -351,9 +351,6 @@ body
   pointer-events: all
   margin: 1.4rem 0 1.4rem 1.4rem
 
-.game ~ .footer>.fcontain
-  margin: 1.8rem 0 1rem 1rem
-
   &.right
     margin-left: auto
     margin-right: 1.4rem
@@ -886,12 +883,24 @@ body
     background: linear-gradient(180deg, rgba(0,0,0,0) 0%, $p2-color 30%, $p2-color 100%)
     position: relative
 
-    > .fcontain > .text
-      background: $p11-color
-      padding: 1rem
-      border-radius: 0.5rem
-      min-width: 4rem
-      text-align: center
+    > .fcontain
+      margin: 1.8rem 0 1rem 1rem
+
+      &.right
+        margin-left: auto
+        margin-right: 1.4rem
+
+      > .text
+        background: $p11-color
+        padding: 1rem
+        border-radius: 0.5rem
+        min-width: 4rem
+        text-align: center
+
+  .lds-ring
+    bottom: auto
+    top: 0
+    right: 0
 
 .kbutton
   outline: 0
