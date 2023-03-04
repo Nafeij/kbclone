@@ -39,7 +39,7 @@ class Game extends React.Component {
       oppProfile = Profile.cosm[oppProfileInd]
     }
 
-    ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart', 'onResize', 'scrambleDice'].forEach(func => {
+    ;['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart', 'onResize', 'scrambleDice'].forEach(func => {
       this[func] = this[func].bind(this)
     })
 
