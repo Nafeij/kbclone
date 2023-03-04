@@ -367,12 +367,9 @@ class Game extends React.Component {
   }
 
   async proccessTurn(tub, turn = this.state.turn, memo = this.fetchMemo(turn, tub)){
-    console.log(this.state.sideProps[1].name, memo)
     if (this.gameType === GameType.ONLINE && this.state.turn){
       this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub, side : !turn + 0, memo : flipScoreObj(memo)})
     }
-    console.log(this.state.sideProps[1].name, memo)
-    // console.log(this.state.sideProps[1].name, memo)
     this.clearClickable()
     const num = await this.handleMoveAnim(tub, null, null, turn)
     if (this.props.settings.caravan && num === 1){

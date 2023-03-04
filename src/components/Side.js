@@ -52,7 +52,6 @@ export default class Side extends React.Component {
                 <div className="board">
                     <div
                         className='roller' onAnimationEnd={()=>{if (isTurn && !rolled){
-                            // console.log('test')
                             hasSlid()
                         }}}>
                         <div className={`rollbox ${isTurn && slid? "rollboxhover" : ""} ${profile.effects && !!profile.effects.length ? 'rollboxBoss' :''}`}

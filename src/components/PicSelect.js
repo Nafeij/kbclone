@@ -9,7 +9,6 @@ const PicSelect = (props) => {
     const scrollRefs = useRef(Array(Profile.cosm.length))
 
     const scrollTo = (index, behavior = "smooth") => {
-        // console.log(scrollRefs.current[index])
         scrollRefs.current[index].scrollIntoView({ behavior, block: "center"})
     }
 

@@ -199,7 +199,6 @@ class App extends React.Component{
                 gameSettingsProps.caravan = caravanBounds(gameSettingsProps.tubLen)
               }
               this.setState({gameSettingsProps, settingChanged : true})
-              //console.log(gameSettingsProps.caravan)
             }
           },
           modColor : (setting,side,color)=>{
@@ -444,7 +443,6 @@ class App extends React.Component{
     }, ()=>{
       this.setState({isLoading : false})
       this.server.close()
-      //console.log('other closed')
       clearInterval(interval)
       this.return()
       this.showFlytext("Player Disconnected")
@@ -478,7 +476,6 @@ class App extends React.Component{
     }, ()=>{
       this.server.close()
       this.setState({isLoading : false})
-      //console.log('other closed')
       this.return()
       this.showFlytext("Player Disconnected")
     }, (e)=>{
@@ -492,7 +489,6 @@ class App extends React.Component{
 
 
   async startPVPGame(name){
-    // console.log(' Player: ' + name + ' Opponent: ' + oppName)
     let turn, {gameSettingsProps} = this.state
     const playProfileInd =  gameSettingsProps.playProfileInd
     if(this.server.isHost){
@@ -505,7 +501,6 @@ class App extends React.Component{
       let init = await this.server.recv()
       gameSettingsProps.oppProfileInd = init.oppProfileInd
       gameSettingsProps.oppName = init.name
-      //console.log('host turn ' + turn)
     } else {
       this.server.send({name, oppProfileInd : playProfileInd})
       let init = await this.server.recv()
@@ -573,7 +568,6 @@ class App extends React.Component{
   }
 
   keyNav(e){
-    // e.stopPropagation()
     if (e.key === "Tab") {
       e.preventDefault()
       return
@@ -582,7 +576,6 @@ class App extends React.Component{
     if (key) {
       this.props.tree.resolve(key)
       e.preventDefault()
-      // console.log(this.props.tree.getFocusedPath())
     }
   }
 

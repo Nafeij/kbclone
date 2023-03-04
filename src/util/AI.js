@@ -5,7 +5,6 @@ export function evaluate(diceMatrix, num, profile, turn, settings, turnCount){
   if (Math.random() > profile.skill) {
     return randomSelect(choices.filter(c=>(c.side === turn))) // only choose own side
   }
-  // console.log(choices)
   let maxWeight = -Infinity, bestChoices = [choices[0]]
   for (const choice of choices) {
     const {weight, diceMatNew} = weighDie(num, diceMatrix, turn, choice, settings)

@@ -52,10 +52,8 @@ export default class SlidePane extends React.Component{
       width = this.selfRef.current.clientWidth,
       delta = (((e.pageX - relX) * SLIDE_FACTOR) / width) + initTranslate - sepRatio
     this.setState({
-      // translateX: clamp(delta + initTranslate, -((this.props.numSep-1)/this.props.numSep),0)
       translateX: strictMod(delta,-1) + sepRatio
     }, ()=>{
-      // console.log(delta + ' ' + this.props.numSep)
       this.props.releaseCallback(translateX)
     })
     e.stopPropagation()

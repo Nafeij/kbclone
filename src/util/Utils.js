@@ -102,7 +102,6 @@ export function mostCommon(arr) {
     },{})
     if (hashmap.length === 1) return Number(Object.keys(hashmap)[0])
     const res = Number(Object.keys(hashmap).reduce((a, b) => hashmap[a] > hashmap[b] ? a : b))
-    //console.log(Number(res))
     return {num : res, count : hashmap[res]}
 }
 
