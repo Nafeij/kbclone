@@ -7,7 +7,7 @@ import { withParams } from "../NavHooks.js";
 import { cheatDice, evaluate, scoreAll } from "../util/AI.js";
 import Profile from "../util/Profile.js";
 import Server from "../util/Server.js";
-import { convertToNumMat, defLength, eleDimensions, GameType, isFull, numMatchingDice, randomExcluding, randomInRange, scoreTub, tubBoxWidth, typeFromParam } from '../util/Utils.js';
+import { convertToNumMat, defLength, eleDimensions, GameType, isFull, numMatchingDice, randomExcluding, randomInRange, scoreTub, tubBoxWidth, typeFromParam, flipScoreObj } from '../util/Utils.js';
 import Flytext from "./Flytext.js";
 import Loading from "./Loading.js";
 
@@ -21,7 +21,7 @@ class Game extends React.Component {
     this.tubBoxAspect = (this.props.settings.tubLen + .8) / (boxAspectRatio * this.props.settings.numTubs)
 
     let numLives, oppProfile,
-      {oppProfileInd, oppName, playProfileInd, name, numTubs, tubLen, preview, caravan, time, turnLimit} = this.props.settings
+      {oppProfileInd, oppName, playProfileInd, name, numTubs, tubLen, preview, caravan, time, turnLimit, turn} = this.props.settings
     if (this.gameType === GameType.AI){
       oppProfile = Profile.ai[this.props.params.charInd]
       oppName = oppProfile.name
@@ -31,9 +31,13 @@ class Game extends React.Component {
       if (this.gameType === GameType.DEFAULT) {
         oppName = name
         oppProfileInd = playProfileInd
+      } else if (this.gameType === GameType.ONLINE){
+        if (!this.server.peer || this.server.peer.disconnected) {
+          console.error('Game: Server not connected')
+        }
       }
       oppProfile = Profile.cosm[oppProfileInd]
-    };
+    }
 
     ['gameStart', 'proccessClick', 'onShakeAnimEnd', 'onKeyUp', 'blockingFunc', 'return', 'restart', 'onResize', 'scrambleDice'].forEach(func => {
       this[func] = this[func].bind(this)
@@ -95,14 +99,14 @@ class Game extends React.Component {
             onClick: this.restart
           },
           {
-            text : 'Back',
+            text : this.gameType === GameType.ONLINE ? 'Disconnect' : 'Back',
             onClick: this.return,
           }
         ]
       },
       turnCount: turnLimit,
       gameTime: null,
-      turn: 0,
+      turn: this.gameType === GameType.ONLINE ? turn : randomInRange(2),
       rolled: false,
       slid: false,
       dkey: 0,
@@ -207,8 +211,8 @@ class Game extends React.Component {
                 sideProps[turn].time = -1
                 clearInterval(this.timeInterval)
               }
-              this.setState({sideProps, isLoading : false},()=>{
-                this.proccessTurn(mov.tub,!mov.side + 0)
+              this.setState({sideProps, newDice, isLoading : false},()=>{
+                this.proccessTurn(mov.tub,mov.side,mov.memo)
             })})
           } else {
             this.playerActivate()
@@ -312,7 +316,6 @@ class Game extends React.Component {
     let {sideProps, tubProps} = this.state
     sideProps[0].tubsClickable = false
     sideProps[1].tubsClickable = false
-    // const oldScore = (si,ti) => (memo ? memo[0][si][ti] : null)
     tubProps = tubProps.map((side)=>{
       return side.map((tub)=>{
         return {...tub, scoreMemo : null}
@@ -363,14 +366,14 @@ class Game extends React.Component {
 
   }
 
-  async proccessTurn(tub, turn = this.state.turn){
+  async proccessTurn(tub, turn = this.state.turn, memo = this.fetchMemo(turn, tub)){
+    console.log(this.state.sideProps[1].name, memo)
     if (this.gameType === GameType.ONLINE && this.state.turn){
-      this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub, side : turn})
+      this.server.send({num : this.state.sideProps[this.state.turn].newDice.num, tub, side : !turn + 0, memo : flipScoreObj(memo)})
     }
-    const memo = this.fetchMemo(turn, tub)
+    console.log(this.state.sideProps[1].name, memo)
+    // console.log(this.state.sideProps[1].name, memo)
     this.clearClickable()
-    const {sideProps} = this.state
-    this.setState({sideProps})
     const num = await this.handleMoveAnim(tub, null, null, turn)
     if (this.props.settings.caravan && num === 1){
       const scoreChanged = await this.destroyAll(tub, turn, memo)
@@ -563,7 +566,7 @@ class Game extends React.Component {
   calcTotal(turn=this.state.turn, memo=null){
     const caravan = this.props.settings.caravan
     if (memo) {
-      return memo[0][turn].reduce((part, a) => this.scoreReduce(part, a, caravan), 0)
+      return memo.scores[turn].reduce((part, a) => this.scoreReduce(part, a, caravan), 0)
     }
     return this.state.diceMatrix[turn].map(t=>(scoreTub(t))).reduce((part, a) => this.scoreReduce(part, a, caravan), 0)
   }
@@ -618,7 +621,9 @@ class Game extends React.Component {
     this.setState({diceMatrix, sideProps})
     return new Promise(resolve=>{
       Promise.all(promises).then(()=>{
-        if (!destAll) promises = [this.updateScore(tub, turn, memo)]
+        if (!destAll) {
+          promises = [this.updateScore(tub, turn, memo)]
+        }
         diceLost.forEach((s,si)=>{
           s.forEach(i=>{
             if (tub !== i || turn !== si) promises.push(this.updateScore(i, si, memo));
@@ -706,7 +711,7 @@ class Game extends React.Component {
       }
     }
     if (scoreMemo) {
-      newScore = scoreMemo[0][turn][i]
+      newScore = scoreMemo.scores[turn][i]
     }
     this.setState({diceMatrix, tubProps})
     return this.handleScoreHover(newScore,turn,i,true)
@@ -777,7 +782,7 @@ class Game extends React.Component {
     let {diceMatrix, tubProps} = this.state
     if (isFull(diceMatrix[i][j])) return
     const memo = this.fetchMemo(i, j);
-    const [scores, removedAt ,] = memo
+    const {scores, removedAt} = memo
 
     removedAt.forEach(t=>{
       diceMatrix[t.s][t.t][t.d].shrinkPreview = isHover
@@ -870,13 +875,6 @@ class Game extends React.Component {
   }
 
   componentDidMount(){
-    if (this.gameType === GameType.ONLINE){
-      const flytextProps = this.state.flytextProps
-      flytextProps.buttons[1].text = "Disconnect"
-      this.setState({turn : this.props.settings.turn, flytextProps})
-    } else {
-      this.setState({turn : randomInRange(2)})
-    }
     this.onResize()
     window.addEventListener("resize", this.onResize)
     window.addEventListener("keyup", this.onKeyUp)

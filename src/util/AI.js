@@ -29,7 +29,7 @@ export function evaluate(diceMatrix, num, profile, turn, settings, turnCount){
 
 export function scoreAll(num, diceMat, turn, choice, settings, getRaw = false){
   const {diceMatrix, removedAt} = executeMov(num, diceMat, choice, settings)
-  return [scoreStatic(diceMatrix, settings, turn, getRaw), removedAt, diceMatrix]
+  return {scores : scoreStatic(diceMatrix, settings, turn, getRaw), removedAt, diceMatrix}
 }
 
 function scoreStatic(diceMatrix, settings, playerSide, getRaw){
@@ -157,7 +157,7 @@ export function cheatDice(diceMatrix, turn, numFaces, settings, turnCount){
 }
 
 function weighDie(num, diceMatrix, turn, choice, settings){
-  const [scores,  , diceMatNew] = scoreAll(num, diceMatrix, turn, choice, settings)
+  const {scores, diceMatrix : diceMatNew } = scoreAll(num, diceMatrix, turn, choice, settings)
   return {weight:scores.flat().reduce((a,b)=>(a+b),0), diceMatNew}
 }
 

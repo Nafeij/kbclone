@@ -173,3 +173,14 @@ export function typeFromParam(param) {
             return GameType.DEFAULT
     }
 }
+
+export function flipScoreObj(memo) {
+    const newMemo = {}
+    newMemo.scores = [memo.scores[1],memo.scores[0]]
+    newMemo.removedAt = memo.removedAt.map(c=>{
+        c.s = 1 - c.s
+        return c
+    })
+    newMemo.diceMatrix = [memo.diceMatrix[1],memo.diceMatrix[0]]
+    return newMemo
+}
