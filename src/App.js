@@ -26,6 +26,7 @@ import logo from "./img/logo.png"
 import caravanImg from "./img/caravan.png"
 import hourGlass from "./img/hourglass.png"
 import pick from "./img/pick.png"
+import Credit from './components/Credit.js'
 
 const MainMenu = (props) => (
   <div className='menu' style={{pointerEvents: props.pointerEvents}}>
@@ -38,6 +39,7 @@ const MainMenu = (props) => (
         </div>
       ))}
     </div>
+    <Credit />
   </div>
 )
 

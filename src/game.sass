@@ -355,6 +355,39 @@ body
     margin-left: auto
     margin-right: 1.4rem
 
+.fcredit
+  font-family: $font-family_4
+  font-size: 0.7rem
+  position: absolute
+  left: 50%
+  bottom: 8rem
+  transform: translate(-50%, 0)
+  z-index: 1
+
+  a
+    margin: 0 auto
+    color: $text-color
+    text-decoration: none
+    opacity: 0.25
+
+    &:hover
+      opacity: 1
+
+    .github-stats
+      margin-top: 10px
+      text-align: center
+
+      & > span
+        display: inline-flex
+        align-items: center
+        margin: 0 7px
+
+      svg
+        display: inline-block
+        margin-right: 5px
+        width: 14px
+        height: 14px
+
 .symb
   background-size: contain
   height: 1.4rem
@@ -1617,6 +1650,9 @@ body
     font-size: 2vmin
   .title
     width: 50%
+  .fcredit
+    bottom: 1rem
+    font-size: 0.5rem
   .menubox.across.TabBar, .menubox.settingsList, .menubox.across.personal
     max-width: 60em
   .game
