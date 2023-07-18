@@ -44,7 +44,7 @@ This app uses persistent cookies to save your preferences, settings and statisti
 
 All assets are either original or reproductions. Original rights and intellectual properties belong to Massive Monster.
 
-Art generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
+Title and GUI art generously contributed by [Kuroukira](https://www.reddit.com/user/Kuroukira)
 
 ## CULT OF THE LAMB
 
