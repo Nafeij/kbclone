@@ -26,3 +26,11 @@ yarn-error.log*
 .eslintrc.js
 
 /.github
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

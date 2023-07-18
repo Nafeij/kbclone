@@ -11,7 +11,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-navtree": "^0.0.6",
+    "react-navtree": "https://github.com/nafeij/react-navtree",
     "react-router-dom": "^6.8.2",
     "react-scripts": "^5.0.1",
     "react-transition-group": "^4.4.5",
@@ -47,5 +47,6 @@
   "devDependencies": {
     "gh-pages": "^4.0.0",
     "sass": "^1.58.0"
-  }
+  },
+  "packageManager": "yarn@3.6.1"
 }
