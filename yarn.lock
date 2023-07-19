@@ -8679,7 +8679,7 @@ __metadata:
     prop-types: ^15.8.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-navtree: "https://github.com/nafeij/react-navtree"
+    react-navtree: ^0.0.6
     react-router-dom: ^6.8.2
     react-scripts: ^5.0.1
     react-transition-group: ^4.4.5
@@ -11022,14 +11022,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-navtree@https://github.com/nafeij/react-navtree":
+"react-navtree@npm:^0.0.6":
   version: 0.0.6
-  resolution: "react-navtree@https://github.com/nafeij/react-navtree.git#commit=ede884042f9639b42aabd48897b73cb06e205c2d"
+  resolution: "react-navtree@npm:0.0.6"
   dependencies:
     prop-types: ^15.5.7
   peerDependencies:
-    react: ^18.2.0
-  checksum: 1d2f30cc703b52aabe1a8f1e65e42d20bcf26d44173cb3cda614fd938a4501babd651a190f2bf621137bc64f2e24ad1528879d646d03de77c9b42e5534af080c
+    react: ^15.5.0
+  checksum: 02f38500f8f0f67bd5a455679f2e7e24c10cb1c5e33ca407194da7035c4a070f4c4f292b06fa6554b93b7d46e525ee147450c310ec17180f52ef61465fa1b1b1
   languageName: node
   linkType: hard
 
