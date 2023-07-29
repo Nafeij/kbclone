@@ -13,10 +13,17 @@
     "react-dom": "^18.2.0",
     "react-navtree": "^0.0.6",
     "react-router-dom": "^6.8.2",
-    "react-scripts": "^5.0.1",
     "react-transition-group": "^4.4.5",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "gh-pages": "^4.0.0",
+    "react-scripts": "^5.0.1",
+    "sass": "^1.58.0"
+  },
+  "resolutions": {
+    "react-scripts/@svgr/webpack": "^6.2.1"
   },
   "scripts": {
     "predeploy": "npm run build",
@@ -43,10 +50,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "gh-pages": "^4.0.0",
-    "sass": "^1.58.0"
   },
   "packageManager": "yarn@3.6.1"
 }
