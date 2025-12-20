@@ -14,12 +14,12 @@
     "react-navtree": "^0.0.6",
     "react-router-dom": "^6.8.2",
     "react-transition-group": "^4.4.5",
-    "universal-cookie": "^4.0.4",
+    "universal-cookie": "^8.0.1",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "gh-pages": "^4.0.0",
+    "gh-pages": "^6.3.0",
     "react-scripts": "^5.0.1",
     "sass": "^1.58.0"
   },
